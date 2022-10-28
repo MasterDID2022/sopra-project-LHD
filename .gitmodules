@@ -1,0 +1,3 @@
+[submodule "sopra-project-report-LHD"]
+	path = sopra-project-report-LHD
+	url = git@github.com:wedidtln/sopra-project-report-LHD.git
