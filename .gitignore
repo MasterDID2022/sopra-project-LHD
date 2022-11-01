@@ -9,6 +9,9 @@
 
 !.idea/codeStyles
 !.idea/runConfigurations
+*.iml
+modules.xml
+*.ipr
 
 ### Java ###
 # Compiled class file
