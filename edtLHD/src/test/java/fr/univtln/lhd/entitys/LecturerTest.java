@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class LecturerTest {
     @Test
-    public void shouldReturnNotNull(){
+     void shouldReturnNotNull(){
         Lecturer lecturer = Lecturer.of("Name","FirstName","Name.Firstname@emal.com","Chercheur");
         assertNotNull(lecturer);
     }

@@ -10,7 +10,7 @@ import java.util.List;
 
 public class GroupTest {
 
-    private List<Student> getListOfStudents(){
+    public List<Student> getListOfStudents(){
         List<Student> students = new ArrayList<>();
         Student s = Student.of("Name", "FName", "Mail");
         students.add(s);
@@ -21,25 +21,25 @@ public class GroupTest {
     }
 
     @Test
-    void testInstanceNotNull(){
+     void testInstanceNotNull(){
         Group group = getInstanceOfGroup();
         assertNotNull(group);
     }
 
     @Test
-    void testNameEquality(){
+     void testNameEquality(){
         Group group = getInstanceOfGroup();
         assertEquals("Name", group.getName());
     }
 
     @Test
-    void testStudentNotNull(){
+     void testStudentNotNull(){
         Group group = getInstanceOfGroup();
         assertNotNull(group.getStudents());
     }
 
     @Test
-    void testStudentCountEquality(){
+     void testStudentCountEquality(){
         Group group = getInstanceOfGroup();
         assertEquals(1, group.getStudents().size());
     }
