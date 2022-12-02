@@ -7,18 +7,17 @@ import static org.junit.jupiter.api.Assertions.*;
 class AdminTest {
 
     private Admin getInstanceOfAdmin(){
-        Admin admin = Admin.of("Name","FirstName","Name.Firstname@emal.com","St");
-        return admin;
+        return Admin.of("Name","FirstName","Name.Firstname@emal.com","St");
     }
 
     @Test
-    public void shouldReturnNotNull(){
+    void shouldReturnNotNull(){
         Admin admin = this.getInstanceOfAdmin();
         assertNotNull(admin);
     }
     @Test
-    void UFRshoudlBeSt() {
+    void facultyShouldBeSt() {
         Admin admin = this.getInstanceOfAdmin();
-        assertEquals(admin.getUFR(),"St");
+        assertEquals("St",admin.getFaculty());
     }
 }
