@@ -23,7 +23,7 @@ public class SlotTest {
     }
 
     @Test
-    public void testInstanceNotNull () {
+     void testInstanceNotNull () {
         Slot slot = getInstanceOfSlot();
         assertNotNull(slot);
     }

@@ -21,25 +21,25 @@ public class GroupTest {
     }
 
     @Test
-    public void testInstanceNotNull(){
+     void testInstanceNotNull(){
         Group group = getInstanceOfGroup();
         assertNotNull(group);
     }
 
     @Test
-    public void testNameEquality(){
+     void testNameEquality(){
         Group group = getInstanceOfGroup();
         assertEquals("Name", group.getName());
     }
 
     @Test
-    public void testStudentNotNull(){
+     void testStudentNotNull(){
         Group group = getInstanceOfGroup();
         assertNotNull(group.getStudents());
     }
 
     @Test
-    public void testStudentCountEquality(){
+     void testStudentCountEquality(){
         Group group = getInstanceOfGroup();
         assertEquals(1, group.getStudents().size());
     }
