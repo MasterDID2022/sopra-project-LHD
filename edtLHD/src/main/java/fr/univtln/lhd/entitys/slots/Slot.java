@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 public class Slot {
 
-    private enum SlotType { CM, TD, TP, EXAM, CONFERENCE, REUNION, OTHER }
+    protected enum SlotType { CM, TD, TP, EXAM, CONFERENCE, REUNION, OTHER }
 
     private final SlotType type;
     private final Classroom classroom;

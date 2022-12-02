@@ -1,5 +1,6 @@
 package fr.univtln.lhd.entitys.slots;
 
+import fr.univtln.lhd.entitys.Student;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,13 +13,13 @@ import java.util.List;
 public class Group {
     private final String name;
 
-    private List students; //modify List<Student class>
+    private List<Student> students; //modify List<Student class>
 
     public static Group getInstance(String name){
         return new Group(name, new ArrayList<>());
     }
 
-    public static Group getInstance(String name, List students) {
+    public static Group getInstance(String name, List<Student> students) {
         return new Group(name, students);
     }
 }
