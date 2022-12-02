@@ -1,13 +1,12 @@
 package fr.univtln.lhd;
 
-/**
- * Hello world!
- *
- */
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class App 
 {
     public static void main( String[] args )
     {
-        System.err.println( "Hello World!" );
+        log.info( "Hello World!" );
     }
 }
