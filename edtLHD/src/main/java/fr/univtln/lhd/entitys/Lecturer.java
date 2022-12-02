@@ -11,7 +11,7 @@ public class Lecturer extends User {
         this.title = title;
     }
 
-    public static Lecturer createLecturer(String name, String fname, String email, String title) {
+    public static Lecturer of(String name, String fname, String email, String title) {
         return new Lecturer(name, fname, email, title);
     }
 }
