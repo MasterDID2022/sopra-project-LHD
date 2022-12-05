@@ -19,7 +19,7 @@ class LecturerTest {
     @Test
     void shouldGetTitle(){
         Lecturer lecturer = this.getInstanceOfLecturer();
-        assertEquals(lecturer.getTitle(),"chercheur");
+        assertEquals("chercheur",lecturer.getTitle());
     }
 
 }

@@ -2,13 +2,12 @@ package fr.univtln.lhd.entitys;
 
 import lombok.Getter;
 
-import java.util.Objects;
 
 /**
  *Class that represent a User that is an Admin
  */
 @Getter
-public class Admin extends User {
+class Admin extends User {
     private final String faculty;
 
     /**

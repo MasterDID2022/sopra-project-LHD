@@ -1,8 +1,6 @@
 package fr.univtln.lhd.entitys;
 
-import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
  * Class of User that is Student
