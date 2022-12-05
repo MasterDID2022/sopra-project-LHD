@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
-public class ClassroomTest {
+class ClassroomTest {
 
     private Classroom getInstanceOfClassroom(){
         return Classroom.getInstance("Name", "BuildingName");

@@ -1,15 +1,26 @@
 package fr.univtln.lhd.entitys;
 
+import fr.univtln.lhd.entitys.slots.Group;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.ArrayList;
+import java.util.List;
+
 
 class UserTest {
 
     public User getInstanceOfUser(){
         return Admin.of("Name","FirstName","Name.Firstname@emal.com","St");
     }
+
+    public List<Student> getListOfStudents(){
+        List<Student> students = new ArrayList<>();
+        Student s = Student.of("Name", "FName", "Mail");
+        students.add(s);
+        return students;
+    }
+
 
     public  User getAnotherInstanceOfUser(){
         return Admin.of("Name2","FirstName2","Name2.First2name@emal.com","St");
@@ -28,10 +39,36 @@ class UserTest {
     }
 
     @Test
+    void ShouldGetName(){
+        User user1 = getInstanceOfUser();
+        Assertions.assertEquals("Name",user1.getName());
+    }
+
+    @Test
+    void ShouldGetFname(){
+        User user1 = getInstanceOfUser();
+        Assertions.assertEquals("FirstName",user1.getFname());
+    }
+
+    @Test
+    void ShouldGetEmail(){
+        User user1 = getInstanceOfUser();
+        Assertions.assertEquals("Name.Firstname@emal.com",user1.getEmail());
+    }
+
+    @Test
     void HashCodeIsReflexive2(){
         User user1 = this.getInstanceOfUser();
         User user2 = this.getAnotherInstanceOfUser();
         Assertions.assertNotEquals(user1.hashCode(),user2.hashCode());
+    }
+
+    @Test
+    void differentClassShouldNotBeEqual(){
+        Group different = Group.getInstance("Name", getListOfStudents());
+        User user = this.getAnotherInstanceOfUser();
+        Assertions.assertNotEquals(user,different);
+
     }
 
     @Test
@@ -41,6 +78,7 @@ class UserTest {
         Assertions.assertNotEquals(user1,user2);
     }
 
+    @Test
     void EqualIsSymmetric(){
         User user1 = this.getInstanceOfUser();
         User user2 = this.getInstanceOfUser();
@@ -75,6 +113,7 @@ class UserTest {
         User user3 = this.getInstanceOfUser();
         Assertions.assertTrue(user1.equals(user2)&&user2.equals(user3)&&user1.equals(user3));
     }
+    @Test
     void EqualIsTransitive2(){
         User user1 = this.getInstanceOfUser();
         User user2 = this.getAnotherInstanceOfUser();
@@ -101,4 +140,12 @@ class UserTest {
                 user2.hashCode()==user3.hashCode()&&
                 user1.hashCode()==user3.hashCode());
     }
+
+    @Test
+    void NullEquality(){
+        User user1 = this.getInstanceOfUser();
+        Assertions.assertNotEquals(null,user1);
+    }
+
+
 }
