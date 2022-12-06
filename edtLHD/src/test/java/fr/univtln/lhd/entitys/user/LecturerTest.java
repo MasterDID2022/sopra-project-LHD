@@ -1,5 +1,6 @@
-package fr.univtln.lhd.entitys;
+package fr.univtln.lhd.entitys.user;
 
+import fr.univtln.lhd.model.entitys.user.Lecturer;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

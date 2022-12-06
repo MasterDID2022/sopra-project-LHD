@@ -2,7 +2,8 @@ package fr.univtln.lhd.entitys.slots;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import fr.univtln.lhd.entitys.Student;
+import fr.univtln.lhd.model.entitys.slots.Group;
+import fr.univtln.lhd.model.entitys.user.Student;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -17,30 +18,30 @@ class GroupTest {
         students.add(s);
         return students;
     }
-    private Group getInstanceOfGroup() {
+    public Group getInstanceOfGroup() {
         return Group.getInstance("Name", getListOfStudents());
     }
 
     @Test
-     void testInstanceNotNull(){
+    void testInstanceNotNull(){
         Group group = getInstanceOfGroup();
         assertNotNull(group);
     }
 
     @Test
-     void testNameEquality(){
+    void testNameEquality(){
         Group group = getInstanceOfGroup();
         assertEquals("Name", group.getName());
     }
 
     @Test
-     void testStudentNotNull(){
+    void testStudentNotNull(){
         Group group = getInstanceOfGroup();
         assertNotNull(group.getStudents());
     }
 
     @Test
-     void testStudentCountEquality(){
+    void testStudentCountEquality(){
         Group group = getInstanceOfGroup();
         assertEquals(1, group.getStudents().size());
     }

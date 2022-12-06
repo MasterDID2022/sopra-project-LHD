@@ -1,12 +1,11 @@
-package fr.univtln.lhd.entitys;
+package fr.univtln.lhd.entitys.user;
 
+import fr.univtln.lhd.model.entitys.user.Admin;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import  org.junit.jupiter.api.Test;
 
-
-public class AdminTest {
+class AdminTest {
 
     public Admin getInstanceOfAdmin(){
         return Admin.of("Name","FirstName","Name.Firstname@emal.com","St");

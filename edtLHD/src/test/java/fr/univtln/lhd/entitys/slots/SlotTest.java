@@ -1,30 +1,32 @@
 package fr.univtln.lhd.entitys.slots;
 
-import org.junit.jupiter.api.Assertions;
+import fr.univtln.lhd.model.entitys.slots.Classroom;
+import fr.univtln.lhd.model.entitys.slots.Group;
+import fr.univtln.lhd.model.entitys.slots.Slot;
+import fr.univtln.lhd.model.entitys.slots.Subject;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class SlotTest {
 
-    private Classroom getInstanceOfClassroom () {
+    public Classroom getInstanceOfClassroom () {
         return Classroom.getInstance("Name", "BuildingName");
     }
 
-    private Subject getInstanceOfSubject () {
+    public Subject getInstanceOfSubject () {
         return Subject.getInstance("Name", 70);
     }
 
-    private Group getInstanceOfGroup () {
+    public Group getInstanceOfGroup () {
         return Group.getInstance("Name");
     }
 
-
-    private Slot getInstanceOfSlot () {
+    public Slot getInstanceOfSlot () {
         return Slot.getInstance(Slot.SlotType.CM, getInstanceOfClassroom(), getInstanceOfSubject(), getInstanceOfGroup(), 10);
     }
 
-    private Slot getInstanceOfSlotWithMemo () {
+    public Slot getInstanceOfSlotWithMemo () {
         return Slot.getInstance(Slot.SlotType.CM, getInstanceOfClassroom(), getInstanceOfSubject(), getInstanceOfGroup(), 10,"memo");
     }
 

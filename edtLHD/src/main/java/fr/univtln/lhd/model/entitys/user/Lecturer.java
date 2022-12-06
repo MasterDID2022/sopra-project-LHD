@@ -1,5 +1,6 @@
-package fr.univtln.lhd.entitys;
+package fr.univtln.lhd.model.entitys.user;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 /**
@@ -29,4 +30,24 @@ public class Lecturer extends User {
     public static Lecturer of(String name, String fname, String email, String title) {
         return new Lecturer(name, fname, email, title);
     }
+        /**
+     * Take an object and return if the lecturer is equal to it
+     * the only important parameter for the test of equality are those of User
+     * @param o an object
+     * @return a boolean
+     */
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    /**
+     * HashCode of lecturer, like the equality the only important parameter are those of User
+     * @return hashcode
+     */
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
 }

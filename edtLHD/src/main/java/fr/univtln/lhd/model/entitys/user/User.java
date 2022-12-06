@@ -1,4 +1,4 @@
-package fr.univtln.lhd.entitys;
+package fr.univtln.lhd.model.entitys.user;
 
 import lombok.Getter;
 

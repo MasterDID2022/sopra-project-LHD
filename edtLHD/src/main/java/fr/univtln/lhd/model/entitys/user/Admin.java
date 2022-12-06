@@ -1,13 +1,14 @@
-package fr.univtln.lhd.entitys;
+package fr.univtln.lhd.model.entitys.user;
 
 import lombok.Getter;
+
 
 
 /**
  *Class that represent a User that is an Admin
  */
 @Getter
-class Admin extends User {
+public class Admin extends User {
     private final String faculty;
 
     /**
@@ -30,4 +31,23 @@ class Admin extends User {
         return new Admin(name, fname, email, faculty);
     }
 
+    /**
+     * Take an object and return if the admin is equal to it
+     * the only important parameter for the test of equality are those of User
+     * @param o an object
+     * @return a boolean
+     */
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    /**
+     * HashCode of admin, like the equality the only important parameter are those User
+     * @return hashcode
+     */
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }

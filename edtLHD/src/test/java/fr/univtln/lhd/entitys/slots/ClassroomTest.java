@@ -2,16 +2,17 @@ package fr.univtln.lhd.entitys.slots;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import fr.univtln.lhd.model.entitys.slots.Classroom;
 import org.junit.jupiter.api.Test;
 
 class ClassroomTest {
 
-    private Classroom getInstanceOfClassroom(){
+    public Classroom getInstanceOfClassroom(){
         return Classroom.getInstance("Name", "BuildingName");
     }
 
     @Test
-     void testInstanceNotNull(){
+    void testInstanceNotNull(){
         Classroom classroom = getInstanceOfClassroom();
         assertNotNull(classroom);
     }
