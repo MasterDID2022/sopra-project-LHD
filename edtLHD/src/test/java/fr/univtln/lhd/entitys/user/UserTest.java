@@ -1,6 +1,9 @@
-package fr.univtln.lhd.entitys;
+package fr.univtln.lhd.entitys.user;
 
-import fr.univtln.lhd.entitys.slots.Group;
+import fr.univtln.lhd.model.entitys.slots.Group;
+import fr.univtln.lhd.model.entitys.user.Admin;
+import fr.univtln.lhd.model.entitys.user.Student;
+import fr.univtln.lhd.model.entitys.user.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

@@ -1,10 +1,8 @@
-package fr.univtln.lhd.entitys;
+package fr.univtln.lhd.model.entitys.user;
 
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
 /**
  *Class that represent a Guest
  */

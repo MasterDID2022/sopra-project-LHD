@@ -1,4 +1,4 @@
-package fr.univtln.lhd.entitys;
+package fr.univtln.lhd.model.entitys;
 
 /**
  * Core classe of our software

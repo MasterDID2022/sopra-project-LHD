@@ -1,11 +1,13 @@
 package fr.univtln.lhd.entitys.slots;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import fr.univtln.lhd.model.entitys.slots.Subject;
 import org.junit.jupiter.api.Test;
 
 class SubjectTest {
 
-    private Subject getInstanceOfSubject(){
+    public Subject getInstanceOfSubject(){
         return Subject.getInstance("Name", 70);
     }
 
@@ -18,12 +20,12 @@ class SubjectTest {
     @Test
     void testNameEquality(){
         Subject subject = getInstanceOfSubject();
-        assertEquals(subject.getName(), "Name");
+        assertEquals( "Name",subject.getName());
     }
 
     @Test
     void testHourCountMaxEquality(){
         Subject subject = getInstanceOfSubject();
-        assertEquals(subject.getHourCountMax(), 70);
+        assertEquals(70, subject.getHourCountMax());
     }
 }
