@@ -19,7 +19,6 @@ class SlotTest {
         return Group.getInstance("Name");
     }
 
-
     public Slot getInstanceOfSlot () {
         return Slot.getInstance(Slot.SlotType.CM, getInstanceOfClassroom(), getInstanceOfSubject(), getInstanceOfGroup(), 10);
     }
