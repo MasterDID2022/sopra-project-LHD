@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 class SubjectTest {
 
-    private Subject getInstanceOfSubject(){
+    public Subject getInstanceOfSubject(){
         return Subject.getInstance("Name", 70);
     }
 

@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import  org.junit.jupiter.api.Test;
 
 
-public class AdminTest {
+class AdminTest {
 
     public Admin getInstanceOfAdmin(){
         return Admin.of("Name","FirstName","Name.Firstname@emal.com","St");

@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Class defining a Slot
+ */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 @Setter
@@ -21,10 +24,29 @@ public class Slot {
 
     private String memo; //Slot annotation
 
+    /**
+     * Factory for a Slot class
+     * @param type SlotType enum, defines the type of this Slot
+     * @param classroom Classroom object, to which Classroom this Slot is associated with
+     * @param subject Subject object, what subject this Slot is about
+     * @param group Group object, to what group this Slot is for
+     * @param timeRange indicates the Time taken by the Slot
+     * @param memo a little annotations for that Slot
+     * @return an instance of Slot
+     */
     public static Slot getInstance(SlotType type, Classroom classroom, Subject subject, Group group, int timeRange, String memo){
         return new Slot(type, classroom, subject, group, timeRange, memo);
     }
 
+    /**
+     * Factory for a Slot class
+     * @param type SlotType enum, defines the type of this Slot
+     * @param classroom Classroom object, to which Classroom this Slot is associated with
+     * @param subject Subject object, what subject this Slot is about
+     * @param group Group object, to what group this Slot is for
+     * @param timeRange indicates the Time taken by the Slot
+     * @return an instance of Slot
+     */
     public static Slot getInstance(SlotType type, Classroom classroom, Subject subject, Group group, int timeRange){
         return new Slot(type, classroom, subject, group, timeRange, null);
     }
