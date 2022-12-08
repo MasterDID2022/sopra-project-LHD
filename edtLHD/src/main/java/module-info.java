@@ -8,5 +8,6 @@ module fr.univtln.lhd {
     requires static lombok;
     requires java.naming;
 
-    exports fr.univtln.lhd.view to javafx.graphics;
+    exports fr.univtln.lhd.view;
+    exports fr.univtln.lhd.model.entitys;
 }
