@@ -14,10 +14,9 @@ class GroupTest {
 
     public List<Student> getListOfStudents(){
         List<Student> students = new ArrayList<>();
-        Student s = Student.of("Name", "FName", "Mail");
-        students.add(s);
         return students;
     }
+
     public Group getInstanceOfGroup() {
         return Group.getInstance("Name", getListOfStudents());
     }
@@ -41,8 +40,22 @@ class GroupTest {
     }
 
     @Test
-    void testStudentCountEquality(){
+    void Addtest(){
         Group group = getInstanceOfGroup();
+        group.add(Student.of("name","fname","email"));
+        assertEquals(1, group.getStudents().size());
+    }
+
+    @Test
+    void testStudentCountEquality0(){
+        Group group = getInstanceOfGroup();
+        assertEquals(0, group.getStudents().size());
+    }
+
+    @Test
+    void testStudentCountEquality1(){
+        Group group = getInstanceOfGroup();
+        group.add(Student.of("name","fname","email"));
         assertEquals(1, group.getStudents().size());
     }
 }
