@@ -6,12 +6,15 @@ import fr.univtln.lhd.model.entities.slots.Slot;
 import fr.univtln.lhd.model.entities.slots.Subject;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class SlotTest {
 
     public Classroom getInstanceOfClassroom () {
-        return Classroom.getInstance("Name", "BuildingName");
+        return Classroom.getInstance("Name");
     }
 
     public Subject getInstanceOfSubject () {
@@ -22,12 +25,18 @@ class SlotTest {
         return Group.getInstance("Name");
     }
 
+    public List<Group> getListOfGroup() {
+        List<Group> groups = new ArrayList<>();
+        groups.add( getInstanceOfGroup() );
+        return groups;
+    }
+
     public Slot getInstanceOfSlot () {
-        return Slot.getInstance(Slot.SlotType.CM, getInstanceOfClassroom(), getInstanceOfSubject(), getInstanceOfGroup(), 10);
+        return Slot.getInstance(Slot.SlotType.CM, getInstanceOfClassroom().getId(), getInstanceOfSubject().getId(), getListOfGroup(), "10");
     }
 
     public Slot getInstanceOfSlotWithMemo () {
-        return Slot.getInstance(Slot.SlotType.CM, getInstanceOfClassroom(), getInstanceOfSubject(), getInstanceOfGroup(), 10,"memo");
+        return Slot.getInstance(Slot.SlotType.CM, getInstanceOfClassroom().getId(), getInstanceOfSubject().getId(), getListOfGroup(), "10","memo");
     }
 
     @Test

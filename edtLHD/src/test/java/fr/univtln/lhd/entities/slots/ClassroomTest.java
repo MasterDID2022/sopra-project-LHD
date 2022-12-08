@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 class ClassroomTest {
 
     public Classroom getInstanceOfClassroom(){
-        return Classroom.getInstance("Name", "BuildingName");
+        return Classroom.getInstance("Name");
     }
 
     @Test
@@ -21,11 +21,5 @@ class ClassroomTest {
     void testNameEquality(){
         Classroom classroom = getInstanceOfClassroom();
         assertEquals("Name", classroom.getName());
-    }
-
-    @Test
-    void testBuildingNameEquality(){
-        Classroom classroom = getInstanceOfClassroom();
-        assertEquals("BuildingName", classroom.getBuildingName());
     }
 }
