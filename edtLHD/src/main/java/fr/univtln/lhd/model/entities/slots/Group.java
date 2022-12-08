@@ -1,6 +1,6 @@
-package fr.univtln.lhd.model.entitys.slots;
+package fr.univtln.lhd.model.entities.slots;
 
-import fr.univtln.lhd.model.entitys.user.Student;
+import fr.univtln.lhd.model.entities.user.Student;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

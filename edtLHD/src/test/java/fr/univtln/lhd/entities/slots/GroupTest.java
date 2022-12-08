@@ -1,9 +1,9 @@
-package fr.univtln.lhd.entitys.slots;
+package fr.univtln.lhd.entities.slots;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import fr.univtln.lhd.model.entitys.slots.Group;
-import fr.univtln.lhd.model.entitys.user.Student;
+import fr.univtln.lhd.model.entities.slots.Group;
+import fr.univtln.lhd.model.entities.user.Student;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
