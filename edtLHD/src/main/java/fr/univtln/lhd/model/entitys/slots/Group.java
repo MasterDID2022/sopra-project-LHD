@@ -12,11 +12,15 @@ import java.util.List;
  * Class for defining a Group
  */
 @Getter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Group {
     private final String name;
 
     private List<Student> students; //modify List<Student class>
+
+    public Group(String name, List<Student> students) {
+        this.name = name;
+        this.students = students;
+    }
 
     /**
      * Factory for a Group with no students

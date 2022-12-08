@@ -7,12 +7,16 @@ import lombok.Getter;
 /**
  * Class defining a Subject
  */
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class Subject {
 
     private final String name;
     private final int hourCountMax; //max number of hours dedicated to this subject
+
+    public Subject(String name, int hourCountMax) {
+        this.name = name;
+        this.hourCountMax = hourCountMax;
+    }
 
     /**
      * Factory for a Subject

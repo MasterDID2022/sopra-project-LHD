@@ -8,7 +8,6 @@ import lombok.Setter;
 /**
  * Class defining a Slot
  */
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 @Setter
 public class Slot {
@@ -23,6 +22,15 @@ public class Slot {
     private int timeRange; //time range type needs to be changed to Time Range Wrapper Class
 
     private String memo; //Slot annotation
+
+    public Slot(SlotType type, Classroom classroom, Subject subject, Group group, int timeRange, String memo) {
+        this.type = type;
+        this.classroom = classroom;
+        this.subject = subject;
+        this.group = group;
+        this.timeRange = timeRange;
+        this.memo = memo;
+    }
 
     /**
      * Factory for a Slot class

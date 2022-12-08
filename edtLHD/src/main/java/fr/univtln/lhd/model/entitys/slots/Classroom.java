@@ -1,18 +1,20 @@
 package fr.univtln.lhd.model.entitys.slots;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
  * Class defining a Classroom
  */
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class Classroom {
 
     private final String name;
     private final String buildingName; //? might not be a string in database ?
+
+    public Classroom(String name, String buildingName) {
+        this.name = name;
+        this.buildingName = buildingName;
+    }
 
     /**
      * Factory for a classroom
