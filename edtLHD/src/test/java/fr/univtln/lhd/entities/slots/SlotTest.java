@@ -1,9 +1,9 @@
-package fr.univtln.lhd.entitys.slots;
+package fr.univtln.lhd.entities.slots;
 
-import fr.univtln.lhd.model.entitys.slots.Classroom;
-import fr.univtln.lhd.model.entitys.slots.Group;
-import fr.univtln.lhd.model.entitys.slots.Slot;
-import fr.univtln.lhd.model.entitys.slots.Subject;
+import fr.univtln.lhd.model.entities.slots.Classroom;
+import fr.univtln.lhd.model.entities.slots.Group;
+import fr.univtln.lhd.model.entities.slots.Slot;
+import fr.univtln.lhd.model.entities.slots.Subject;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

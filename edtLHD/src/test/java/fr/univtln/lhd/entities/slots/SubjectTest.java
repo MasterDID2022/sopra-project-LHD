@@ -1,8 +1,8 @@
-package fr.univtln.lhd.entitys.slots;
+package fr.univtln.lhd.entities.slots;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import fr.univtln.lhd.model.entitys.slots.Subject;
+import fr.univtln.lhd.model.entities.slots.Subject;
 import org.junit.jupiter.api.Test;
 
 class SubjectTest {

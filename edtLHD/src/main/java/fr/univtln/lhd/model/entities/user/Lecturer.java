@@ -1,6 +1,5 @@
-package fr.univtln.lhd.model.entitys.user;
+package fr.univtln.lhd.model.entities.user;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 /**

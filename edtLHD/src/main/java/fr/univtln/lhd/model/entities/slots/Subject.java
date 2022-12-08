@@ -1,4 +1,4 @@
-package fr.univtln.lhd.model.entitys.slots;
+package fr.univtln.lhd.model.entities.slots;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
