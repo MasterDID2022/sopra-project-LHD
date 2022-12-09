@@ -120,6 +120,7 @@ public class SubjectDAO implements DAO<Subject> {
         try {
             update.setString(1, subject.getName());
             update.setFloat(2, subject.getHourCountMax());
+            update.setLong(3, subject.getId());
             update.executeUpdate();
         } catch (SQLException e){
             log.error(e.getMessage());

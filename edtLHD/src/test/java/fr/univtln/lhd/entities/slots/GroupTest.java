@@ -18,7 +18,7 @@ class GroupTest {
     }
 
     public Group getInstanceOfGroup() {
-        return Group.getInstance("Name", getListOfStudents());
+        return Group.getInstance("Name");
     }
 
     @Test
@@ -31,31 +31,5 @@ class GroupTest {
     void testNameEquality(){
         Group group = getInstanceOfGroup();
         assertEquals("Name", group.getName());
-    }
-
-    @Test
-    void testStudentNotNull(){
-        Group group = getInstanceOfGroup();
-        assertNotNull(group.getStudents());
-    }
-
-    @Test
-    void Addtest(){
-        Group group = getInstanceOfGroup();
-        group.add(Student.of("name","fname","email"));
-        assertEquals(1, group.getStudents().size());
-    }
-
-    @Test
-    void testStudentCountEquality0(){
-        Group group = getInstanceOfGroup();
-        assertEquals(0, group.getStudents().size());
-    }
-
-    @Test
-    void testStudentCountEquality1(){
-        Group group = getInstanceOfGroup();
-        group.add(Student.of("name","fname","email"));
-        assertEquals(1, group.getStudents().size());
     }
 }
