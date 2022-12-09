@@ -11,6 +11,8 @@ import lombok.Getter;
 @Getter
 public class Subject {
 
+    private long id = -1;
+
     private final String name;
     private final int hourCountMax; //max number of hours dedicated to this subject
 
@@ -21,6 +23,8 @@ public class Subject {
      * @return an instance of Subject
      */
     public static Subject getInstance(String name, int hourCountMax){
-        return new Subject(name, hourCountMax);
+        return new Subject(-1, name, hourCountMax);
     }
+
+    public static Subject getInstance(long id, String name, int hourCountMax) { return new Subject(id, name, hourCountMax); }
 }

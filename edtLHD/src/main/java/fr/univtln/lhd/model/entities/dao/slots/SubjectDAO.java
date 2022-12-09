@@ -3,38 +3,33 @@ package fr.univtln.lhd.model.entities.dao.slots;
 import fr.univtln.lhd.model.entities.dao.DAO;
 import fr.univtln.lhd.model.entities.slots.Subject;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.sql.*;
+import java.util.*;
 
 /**
  * SubjectDAO implementing DAO interface for Subject Object
  */
 public class SubjectDAO implements DAO<Subject> {
 
-    public static String DB_URL = "jdbc:postgresql://localhost:5432/postgres";
-    public static String USER = "";
-    public static String PASS = "";
+    public static String DB_URL = "jdbc:postgresql://localhost:5432/lhd";
+    public static String USER = "postgres";
+    public static String PASS = "assAss&n03&N";
 
     private final Connection conn;
     private final PreparedStatement getAll;
     private final PreparedStatement get;
     private final PreparedStatement save;
-    //private final PreparedStatement update;
-    //private final PreparedStatement delete;
+    private final PreparedStatement update;
+    private final PreparedStatement delete;
 
     private SubjectDAO() throws SQLException {
-        this.conn = DriverManager.getConnection(DB_URL, USER, PASS);
+        this.conn = initConnection(DB_URL, USER, PASS);
 
         this.get = conn.prepareStatement("SELECT * FROM SUBJECT WHERE ID=?");
         this.getAll = conn.prepareStatement("SELECT * FROM SUBJECT");
         this.save = conn.prepareStatement("INSERT INTO SUBJECT VALUES (?,?)");
-        //this.update = conn.prepareStatement("UPDATE SUBJECT ")
+        this.update = conn.prepareStatement("UPDATE SUBJECT SET NAME=? WHERE ID=?");
+        this.delete = conn.prepareStatement("DELETE FROM SUBJECT WHERE ID=?");
     }
 
     /**
@@ -54,6 +49,19 @@ public class SubjectDAO implements DAO<Subject> {
      */
     @Override
     public List<Subject> getAll() {
+
+        List<Subject> subjectList = new ArrayList<>();
+
+        try {
+            ResultSet rs = getAll.executeQuery();
+            while (rs.next()) {
+                Subject s = Subject.getInstance(rs.getString("NAME"), 10);
+                subjectList.add(s);
+            }
+        } catch (SQLException e){
+            throw new RuntimeException();
+        }
+
         //wip
         return Collections.emptyList();
     }
