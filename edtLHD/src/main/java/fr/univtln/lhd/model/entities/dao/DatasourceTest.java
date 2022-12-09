@@ -9,10 +9,7 @@ import java.sql.SQLException;
 public class DatasourceTest
 {
     public static void main(String[] args) {
-        String DB_URL = "jdbc:postgresql://localhost:5432/postgres";
-        String DB_USER = "postgres";
-        String DB_PASS = "assAss&n03&N";
-        try (Connection conn = Datasource.getConnection(DB_URL, DB_USER, DB_PASS)) {
+        try (Connection conn = Datasource.getConnection()) {
             System.out.println("fsjkdfh");
         } catch (SQLException e){
             log.error(e.getMessage());
