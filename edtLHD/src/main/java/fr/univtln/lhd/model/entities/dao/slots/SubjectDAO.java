@@ -2,18 +2,16 @@ package fr.univtln.lhd.model.entities.dao.slots;
 
 import fr.univtln.lhd.model.entities.dao.DAO;
 import fr.univtln.lhd.model.entities.slots.Subject;
+import lombok.extern.slf4j.Slf4j;
 
 import java.sql.*;
 import java.util.*;
 
+@Slf4j
 /**
  * SubjectDAO implementing DAO interface for Subject Object
  */
 public class SubjectDAO implements DAO<Subject> {
-
-    public static String DB_URL = "jdbc:postgresql://localhost:5432/lhd";
-    public static String USER = "postgres";
-    public static String PASS = "assAss&n03&N";
 
     private final Connection conn;
     private final PreparedStatement getAll;
@@ -23,14 +21,16 @@ public class SubjectDAO implements DAO<Subject> {
     private final PreparedStatement delete;
 
     private SubjectDAO() throws SQLException {
-        this.conn = initConnection(DB_URL, USER, PASS);
+        this.conn = initConnection();
 
         this.get = conn.prepareStatement("SELECT * FROM SUBJECT WHERE ID=?");
         this.getAll = conn.prepareStatement("SELECT * FROM SUBJECT");
-        this.save = conn.prepareStatement("INSERT INTO SUBJECT VALUES (?,?)");
-        this.update = conn.prepareStatement("UPDATE SUBJECT SET NAME=? WHERE ID=?");
+        this.save = conn.prepareStatement("INSERT INTO SUBJECT VALUES (DEFAULT, ?, ?)");
+        this.update = conn.prepareStatement("UPDATE SUBJECT SET NAME=?, HOUR_COUNT_MAX=? WHERE ID=?");
         this.delete = conn.prepareStatement("DELETE FROM SUBJECT WHERE ID=?");
     }
+
+    public static SubjectDAO getInstance() throws SQLException { return new SubjectDAO(); }
 
     /**
      * Getter for one Subject
@@ -39,8 +39,25 @@ public class SubjectDAO implements DAO<Subject> {
      */
     @Override
     public Optional<Subject> get(long id) {
-        //wip
-        return Optional.empty();
+        Optional<Subject> result = Optional.empty();
+
+        try {
+            get.setLong(1, id);
+            ResultSet rs = get.executeQuery();
+
+            if (rs.next()) {
+                result = Optional.of(
+                        Subject.getInstance(
+                        rs.getLong("ID"),
+                        rs.getString("NAME"),
+                        rs.getFloat("HOUR_COUNT_MAX"))
+                );
+            }
+
+        }catch (SQLException e){
+            log.error(e.getMessage());
+        }
+        return result;
     }
 
     /**
@@ -55,15 +72,16 @@ public class SubjectDAO implements DAO<Subject> {
         try {
             ResultSet rs = getAll.executeQuery();
             while (rs.next()) {
-                Subject s = Subject.getInstance(rs.getString("NAME"), 10);
+                Subject s = Subject.getInstance(
+                        rs.getLong("ID"),
+                        rs.getString("NAME"),
+                        rs.getFloat("HOUR_COUNT_MAX"));
                 subjectList.add(s);
             }
         } catch (SQLException e){
-            throw new RuntimeException();
+            log.error(e.getMessage());
         }
-
-        //wip
-        return Collections.emptyList();
+        return subjectList;
     }
 
     /**
@@ -72,7 +90,14 @@ public class SubjectDAO implements DAO<Subject> {
      */
     @Override
     public void save(Subject subject) {
-        //wip
+
+        try{
+            save.setString(1, subject.getName());
+            save.setFloat(2, subject.getHourCountMax());
+            save.executeUpdate();
+        } catch (SQLException e){
+            log.error(e.getMessage());
+        }
     }
 
     /**
@@ -82,7 +107,13 @@ public class SubjectDAO implements DAO<Subject> {
      */
     @Override
     public void update(Subject subject, Map<String, String> params) {
-        //wip
+
+        try {
+            update.setString(1, subject.getName());
+            update.setFloat(2, subject.getHourCountMax());
+        } catch (SQLException e){
+            log.error(e.getMessage());
+        }
     }
 
     /**
@@ -91,6 +122,11 @@ public class SubjectDAO implements DAO<Subject> {
      */
     @Override
     public void delete(Subject subject) {
-        //wip
+
+        try {
+            delete.executeUpdate();
+        } catch (SQLException e){
+            log.error(e.getMessage());
+        }
     }
 }
