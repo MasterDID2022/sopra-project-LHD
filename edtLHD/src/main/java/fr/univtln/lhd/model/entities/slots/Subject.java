@@ -1,5 +1,6 @@
 package fr.univtln.lhd.model.entities.slots;
 
+import fr.univtln.lhd.exception.IdException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -40,7 +41,15 @@ public class Subject {
         return new Subject(id, name, hourCountMax);
     }
 
-    public void setId(long id){
+    /**
+     * Set the id, should only be used by the DAO
+     * @param id
+     * @throws IdException
+     */
+    public void setId(long id) throws IdException {
+        if (id<0) {
+            throw  new IdException("Id Error");
+        }
         this.id = id;
     }
 

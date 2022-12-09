@@ -1,5 +1,7 @@
 package fr.univtln.lhd.model.entities.dao;
 
+import fr.univtln.lhd.exception.IdException;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -44,7 +46,7 @@ public interface DAO<T> {
      * @param t Entity t
      * @param params Map of attributes and values
      */
-    void update(T t, Map<String, String> params);
+    void update(T t, Map<String, String> params) throws IdException;
 
     /**
      * Delete Entity t from Database

@@ -22,7 +22,6 @@ public class SubjectDAO implements DAO<Subject> {
 
     private SubjectDAO() throws SQLException {
         this.conn = initConnection();
-
         this.get = conn.prepareStatement("SELECT * FROM SUBJECT WHERE ID=?");
         this.getAll = conn.prepareStatement("SELECT * FROM SUBJECT");
         this.save = conn.prepareStatement("INSERT INTO SUBJECT VALUES (DEFAULT, ?, ?)");
@@ -66,9 +65,7 @@ public class SubjectDAO implements DAO<Subject> {
      */
     @Override
     public List<Subject> getAll() {
-
         List<Subject> subjectList = new ArrayList<>();
-
         try {
             ResultSet rs = getAll.executeQuery();
             while (rs.next()) {
@@ -90,7 +87,6 @@ public class SubjectDAO implements DAO<Subject> {
      */
     @Override
     public void save(Subject subject) {
-
         try{
             save.setString(1, subject.getName());
             save.setFloat(2, subject.getHourCountMax());
