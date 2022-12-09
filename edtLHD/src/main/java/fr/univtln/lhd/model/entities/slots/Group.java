@@ -15,7 +15,6 @@ import java.util.List;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Group {
     private final String name;
-
     private List<Student> students; //modify List<Student class>
 
     /**
@@ -35,5 +34,14 @@ public class Group {
      */
     public static Group getInstance(String name, List<Student> students) {
         return new Group(name, students);
+    }
+
+    /**
+     * Take a Student and add it to the List of students of the Group
+     * @param student
+     */
+    public void add(Student student){
+        student.add(this);
+        this.students.add(student);
     }
 }

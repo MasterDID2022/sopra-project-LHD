@@ -1,6 +1,10 @@
 package fr.univtln.lhd.model.entities.user;
 
+import fr.univtln.lhd.model.entities.slots.Group;
 import lombok.Getter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class of User that is Student
@@ -8,12 +12,14 @@ import lombok.Getter;
 @Getter
 public class Student extends User {
 
+    private List<Group> student_group;
     /**
      * Private constructor use by the factory should not be used
      * ref <code>of</code> methode for parameter meaning
      */
-    private Student(String name, String fname, String email) {
+    private Student(String name, String fname, String email,List<Group> student_group) {
         super(name, fname, email);
+        this.student_group=student_group;
     }
 
     /**
@@ -24,7 +30,34 @@ public class Student extends User {
      * @return an instance of Student
      */
     public static Student of(String name, String fname, String email) {
-        return new Student(name, fname, email);
+        List<Group> student_group = null;
+        return new Student(name, fname, email,student_group);
+    }
+
+    /**
+     * Take a group and add it to the list of Group of this student
+     * @param group a group to add to this student
+     */
+    public void add(Group group){
+        if (student_group != null){
+            this.student_group.add(group);
+        }
+        else{
+            this.student_group = new ArrayList<Group>();
+            this.student_group.add(group);
+        }
+    }
+
+    /**
+     * factory of Student
+     * @param name name of a student
+     * @param fname first name of a student
+     * @param email email of a student
+     * @param student_group Groupe attached to a student
+     * @return an instance of Student
+     */
+    public static Student of(String name, String fname, String email, List<Group> student_group) {
+        return new Student(name, fname, email,student_group);
     }
 
     /**
@@ -46,4 +79,5 @@ public class Student extends User {
     public int hashCode() {
         return super.hashCode();
     }
+
 }
