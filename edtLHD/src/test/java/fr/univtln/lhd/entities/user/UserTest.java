@@ -19,8 +19,6 @@ class UserTest {
 
     public List<Student> getListOfStudents(){
         List<Student> students = new ArrayList<>();
-        Student s = Student.of("Name", "FName", "Mail");
-        students.add(s);
         return students;
     }
 
