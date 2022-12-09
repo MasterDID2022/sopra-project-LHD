@@ -1,5 +1,6 @@
 package fr.univtln.lhd.entities.user;
 
+import fr.univtln.lhd.exception.IdException;
 import fr.univtln.lhd.model.entities.slots.Group;
 import fr.univtln.lhd.model.entities.user.Admin;
 import fr.univtln.lhd.model.entities.user.Student;
@@ -25,6 +26,28 @@ class UserTest {
 
     public  User getAnotherInstanceOfUser(){
         return Admin.of("Name2","FirstName2","Name2.First2name@emal.com","St");
+    }
+
+    @Test
+    void IdShouldBeNegative(){
+        User user1 = this.getInstanceOfUser();
+        Assertions.assertEquals(-1,user1.getId());
+    }
+
+    @Test
+    void IdShouldBe42() throws IdException {
+        User user1 = this.getInstanceOfUser();
+        user1.setId(42);
+        Assertions.assertEquals(42,user1.getId());
+    }
+
+    @Test
+    void ShouldThrowAnIdException(){
+        User user1 = this.getInstanceOfUser();
+        IdException thrown = Assertions.assertThrows(
+                IdException.class,() ->user1.setId(-3),"should throw id error"
+        );
+        Assertions.assertFalse(thrown.getMessage().contains("should throw id error"));
     }
 
     @Test
