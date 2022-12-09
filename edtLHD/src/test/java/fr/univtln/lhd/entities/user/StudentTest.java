@@ -11,8 +11,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class StudentTest {
 
-
-
     @Test
      void shouldReturnNotNullWhithoutGroup(){
         Student student = Student.of("Name","FirstName","Name.Firstname@emal.com");
