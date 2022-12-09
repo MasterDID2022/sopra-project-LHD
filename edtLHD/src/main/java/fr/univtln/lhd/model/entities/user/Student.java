@@ -12,14 +12,14 @@ import java.util.List;
 @Getter
 public class Student extends User {
 
-    private List<Group> student_group;
+    private List<Group> studendGroup;
     /**
      * Private constructor use by the factory should not be used
      * ref <code>of</code> methode for parameter meaning
      */
-    private Student(String name, String fname, String email,List<Group> student_group) {
+    private Student(String name, String fname, String email,List<Group> studendGroup) {
         super(name, fname, email);
-        this.student_group=student_group;
+        this.studendGroup=studendGroup;
     }
 
     /**
@@ -30,8 +30,8 @@ public class Student extends User {
      * @return an instance of Student
      */
     public static Student of(String name, String fname, String email) {
-        List<Group> student_group = null;
-        return new Student(name, fname, email,student_group);
+        List<Group> studendGroup = null;
+        return new Student(name, fname, email,studendGroup);
     }
 
     /**
@@ -39,12 +39,12 @@ public class Student extends User {
      * @param group a group to add to this student
      */
     public void add(Group group){
-        if (student_group != null){
-            this.student_group.add(group);
+        if (studendGroup != null){
+            this.studendGroup.add(group);
         }
         else{
-            this.student_group = new ArrayList<Group>();
-            this.student_group.add(group);
+            this.studendGroup = new ArrayList<Group>();
+            this.studendGroup.add(group);
         }
     }
 
@@ -53,11 +53,11 @@ public class Student extends User {
      * @param name name of a student
      * @param fname first name of a student
      * @param email email of a student
-     * @param student_group Groupe attached to a student
+     * @param studendGroup Groupe attached to a student
      * @return an instance of Student
      */
-    public static Student of(String name, String fname, String email, List<Group> student_group) {
-        return new Student(name, fname, email,student_group);
+    public static Student of(String name, String fname, String email, List<Group> studendGroup) {
+        return new Student(name, fname, email,studendGroup);
     }
 
     /**

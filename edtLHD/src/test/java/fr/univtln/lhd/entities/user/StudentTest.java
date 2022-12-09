@@ -26,17 +26,21 @@ class StudentTest {
         assertNotNull(student);
     }
 
+    @Test
     void addToEmptyGroup(){
         Student student = Student.of("Name","FirstName","Name.Firstname@emal.com");
         student.add(Group.getInstance("groupe"));
-        assertEquals(1,student.getStudent_group().size());
+        assertEquals(1,student.getStudendGroup().size());
     }
 
+    @Test
     void addToGroup(){
         Student student = Student.of("Name","FirstName","Name.Firstname@emal.com");
         student.add(Group.getInstance("groupe2"));
         student.add(Group.getInstance("groupe"));
-        assertEquals(2,student.getStudent_group().size());
+        assertEquals(2,student.getStudendGroup().size());
     }
+
+
 
 }
