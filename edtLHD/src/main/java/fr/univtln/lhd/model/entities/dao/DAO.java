@@ -12,8 +12,8 @@ import java.util.Optional;
  */
 public interface DAO<T> {
 
-    default Connection initConnection(String url, String user, String password) throws SQLException {
-        return Datasource.getConnection(url, user, password);
+    default Connection initConnection() throws SQLException {
+        return Datasource.getConnection();
     }
 
     default Connection initConnection(String url) throws SQLException {
