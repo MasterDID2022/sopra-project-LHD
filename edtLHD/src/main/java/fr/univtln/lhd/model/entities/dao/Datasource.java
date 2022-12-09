@@ -7,7 +7,6 @@ import java.sql.SQLException;
 
 public class Datasource {
     private final HikariDataSource ds;
-
     private static String DB_URL = "jdbc:postgresql://localhost:5432/lhd";
     private static String USER = "postgres";
     private static String PASS = "assAss&n03&N";

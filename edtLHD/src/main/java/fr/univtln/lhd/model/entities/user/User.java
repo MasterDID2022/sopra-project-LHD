@@ -60,6 +60,8 @@ public abstract class User {
         this.id = id;
     }
 
-
-
+    @Override
+    public String toString() {
+        return  name +' '+ fname +' '+ email + " ["+id+"] ";
+    }
 }

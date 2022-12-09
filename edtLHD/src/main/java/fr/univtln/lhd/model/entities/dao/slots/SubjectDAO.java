@@ -20,9 +20,12 @@ public class SubjectDAO implements DAO<Subject> {
     private final PreparedStatement update;
     private final PreparedStatement delete;
 
+    /**
+     * Constructor of SubjectDao, initiate connection and prepared statement
+     * @throws SQLException throw a SQLException if there is a problem with the connection or database prepared statement
+     */
     private SubjectDAO() throws SQLException {
         this.conn = initConnection();
-
         this.get = conn.prepareStatement("SELECT * FROM SUBJECT WHERE ID=?");
         this.getAll = conn.prepareStatement("SELECT * FROM SUBJECT");
         this.save = conn.prepareStatement("INSERT INTO SUBJECT VALUES (DEFAULT, ?, ?)");
@@ -30,6 +33,11 @@ public class SubjectDAO implements DAO<Subject> {
         this.delete = conn.prepareStatement("DELETE FROM SUBJECT WHERE ID=?");
     }
 
+    /**
+     * Factory for SubjectDao
+     * @return an instance of SubjectDAO
+     * @throws SQLException throw a SQLException if there is a problem with the connection or database prepared statement
+     */
     public static SubjectDAO getInstance() throws SQLException { return new SubjectDAO(); }
 
     /**
@@ -66,9 +74,7 @@ public class SubjectDAO implements DAO<Subject> {
      */
     @Override
     public List<Subject> getAll() {
-
         List<Subject> subjectList = new ArrayList<>();
-
         try {
             ResultSet rs = getAll.executeQuery();
             while (rs.next()) {
@@ -90,7 +96,6 @@ public class SubjectDAO implements DAO<Subject> {
      */
     @Override
     public void save(Subject subject) {
-
         try{
             save.setString(1, subject.getName());
             save.setFloat(2, subject.getHourCountMax());
@@ -111,6 +116,8 @@ public class SubjectDAO implements DAO<Subject> {
         try {
             update.setString(1, subject.getName());
             update.setFloat(2, subject.getHourCountMax());
+            update.setLong(3, subject.getId());
+            update.executeUpdate();
         } catch (SQLException e){
             log.error(e.getMessage());
         }
@@ -124,6 +131,7 @@ public class SubjectDAO implements DAO<Subject> {
     public void delete(Subject subject) {
 
         try {
+            delete.setLong(1, subject.getId());
             delete.executeUpdate();
         } catch (SQLException e){
             log.error(e.getMessage());
