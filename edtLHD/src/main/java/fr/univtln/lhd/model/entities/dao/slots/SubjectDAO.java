@@ -20,6 +20,10 @@ public class SubjectDAO implements DAO<Subject> {
     private final PreparedStatement update;
     private final PreparedStatement delete;
 
+    /**
+     * Constructor of SubjectDao, initiate connection and prepared statement
+     * @throws SQLException throw a SQLException if there is a problem with the connection or database prepared statement
+     */
     private SubjectDAO() throws SQLException {
         this.conn = initConnection();
 
@@ -30,6 +34,11 @@ public class SubjectDAO implements DAO<Subject> {
         this.delete = conn.prepareStatement("DELETE FROM SUBJECT WHERE ID=?");
     }
 
+    /**
+     * Factory for SubjectDao
+     * @return an instance of SubjectDAO
+     * @throws SQLException throw a SQLException if there is a problem with the connection or database prepared statement
+     */
     public static SubjectDAO getInstance() throws SQLException { return new SubjectDAO(); }
 
     /**
@@ -111,6 +120,7 @@ public class SubjectDAO implements DAO<Subject> {
         try {
             update.setString(1, subject.getName());
             update.setFloat(2, subject.getHourCountMax());
+            update.executeUpdate();
         } catch (SQLException e){
             log.error(e.getMessage());
         }
@@ -124,6 +134,7 @@ public class SubjectDAO implements DAO<Subject> {
     public void delete(Subject subject) {
 
         try {
+            delete.setLong(1, subject.getId());
             delete.executeUpdate();
         } catch (SQLException e){
             log.error(e.getMessage());
