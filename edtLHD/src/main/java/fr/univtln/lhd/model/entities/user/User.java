@@ -4,7 +4,6 @@ import fr.univtln.lhd.exception.IdException;
 import lombok.Getter;
 
 import java.util.Objects;
-import java.util.OptionalLong;
 
 @Getter
 public abstract class User {
@@ -14,7 +13,7 @@ public abstract class User {
     private final String email;
 
     /**
-     *
+     * Abstract constructor of user, should only be used by the child of User
      * @param name name of a user
      * @param fname first name of a user
      * @param email email of a user
