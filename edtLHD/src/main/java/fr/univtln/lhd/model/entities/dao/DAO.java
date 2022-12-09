@@ -1,5 +1,7 @@
 package fr.univtln.lhd.model.entities.dao;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -9,6 +11,14 @@ import java.util.Optional;
  * @param <T>
  */
 public interface DAO<T> {
+
+    default Connection initConnection(String url, String user, String password) throws SQLException {
+        return Datasource.getConnection(url, user, password);
+    }
+
+    default Connection initConnection(String url) throws SQLException {
+        return Datasource.getConnection(url);
+    }
 
     /**
      * Getter for one Entity
