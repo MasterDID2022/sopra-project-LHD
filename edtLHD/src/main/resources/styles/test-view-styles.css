@@ -1,0 +1,5 @@
+.ok-button{
+    -fx-background-color: limegreen;
+    -fx-font-weight: bold;
+    -fx-text-fill: black;
+}

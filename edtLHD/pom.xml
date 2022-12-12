@@ -55,36 +55,68 @@
             <version>5.9.1</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>19</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-fxml</artifactId>
+            <version>19</version>
+        </dependency>
     </dependencies>
-<build>
-    <plugins>
-<plugin>
-  <groupId>org.jacoco</groupId>
-  <artifactId>jacoco-maven-plugin</artifactId>
-  <version>${jacoco.version}</version>
-  <executions>
-     <!--first execution : for preparing JaCoCo runtime agent-->
-      <execution>
-      	<id>prepare-agent</id>
-            <goals>
-            		<goal>prepare-agent</goal>
-            </goals>
-      </execution>
-     <!--second execution : for creating code coverage reports-->
-      <execution>
-            <id>report</id>
-            <phase>test</phase>
-               <goals>
-               	<goal>report</goal>
-               </goals>
-        </execution>
-    </executions>
- </plugin>
-             <plugin>
+
+    <build>
+        <plugins>
+            <plugin>
+              <groupId>org.jacoco</groupId>
+              <artifactId>jacoco-maven-plugin</artifactId>
+              <version>${jacoco.version}</version>
+              <executions>
+                <!--first execution : for preparing JaCoCo runtime agent-->
+                <execution>
+                    <id>prepare-agent</id>
+                    <goals>
+                        <goal>prepare-agent</goal>
+                    </goals>
+                </execution>
+                <!--second execution : for creating code coverage reports-->
+                <execution>
+                    <id>report</id>
+                    <phase>test</phase>
+                    <goals>
+                        <goal>report</goal>
+                    </goals>
+                </execution>
+              </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.2</version>
-                </plugin>
-</plugins>
-</build>
+            </plugin>
+
+            <plugin>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>0.0.8</version>
+                <executions>
+                    <execution>
+                        <id>default-cli</id>
+                        <configuration>
+                            <mainClass>com.lhd.edtLhd/fr.univtln.lhd.view.AppLauncher</mainClass>
+                            <launcher>app</launcher>
+                            <jlinkZipName>app</jlinkZipName>
+                            <jlinkImageName>app</jlinkImageName>
+                            <noManPages>true</noManPages>
+                            <stripDebug>true</stripDebug>
+                            <noHeaderFiles>true</noHeaderFiles>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
