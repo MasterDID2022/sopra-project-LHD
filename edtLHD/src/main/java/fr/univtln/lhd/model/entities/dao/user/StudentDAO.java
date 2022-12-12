@@ -24,13 +24,14 @@ public class StudentDAO implements DAO<Student> {
     private final PreparedStatement delete;
 
     public StudentDAO() throws SQLException {
-        Connection connection = initConnection();
-        this.get = connection.prepareStatement("SELECT * FROM USERS WHERE ID=?");
-        this.getAll = connection.prepareStatement("SELECT * FROM USERS");
-        this.save = connection.prepareStatement("INSERT INTO USERS VALUES (DEFAULT, ?, ?, ?, ?)");
-        this.update = connection.prepareStatement("UPDATE USERS SET name=?, fname=? ,email=? WHERE ID=?");
-        this.delete = connection.prepareStatement("DELETE FROM USERS WHERE ID=?");
-        this.getIdFromEmail = connection.prepareStatement("SELECT ID FROM USERS WHERE email=?");
+        try (Connection connection = initConnection()) {
+            this.get = connection.prepareStatement("SELECT * FROM USERS WHERE ID=?");
+            this.getAll = connection.prepareStatement("SELECT * FROM USERS");
+            this.save = connection.prepareStatement("INSERT INTO USERS VALUES (DEFAULT, ?, ?, ?, ?)");
+            this.update = connection.prepareStatement("UPDATE USERS SET name=?, fname=? ,email=? WHERE ID=?");
+            this.delete = connection.prepareStatement("DELETE FROM USERS WHERE ID=?");
+            this.getIdFromEmail = connection.prepareStatement("SELECT ID FROM USERS WHERE email=?");
+        }
     }
 
     /**
@@ -53,9 +54,7 @@ public class StudentDAO implements DAO<Student> {
                 );
                 result.get().setId(rs.getLong("ID"));
             }
-        }catch (SQLException e){
-            log.error(e.getMessage());
-        } catch (IdException e) {
+        }catch (SQLException | IdException e){
             log.error(e.getMessage());
         }
         return result;
@@ -78,9 +77,7 @@ public class StudentDAO implements DAO<Student> {
                 student.setId(rs.getLong("ID"));
                 studentList.add(student);
             }
-        } catch (SQLException e){
-            log.error(e.getMessage());
-        } catch (IdException e) {
+        } catch (SQLException | IdException e){
             log.error(e.getMessage());
         }
         return studentList;
@@ -105,11 +102,11 @@ public class StudentDAO implements DAO<Student> {
         } catch (SQLException e){
             log.error(e.getMessage());
         }
-        log.error("Not suppossed to be used");
+        log.error("Not supposed to be used");
     }
 
     /**
-     * Save Student t to Database and add the ID generate by the dabatabase
+     * Save Student t to Database and add the ID generate by the database
      * to student, if the student exist it will only update the ID
      * @param student Student object to save
      * @param password password to save inside the database
@@ -172,18 +169,17 @@ public class StudentDAO implements DAO<Student> {
             update.setString(3,updatedStudent.getEmail());
             update.setLong(4, updatedStudent.getId());
             update.executeUpdate();
-            System.out.println(updatedStudent);
             return updatedStudent;
         }
         catch (SQLException e){
             log.error(e.getMessage());
         }
-        System.out.println("Did not update the database");
+        log.error("did not update the database");
         return student;
     }
 
     /**
-     * Delete Student t from Database
+     * Delete Student from Database
      * @param student Student to be deleted from the database
      */
     @Override
