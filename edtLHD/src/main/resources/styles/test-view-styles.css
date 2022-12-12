@@ -1,5 +1,11 @@
-.ok-button{
+Button{
     -fx-background-color: limegreen;
     -fx-font-weight: bold;
     -fx-text-fill: black;
+}
+
+GridPane Label{
+    -fx-alignment: center;
+    -fx-text-fill: red;
+    -fx-padding: 0;
 }

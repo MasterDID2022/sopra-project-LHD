@@ -18,6 +18,7 @@ public class HelloApp extends Application {
         Scene scene = new Scene(root);
 
         stage.setTitle("TEST JAVAFX");
+        scene.getStylesheets().add("/styles/test-view-styles.css");
         stage.setScene(scene);
         stage.show();
     }
