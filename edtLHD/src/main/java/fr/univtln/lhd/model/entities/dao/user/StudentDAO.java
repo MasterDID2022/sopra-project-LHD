@@ -24,14 +24,13 @@ public class StudentDAO implements DAO<Student> {
     private final PreparedStatement delete;
 
     public StudentDAO() throws SQLException {
-        try (Connection connection = initConnection()) {
-            this.get = connection.prepareStatement("SELECT * FROM USERS WHERE ID=?");
-            this.getAll = connection.prepareStatement("SELECT * FROM USERS");
-            this.save = connection.prepareStatement("INSERT INTO USERS VALUES (DEFAULT, ?, ?, ?, ?)");
-            this.update = connection.prepareStatement("UPDATE USERS SET name=?, fname=? ,email=? WHERE ID=?");
-            this.delete = connection.prepareStatement("DELETE FROM USERS WHERE ID=?");
-            this.getIdFromEmail = connection.prepareStatement("SELECT ID FROM USERS WHERE email=?");
-        }
+        Connection connection = initConnection();
+        this.get = connection.prepareStatement("SELECT * FROM USERS WHERE ID=?");
+        this.getAll = connection.prepareStatement("SELECT * FROM USERS");
+        this.save = connection.prepareStatement("INSERT INTO USERS VALUES (DEFAULT, ?, ?, ?, ?)");
+        this.update = connection.prepareStatement("UPDATE USERS SET name=?, fname=? ,email=? WHERE ID=?");
+        this.delete = connection.prepareStatement("DELETE FROM USERS WHERE ID=?");
+        this.getIdFromEmail = connection.prepareStatement("SELECT ID FROM USERS WHERE email=?");
     }
 
     /**

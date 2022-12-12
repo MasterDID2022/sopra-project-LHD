@@ -24,15 +24,15 @@ public class LecturerDAO implements DAO<Lecturer> {
     private final PreparedStatement delete;
 
     public LecturerDAO() throws SQLException {
-        try (Connection connection = initConnection()) {
-            this.get = connection.prepareStatement("SELECT * FROM LECTURERS WHERE ID=?");
-            this.getAll = connection.prepareStatement("SELECT * FROM LECTURERS");
-            this.save = connection.prepareStatement("INSERT INTO LECTURERS VALUES (DEFAULT, ?, ?, ?, ?, ?)");
-            this.update = connection.prepareStatement("UPDATE LECTURERS SET name=?, fname=? ,email=?,title=? WHERE ID=?");
-            this.delete = connection.prepareStatement("DELETE FROM LECTURERS WHERE ID=?");
-            this.getIdFromEmail = connection.prepareStatement("SELECT ID FROM LECTURERS WHERE email=?");
-        }
+        Connection connection = initConnection();
+        this.get = connection.prepareStatement("SELECT * FROM LECTURERS WHERE ID=?");
+        this.getAll = connection.prepareStatement("SELECT * FROM LECTURERS");
+        this.save = connection.prepareStatement("INSERT INTO LECTURERS VALUES (DEFAULT, ?, ?, ?, ?, ?)");
+        this.update = connection.prepareStatement("UPDATE LECTURERS SET name=?, fname=? ,email=?,title=? WHERE ID=?");
+        this.delete = connection.prepareStatement("DELETE FROM LECTURERS WHERE ID=?");
+        this.getIdFromEmail = connection.prepareStatement("SELECT ID FROM LECTURERS WHERE email=?");
     }
+
 
     /**
      * Getter for one Lecturer
@@ -100,6 +100,7 @@ public class LecturerDAO implements DAO<Lecturer> {
             save.setString(2, lecturer.getFname());
             save.setString(3, lecturer.getEmail());
             save.setString(4, "NO_PASSWORD");
+            save.setString(5, lecturer.getTitle());
             save.executeUpdate();
         } catch (SQLException e){
             log.error(e.getMessage());
@@ -120,6 +121,7 @@ public class LecturerDAO implements DAO<Lecturer> {
             save.setString(2, lecturer.getFname());
             save.setString(3, lecturer.getEmail());
             save.setString(4, password);
+            save.setString(5, lecturer.getEmail());
             save.executeUpdate();
 
         } catch (SQLException e){
