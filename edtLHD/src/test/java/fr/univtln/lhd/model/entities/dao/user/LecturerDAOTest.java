@@ -4,6 +4,7 @@ import fr.univtln.lhd.exception.IdException;
 import fr.univtln.lhd.model.entities.dao.Datasource;
 import fr.univtln.lhd.model.entities.user.Lecturer;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
@@ -15,12 +16,13 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
+@Disabled
 @Slf4j
 class LecturerDAOTest {
 
     public LecturerDAO getDAO() {
         try (
-            Connection conn = Datasource.getInstance().getConnection()) {
+                Connection conn = Datasource.getInstance().getConnection()) {
             LecturerDAO st = new LecturerDAO();
             return st;
         } catch ( SQLException e){
@@ -35,7 +37,7 @@ class LecturerDAOTest {
         return lecturer;
     }
 
-    
+
     private Lecturer getTheTestLecturer(){
         Lecturer lecturer = Lecturer.of("UnitTest","UnitTestFirstName",
                 "UnitTestName.Firstname@email.com","professor");
@@ -67,7 +69,7 @@ class LecturerDAOTest {
         Lecturer lecturer = getTheTestLecturer();
         Optional<Lecturer> lecturerFromBD;
         dao.save(lecturer,"1234");
-        Map param = new HashMap<>();
+        Map<Object, Object> param = new HashMap<>();
         param.put("name","nouveaux");
         param.put("fname","fnouveaux");
         param.put("email","nv@fnouveaux.fr");
@@ -77,16 +79,16 @@ class LecturerDAOTest {
     }
 
     @Test
-    void upddateTheLecturer() throws IdException {
+    void updateTheLecturer() throws IdException {
         LecturerDAO dao = getDAO();
         Lecturer lecturer = getTheTestLecturer();
         Optional<Lecturer> lecturerFromBD;
-        dao.save(lecturer,"1234");
-        Map param = new HashMap<>();
-        param.put("name","nouveaux");
-        param.put("fname","fnouveaux");
-        param.put("email","nv@fnouveaux.fr"+Math.random());
-        dao.update(lecturer,param);
+        dao.save(lecturer, "1234");
+        Map<Object, Object> param = new HashMap<>();
+        param.put("name", "nouveaux");
+        param.put("fname", "fnouveaux");
+        param.put("email", "nv@fnouveaux.fr" + Math.random());
+        dao.update(lecturer, param);
         lecturerFromBD = dao.get(lecturer.getId());
         assertNotEquals(lecturerFromBD.get().getName(),lecturer.getName());
     }

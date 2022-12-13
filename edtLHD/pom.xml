@@ -22,10 +22,6 @@
 	<sonar.language>java</sonar.language>
 	<jacoco.version>0.8.8</jacoco.version>
 	<argline>${project.build.directory}/jacoco.exec</argline>
-
-	<database.url>jdbc:postgresql://localhost:5432/lhd</database.url>
-	<database.username>postgres</database.username>
-	<database.password></database.password>
 </properties>
 
 <dependencies>
@@ -34,6 +30,12 @@
 		<artifactId>lombok</artifactId>
 		<version>1.18.24</version>
 		<scope>provided</scope>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
+	<dependency>
+		<groupId>org.postgresql</groupId>
+		<artifactId>postgresql</artifactId>
+		<version>42.5.1</version>
 	</dependency>
 
 	<dependency>

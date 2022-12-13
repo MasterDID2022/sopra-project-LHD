@@ -5,6 +5,7 @@ import fr.univtln.lhd.model.entities.dao.Datasource;
 import fr.univtln.lhd.model.entities.user.Student;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
@@ -16,6 +17,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
+@Disabled
 class StudentDAOTest {
 
     public StudentDAO getDAO() {
