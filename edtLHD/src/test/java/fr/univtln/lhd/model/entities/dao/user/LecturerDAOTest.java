@@ -17,9 +17,10 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 @Slf4j
 class LecturerDAOTest {
+
     public LecturerDAO getDAO() {
         try (
-            Connection conn = Datasource.getConnection()) {
+            Connection conn = Datasource.getInstance().getConnection()) {
             LecturerDAO st = new LecturerDAO();
             return st;
         } catch ( SQLException e){

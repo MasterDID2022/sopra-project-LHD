@@ -1,7 +1,9 @@
 package fr.univtln.lhd.model.entities.dao.user;
 
+import com.zaxxer.hikari.HikariDataSource;
 import fr.univtln.lhd.exception.IdException;
 import fr.univtln.lhd.model.entities.dao.DAO;
+import fr.univtln.lhd.model.entities.dao.Datasource;
 import fr.univtln.lhd.model.entities.user.Student;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,6 +20,7 @@ import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 @Slf4j
 public class StudentDAO implements DAO<Student> {
+    private final Connection connection;
     private final PreparedStatement getAll;
     private final PreparedStatement get;
     private final PreparedStatement save;
@@ -25,12 +28,12 @@ public class StudentDAO implements DAO<Student> {
     private final PreparedStatement delete;
 
     public StudentDAO() throws SQLException {
-        Connection connection = initConnection();
-        this.get = connection.prepareStatement("SELECT * FROM USERS WHERE ID=?");
-        this.getAll = connection.prepareStatement("SELECT * FROM USERS");
-        this.save = connection.prepareStatement("INSERT INTO USERS VALUES (DEFAULT, ?, ?, ?, ?)",RETURN_GENERATED_KEYS);
-        this.update = connection.prepareStatement("UPDATE USERS SET name=?, fname=? ,email=? WHERE ID=?");
-        this.delete = connection.prepareStatement("DELETE FROM USERS WHERE ID=?");
+        this.connection = Datasource.getInstance().getConnection();
+        this.get = this.connection.prepareStatement("SELECT * FROM USERS WHERE ID=?");
+        this.getAll = this.connection.prepareStatement("SELECT * FROM USERS");
+        this.save = this.connection.prepareStatement("INSERT INTO USERS VALUES (DEFAULT, ?, ?, ?, ?)",RETURN_GENERATED_KEYS);
+        this.update = this.connection.prepareStatement("UPDATE USERS SET name=?, fname=? ,email=? WHERE ID=?");
+        this.delete = this.connection.prepareStatement("DELETE FROM USERS WHERE ID=?");
     }
 
     /**

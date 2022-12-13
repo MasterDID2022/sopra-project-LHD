@@ -89,7 +89,7 @@ class UserTest {
 
     @Test
     void differentClassShouldNotBeEqual(){
-        Group different = Group.getInstance("Name", getListOfStudents());
+        Group different = Group.getInstance("Name");
         User user = this.getAnotherInstanceOfUser();
         Assertions.assertNotEquals(user,different);
 
