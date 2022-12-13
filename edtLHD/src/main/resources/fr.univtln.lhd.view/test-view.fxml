@@ -5,9 +5,9 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.univtln.lhd.view.HelloController">
+<AnchorPane prefHeight="600" prefWidth="900" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.univtln.lhd.view.HelloController">
    <children>
-      <VBox alignment="TOP_CENTER" layoutX="4.0" layoutY="4.0" prefHeight="391.0" prefWidth="590.0" spacing="30.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <VBox alignment="TOP_CENTER" layoutX="4.0" layoutY="4.0" prefHeight="391.0" prefWidth="590.0" spacing="30.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <Label fx:id="label" alignment="CENTER" contentDisplay="CENTER" prefHeight="31.0" prefWidth="192.0" text="Label" textAlignment="CENTER">
                <font>
@@ -21,7 +21,7 @@
                   <Button mnemonicParsing="false" onAction="#onOkButtonClick" text="Button" />
                </children>
             </HBox>
-            <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
+            <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
               <tabs>
                 <Tab fx:id="first_tab" text="Untitled Tab 1">
                   <content>

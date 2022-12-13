@@ -28,8 +28,8 @@ public class Grid extends GridPane {
         private final int rowNumber;
         private final int columnNumber;
 
-        private double cellMinHeight = 25;
-        private double cellPrefHeight = 25;
+        private double cellMinHeight = 20;
+        private double cellPrefHeight = 20;
         private double cellMaxHeight = 1000;
         private double cellMinWidth = 30;
         private double cellPrefWidth = 30;
@@ -57,7 +57,7 @@ public class Grid extends GridPane {
         return new Builder(rowNumber, columnNumber);
     }
 
-    private Grid(Builder builder){
+    protected Grid(Builder builder){
         super();
 
         rowNumber = builder.rowNumber;
@@ -84,6 +84,9 @@ public class Grid extends GridPane {
         super.add(node, columnIndex, rowIndex);
     }
 
+    @Override
+    public void add(Node node, int rowIndex, int columnIndex, int rowSpan, int columnSpan) { super.add(node, columnIndex, rowIndex, columnSpan, rowSpan); }
+
     public void addRow(){
         RowConstraints rowConstraints = new RowConstraints(cellMinHeight, cellPrefHeight, cellMaxHeight, Priority.ALWAYS, VPos.CENTER, true);
         this.getRowConstraints().add(rowConstraints);
@@ -94,11 +97,20 @@ public class Grid extends GridPane {
         this.getColumnConstraints().add(columnConstraints);
     }
 
+    public void modifyRowConstraint(int rowIndex, double cellPrefHeight){
+        this.getRowConstraints().get(rowIndex).setVgrow(Priority.NEVER);
+        this.getRowConstraints().get(rowIndex).setPrefHeight(cellPrefHeight);
+    }
+    public void modifyColumnConstraints(int columnIndex, double cellPrefWidth){
+        this.getColumnConstraints().get(columnIndex).setHgrow(Priority.NEVER);
+        this.getColumnConstraints().get(columnIndex).setPrefWidth(cellPrefWidth);
+    }
+
     public void setRowAlignment(int rowIndex, VPos alignment){
         this.getRowConstraints().get(rowIndex).setValignment(alignment);
     }
 
-    public void setColumnAligment(int columnIndex, HPos alignment){
+    public void setColumnAlignment(int columnIndex, HPos alignment){
         this.getColumnConstraints().get(columnIndex).setHalignment(alignment);
     }
 }
