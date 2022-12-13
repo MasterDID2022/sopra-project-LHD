@@ -18,7 +18,6 @@ public class Group {
     private long id;
 
     private final String name;
-    //private List<Student> students;
 
     /**
      * Factory for a Group given a list of students

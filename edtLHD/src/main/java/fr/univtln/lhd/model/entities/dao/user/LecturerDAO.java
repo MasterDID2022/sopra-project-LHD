@@ -2,6 +2,7 @@ package fr.univtln.lhd.model.entities.dao.user;
 
 import fr.univtln.lhd.exception.IdException;
 import fr.univtln.lhd.model.entities.dao.DAO;
+import fr.univtln.lhd.model.entities.dao.Datasource;
 import fr.univtln.lhd.model.entities.user.Lecturer;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,7 +26,7 @@ public class LecturerDAO implements DAO<Lecturer> {
     private final PreparedStatement delete;
 
     public LecturerDAO() throws SQLException {
-        Connection connection = initConnection();
+        Connection connection = Datasource.getInstance().getConnection();
         this.get = connection.prepareStatement("SELECT * FROM LECTURERS WHERE ID=?");
         this.getAll = connection.prepareStatement("SELECT * FROM LECTURERS");
         this.save = connection.prepareStatement("INSERT INTO LECTURERS VALUES (DEFAULT, ?, ?, ?, ?, ?)",RETURN_GENERATED_KEYS);

@@ -2,8 +2,6 @@ package fr.univtln.lhd.model.entities.dao;
 
 import fr.univtln.lhd.exception.IdException;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -13,14 +11,6 @@ import java.util.Optional;
  * @param <T>
  */
 public interface DAO<T> {
-
-    default Connection initConnection() throws SQLException {
-        return Datasource.getConnection();
-    }
-
-    default Connection initConnection(String url) throws SQLException {
-        return Datasource.getConnection(url);
-    }
 
     /**
      * Getter for one Entity

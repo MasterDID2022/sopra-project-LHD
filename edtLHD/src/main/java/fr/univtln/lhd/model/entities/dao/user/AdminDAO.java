@@ -2,6 +2,7 @@ package fr.univtln.lhd.model.entities.dao.user;
 
 import fr.univtln.lhd.exception.IdException;
 import fr.univtln.lhd.model.entities.dao.DAO;
+import fr.univtln.lhd.model.entities.dao.Datasource;
 import fr.univtln.lhd.model.entities.user.Admin;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,7 +26,7 @@ public class AdminDAO implements DAO<Admin> {
     private final PreparedStatement delete;
 
     public AdminDAO() throws SQLException {
-        Connection connection = initConnection();
+        Connection connection = Datasource.getInstance().getConnection();
         this.get = connection.prepareStatement("SELECT * FROM MANAGERS WHERE ID=?");
         this.getAll = connection.prepareStatement("SELECT * FROM MANAGERS");
         this.save = connection.prepareStatement("INSERT INTO MANAGERS VALUES (DEFAULT, ?, ?, ?, ?, ?)",RETURN_GENERATED_KEYS);

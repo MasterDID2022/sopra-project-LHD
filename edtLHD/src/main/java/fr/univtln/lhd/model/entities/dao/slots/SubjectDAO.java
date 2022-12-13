@@ -1,6 +1,7 @@
 package fr.univtln.lhd.model.entities.dao.slots;
 
 import fr.univtln.lhd.model.entities.dao.DAO;
+import fr.univtln.lhd.model.entities.dao.Datasource;
 import fr.univtln.lhd.model.entities.slots.Subject;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,7 +26,7 @@ public class SubjectDAO implements DAO<Subject> {
      * @throws SQLException throw a SQLException if there is a problem with the connection or database prepared statement
      */
     private SubjectDAO() throws SQLException {
-        this.conn = initConnection();
+        this.conn = Datasource.getInstance().getConnection();
         this.get = conn.prepareStatement("SELECT * FROM SUBJECT WHERE ID=?");
         this.getAll = conn.prepareStatement("SELECT * FROM SUBJECT");
         this.save = conn.prepareStatement("INSERT INTO SUBJECT VALUES (DEFAULT, ?, ?)");

@@ -1,6 +1,7 @@
 package fr.univtln.lhd.model.entities.dao.slots;
 
 import fr.univtln.lhd.model.entities.dao.DAO;
+import fr.univtln.lhd.model.entities.dao.Datasource;
 import fr.univtln.lhd.model.entities.slots.Classroom;
 import fr.univtln.lhd.model.entities.slots.Subject;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +30,7 @@ public class ClassroomDAO implements DAO<Classroom>
      * @throws SQLException throw a SQLException if there is a problem with the connection or database prepared statement
      */
     private ClassroomDAO() throws SQLException {
-        this.conn = initConnection();
+        this.conn = Datasource.getInstance().getConnection();
 
         this.getAll = conn.prepareStatement("SELECT * FROM CLASSROOMS");
         this.get = conn.prepareStatement("SELECT * FROM CLASSROOMS WHERE ID=?");

@@ -1,6 +1,7 @@
 package fr.univtln.lhd.model.entities.dao.slots;
 
 import fr.univtln.lhd.model.entities.dao.DAO;
+import fr.univtln.lhd.model.entities.dao.Datasource;
 import fr.univtln.lhd.model.entities.slots.Slot;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,7 +27,7 @@ public class SlotDAO implements DAO<Slot> {
     //private final PreparedStatement delete;
 
     private SlotDAO() throws SQLException {
-        conn = initConnection();
+        conn = Datasource.getInstance().getConnection();
     }
 
     /**

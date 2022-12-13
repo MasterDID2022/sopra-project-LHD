@@ -22,18 +22,20 @@ public class Subject {
 
     /**
      * Factory for a Subject
-     * @param name name of the subject
+     *
+     * @param name         name of the subject
      * @param hourCountMax max number of hours dedicated to this subject
      * @return an instance of Subject
      */
-    public static Subject getInstance(String name, float hourCountMax){
+    public static Subject getInstance(String name, float hourCountMax) {
         return getInstance(-1, name, hourCountMax);
     }
 
     /**
      * Factory for a Subject
-     * @param id long identifier for a Classroom (default -1)
-     * @param name name of the subject
+     *
+     * @param id           long identifier for a Classroom (default -1)
+     * @param name         name of the subject
      * @param hourCountMax max number of hours dedicated to this subject
      * @return an instance of Subject
      */
@@ -43,12 +45,13 @@ public class Subject {
 
     /**
      * Set the id, should only be used by the DAO
+     *
      * @param id
      * @throws IdException
      */
     public void setId(long id) throws IdException {
-        if (id<0) {
-            throw  new IdException("Id Error");
+        if (id < 0) {
+            throw new IdException("Id Error");
         }
         this.id = id;
     }

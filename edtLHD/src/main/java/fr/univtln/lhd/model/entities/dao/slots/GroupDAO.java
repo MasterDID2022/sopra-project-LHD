@@ -1,6 +1,7 @@
 package fr.univtln.lhd.model.entities.dao.slots;
 
 import fr.univtln.lhd.model.entities.dao.DAO;
+import fr.univtln.lhd.model.entities.dao.Datasource;
 import fr.univtln.lhd.model.entities.slots.Group;
 import fr.univtln.lhd.model.entities.slots.Subject;
 import fr.univtln.lhd.model.entities.user.Student;
@@ -30,7 +31,7 @@ public class GroupDAO implements DAO<Group> {
      * @throws SQLException throw a SQLException if there is a problem with the connection or database prepared statement
      */
     private GroupDAO() throws SQLException {
-        conn = initConnection();
+        conn = Datasource.getInstance().getConnection();
 
         this.getAll = conn.prepareStatement("SELECT * FROM GROUPS");
         this.get = conn.prepareStatement("SELECT * FROM GROUPS WHERE ID=?");

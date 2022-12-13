@@ -4,6 +4,8 @@ import fr.univtln.lhd.exception.IdException;
 import fr.univtln.lhd.model.entities.dao.Datasource;
 import fr.univtln.lhd.model.entities.user.Student;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
@@ -15,16 +17,17 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
+@Disabled
 class StudentDAOTest {
+
     public StudentDAO getDAO() {
-        try (
-            Connection conn = Datasource.getConnection()) {
-            StudentDAO st = new StudentDAO();
-            return st;
-        } catch ( SQLException e){
-            log.error(e.getMessage());
+        StudentDAO st = null;
+        try {
+            st = new StudentDAO();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-        return null;
+        return st;
     }
 
     private Student getRandomNewStudent(){
@@ -38,6 +41,12 @@ class StudentDAOTest {
         Student student = Student.of("UnitTest","UnitTestFirstName",
                 "UnitTestName.Firstname@email.com");
         return student;
+    }
+
+    @Test
+    void CreateADAO(){
+        StudentDAO dao = getDAO();
+        Assertions.assertNotNull(dao);
     }
 
     @Test
