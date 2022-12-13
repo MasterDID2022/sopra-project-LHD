@@ -1,100 +1,131 @@
-<?xml version="1.0" encoding="UTF-8"?>
+i<?xml version="1.0" encoding="UTF-8"?>
 
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<modelVersion>4.0.0</modelVersion>
 
-    <groupId>fr.univtln.lhd</groupId>
-    <artifactId>edtLHD</artifactId>
-    <version>1.0-SNAPSHOT</version>
+<groupId>fr.univtln.lhd</groupId>
+<artifactId>edtLHD</artifactId>
+<version>1.0-SNAPSHOT</version>
 
-    <name>edtLHD</name>
-    <url>https://github.com/wedidtln/sopra-project-LHD/</url>
+<name>edtLHD</name>
+<url>https://github.com/wedidtln/sopra-project-LHD/</url>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <sonar.organization>wedidtln</sonar.organization>
-        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
-        <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
-        <sonar.language>java</sonar.language>
-        <jacoco.version>0.8.8</jacoco.version>
-        <argline>${project.build.directory}/jacoco.exec</argline>
-    </properties>
+<properties>
+	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	<maven.compiler.source>17</maven.compiler.source>
+	<maven.compiler.target>17</maven.compiler.target>
+	<sonar.organization>wedidtln</sonar.organization>
+	<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+	<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+	<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+	<sonar.language>java</sonar.language>
+	<jacoco.version>0.8.8</jacoco.version>
+	<argline>${project.build.directory}/jacoco.exec</argline>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.24</version>
-            <scope>provided</scope>
-        </dependency>
+	<database.url>jdbc:postgresql://localhost:5432/lhd</database.url>
+	<database.username>postgres</database.username>
+	<database.password></database.password>
+</properties>
 
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>2.0.5</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>2.0.5</version>
-        </dependency>
+<dependencies>
+	<dependency>
+		<groupId>org.projectlombok</groupId>
+		<artifactId>lombok</artifactId>
+		<version>1.18.24</version>
+		<scope>provided</scope>
+	</dependency>
 
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>5.9.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>5.9.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP</artifactId>
-            <version>5.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>42.5.1</version>
-        </dependency>
-    </dependencies>
+	<dependency>
+		<groupId>org.slf4j</groupId>
+		<artifactId>slf4j-api</artifactId>
+		<version>2.0.5</version>
+	</dependency>
+	<dependency>
+		<groupId>org.slf4j</groupId>
+		<artifactId>slf4j-simple</artifactId>
+		<version>2.0.5</version>
+	</dependency>
+
+	<dependency>
+		<groupId>org.junit.jupiter</groupId>
+		<artifactId>junit-jupiter-api</artifactId>
+		<version>5.9.1</version>
+		<scope>test</scope>
+	</dependency>
+	<dependency>
+		<groupId>org.junit.jupiter</groupId>
+		<artifactId>junit-jupiter</artifactId>
+		<version>5.9.1</version>
+		<scope>test</scope>
+	</dependency>
+
+	<dependency>
+		<groupId>org.openjfx</groupId>
+		<artifactId>javafx-controls</artifactId>
+		<version>19</version>
+	</dependency>
+	<dependency>
+		<groupId>org.openjfx</groupId>
+		<artifactId>javafx-fxml</artifactId>
+		<version>19</version>
+	</dependency>
+	<dependency>
+		<groupId>com.zaxxer</groupId>
+		<artifactId>HikariCP</artifactId>
+		<version>5.0.1</version>
+	</dependency>
+</dependencies>
+
 <build>
-    <plugins>
-<plugin>
-  <groupId>org.jacoco</groupId>
-  <artifactId>jacoco-maven-plugin</artifactId>
-  <version>${jacoco.version}</version>
-  <executions>
-     <!--first execution : for preparing JaCoCo runtime agent-->
-      <execution>
-      	<id>prepare-agent</id>
-            <goals>
-            		<goal>prepare-agent</goal>
-            </goals>
-      </execution>
-     <!--second execution : for creating code coverage reports-->
-      <execution>
-            <id>report</id>
-            <phase>test</phase>
-               <goals>
-               	<goal>report</goal>
-               </goals>
-        </execution>
-    </executions>
- </plugin>
-             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.2</version>
-                </plugin>
-</plugins>
-</build>
+	<plugins>
+		<plugin>
+			<groupId>org.jacoco</groupId>
+			<artifactId>jacoco-maven-plugin</artifactId>
+			<version>${jacoco.version}</version>
+			<executions>
+				<!--first execution : for preparing JaCoCo runtime agent-->
+				<execution>
+					<id>prepare-agent</id>
+					<goals>
+						<goal>prepare-agent</goal>
+					</goals>
+				</execution>
+				<!--second execution : for creating code coverage reports-->
+				<execution>
+					<id>report</id>
+					<phase>test</phase>
+					<goals>
+						<goal>report</goal>
+					</goals>
+				</execution>
+			</executions>
+		</plugin>
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-surefire-plugin</artifactId>
+			<version>2.22.2</version>
+		</plugin>
+
+		<plugin>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-maven-plugin</artifactId>
+			<version>0.0.8</version>
+			<executions>
+				<execution>
+					<id>default-cli</id>
+					<configuration>
+						<mainClass>com.lhd.edtLhd/fr.univtln.lhd.view.AppLauncher</mainClass>
+						<launcher>app</launcher>
+						<jlinkZipName>app</jlinkZipName>
+						<jlinkImageName>app</jlinkImageName>
+						<noManPages>true</noManPages>
+						<stripDebug>true</stripDebug>
+						<noHeaderFiles>true</noHeaderFiles>
+					</configuration>
+				</execution>
+			</executions>
+		</plugin>
+	</plugins>
+</build> 
 </project>

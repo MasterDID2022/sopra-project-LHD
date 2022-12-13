@@ -1,0 +1,38 @@
+Button{
+    -fx-background-color: limegreen;
+    -fx-font-weight: bold;
+    -fx-text-fill: black;
+}
+
+GridPane Label{
+    -fx-alignment: center;
+    -fx-text-fill: red;
+    -fx-padding: 0;
+}
+
+#day {
+}
+
+#hour{
+    -fx-alignment: TOP_CENTER;
+}
+
+EdtGrid FlowPane {
+    -fx-alignment: center;
+    -fx-background-color: white;
+    -fx-border-color: black;
+    -fx-text-fill: black;
+    -fx-font-size: 12;
+    -fx-font-weight: normal;
+}
+
+#slot {
+    -fx-background-color: blue;
+    -fx-alignment: center;
+    -fx-font-size: 15;
+    -fx-font-weight: bold;
+}
+
+#slot Label{
+    -fx-text-fill: white;
+}

@@ -50,7 +50,4 @@ public class Subject {
         if (id<0) {
             throw  new IdException("Id Error");
         }
-        this.id = id;
-    }
-
 }
