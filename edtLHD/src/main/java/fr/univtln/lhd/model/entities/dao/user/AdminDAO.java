@@ -14,12 +14,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
+
 @Slf4j
 public class AdminDAO implements DAO<Admin> {
     private final PreparedStatement getAll;
     private final PreparedStatement get;
     private final PreparedStatement save;
-    private final PreparedStatement getIdFromEmail;
     private final PreparedStatement update;
     private final PreparedStatement delete;
 
@@ -27,10 +28,9 @@ public class AdminDAO implements DAO<Admin> {
         Connection connection = initConnection();
         this.get = connection.prepareStatement("SELECT * FROM MANAGERS WHERE ID=?");
         this.getAll = connection.prepareStatement("SELECT * FROM MANAGERS");
-        this.save = connection.prepareStatement("INSERT INTO MANAGERS VALUES (DEFAULT, ?, ?, ?, ?, ?)");
+        this.save = connection.prepareStatement("INSERT INTO MANAGERS VALUES (DEFAULT, ?, ?, ?, ?, ?)",RETURN_GENERATED_KEYS);
         this.update = connection.prepareStatement("UPDATE MANAGERS SET name=?, fname=? ,email=?,dpt=? WHERE ID=?");
         this.delete = connection.prepareStatement("DELETE FROM MANAGERS WHERE ID=?");
-        this.getIdFromEmail = connection.prepareStatement("SELECT ID FROM MANAGERS WHERE email=?");
     }
 
 
@@ -102,7 +102,10 @@ public class AdminDAO implements DAO<Admin> {
             save.setString(4, "NO_PASSWORD");
             save.setString(5, admin.getFaculty());
             save.executeUpdate();
-        } catch (SQLException e){
+            ResultSet id_set = save.getGeneratedKeys();
+            id_set.next();
+            admin.setId(id_set.getLong(1));
+        } catch (SQLException | IdException e){
             log.error(e.getMessage());
         }
         log.error("Not supposed to be used");
@@ -123,15 +126,9 @@ public class AdminDAO implements DAO<Admin> {
             save.setString(4, password);
             save.setString(5, admin.getEmail());
             save.executeUpdate();
-
-        } catch (SQLException e){
-            log.error(e.getMessage());
-        }
-        try{
-            getIdFromEmail.setString(1,admin.getEmail());
-            result = getIdFromEmail.executeQuery();
-            result.next();
-            admin.setId(result.getLong("ID"));
+            ResultSet id_set = save.getGeneratedKeys();
+            id_set.next();
+            admin.setId(id_set.getLong(1));
         } catch (SQLException | IdException e) {
             log.error(e.getMessage());
         }

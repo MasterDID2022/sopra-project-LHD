@@ -14,12 +14,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
+
 @Slf4j
 public class LecturerDAO implements DAO<Lecturer> {
     private final PreparedStatement getAll;
     private final PreparedStatement get;
     private final PreparedStatement save;
-    private final PreparedStatement getIdFromEmail;
     private final PreparedStatement update;
     private final PreparedStatement delete;
 
@@ -27,10 +28,9 @@ public class LecturerDAO implements DAO<Lecturer> {
         Connection connection = initConnection();
         this.get = connection.prepareStatement("SELECT * FROM LECTURERS WHERE ID=?");
         this.getAll = connection.prepareStatement("SELECT * FROM LECTURERS");
-        this.save = connection.prepareStatement("INSERT INTO LECTURERS VALUES (DEFAULT, ?, ?, ?, ?, ?)");
+        this.save = connection.prepareStatement("INSERT INTO LECTURERS VALUES (DEFAULT, ?, ?, ?, ?, ?)",RETURN_GENERATED_KEYS);
         this.update = connection.prepareStatement("UPDATE LECTURERS SET name=?, fname=? ,email=?,title=? WHERE ID=?");
         this.delete = connection.prepareStatement("DELETE FROM LECTURERS WHERE ID=?");
-        this.getIdFromEmail = connection.prepareStatement("SELECT ID FROM LECTURERS WHERE email=?");
     }
 
 
@@ -123,15 +123,9 @@ public class LecturerDAO implements DAO<Lecturer> {
             save.setString(4, password);
             save.setString(5, lecturer.getEmail());
             save.executeUpdate();
-
-        } catch (SQLException e){
-            log.error(e.getMessage());
-        }
-        try{
-            getIdFromEmail.setString(1,lecturer.getEmail());
-            result = getIdFromEmail.executeQuery();
-            result.next();
-            lecturer.setId(result.getLong("ID"));
+            ResultSet id_set = save.getGeneratedKeys();
+            id_set.next();
+            lecturer.setId(id_set.getLong(1));
         } catch (SQLException | IdException e) {
             log.error(e.getMessage());
         }
