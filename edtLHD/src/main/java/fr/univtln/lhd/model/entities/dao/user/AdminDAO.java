@@ -12,7 +12,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
@@ -136,51 +135,22 @@ public class AdminDAO implements DAO<Admin> {
     }
 
     /**
-     * Update the data of Admin in the database, without modifying the object admin,
-     * to get the new admin use <code>updateAndGet</code>
-     * @param admin a Admin
-     * @param params Map of attributes and values
-     */
-    @Override
-    public void update(Admin admin, Map params) throws IdException {
-        updateAndGet(admin,params);
-    }
-
-    /**
      * Update Data of Admin t and return the new admin
      * @param admin a Admin
-     * @param params Map of attributes and values
      */
-    public Admin updateAndGet(Admin admin, Map<Object,Object> params) throws IdException {
-        String name = admin.getName();
-        String fname = admin.getFname();
-        String email = admin.getEmail();
-        String title = admin.getFaculty();
-        for (Object key : params.keySet()) {
-            if (key.equals("name")) {
-                name = params.get("name").toString();
-            } else if (key.equals("fname")) {
-                fname = params.get("fname").toString();
-            } else if (key.equals("email")) {
-                email = params.get("email").toString();
-            } else if (key.equals("title")) {
-                title = params.get("title").toString();
-            }
-        }
-        Admin updatedAdmin = Admin.of(name, fname,email,title);
-        updatedAdmin.setId(admin.getId());
+    @Override
+    public Admin update(Admin admin) throws IdException {
         try {
-            update.setString(1, updatedAdmin.getName());
-            update.setString(2, updatedAdmin.getFname());
-            update.setString(3,updatedAdmin.getEmail());
-            update.setLong(4, updatedAdmin.getId());
+            update.setString(1,admin.getName());
+            update.setString(2, admin.getFname());
+            update.setString(3,admin.getEmail());
+            update.setString(4,admin.getFaculty());
+            update.setLong(5,admin.getId());
             update.executeUpdate();
-            return updatedAdmin;
         }
         catch (SQLException e){
             log.error(e.getMessage());
         }
-        log.error("did not update the database");
         return admin;
     }
 

@@ -38,7 +38,7 @@ class StudentDAOTest {
 
     
     private Student getTheTestStudent(){
-        Student student = Student.of("UnitTest","UnitTestFirstName",
+        Student student = Student.of("TheTestStudent","UnitTestFirstName",
                 "UnitTestName.Firstname@email.com");
         return student;
     }
@@ -56,6 +56,19 @@ class StudentDAOTest {
         int oldsize = dao.getAll().size();
         dao.save(student,"1234");
         assertEquals(oldsize+1,dao.getAll().size());
+        dao.delete(student);
+    }
+
+    @Test
+    void updateAstudent() throws IdException {
+        StudentDAO dao = getDAO();
+        Student student = getRandomNewStudent();
+        Student student1 = Student.of(student.getName()+"1",student.getFname()+"1",student.getEmail()+"1");
+        dao.save(student,"1234");
+        System.out.println(student);
+        student1.setId(student.getId());
+        dao.update(student1);
+        assertEquals(dao.get(student.getId()).get(),student1);
     }
 
     @Test
@@ -68,40 +81,11 @@ class StudentDAOTest {
         assertEquals(oldsize,dao.getAll().size());
     }
 
-    @Test
-    void upddateTheStudentAndTheGetter() throws IdException {
-        StudentDAO dao = getDAO();
-        Student student = getTheTestStudent();
-        Optional<Student> studentFromBD;
-        dao.save(student,"1234");
-        Map param = new HashMap<>();
-        param.put("name","nouveaux");
-        param.put("fname","fnouveaux");
-        param.put("email","nv@fnouveaux.fr");
-        student=dao.updateAndGet(student,param);
-        studentFromBD = dao.get(student.getId());
-        assertEquals(studentFromBD.get().getName(),student.getName());
-    }
-
-    @Test
-    void upddateTheStudent() throws IdException {
-        StudentDAO dao = getDAO();
-        Student student = getTheTestStudent();
-        Optional<Student> studentFromBD;
-        dao.save(student,"1234");
-        Map param = new HashMap<>();
-        param.put("name","nouveaux");
-        param.put("fname","fnouveaux");
-        param.put("email","nv@fnouveaux.fr"+Math.random());
-        dao.update(student,param);
-        studentFromBD = dao.get(student.getId());
-        assertNotEquals(studentFromBD.get().getName(),student.getName());
-    }
 
     @Test
     void deleteTheStudent(){
         StudentDAO dao = getDAO();
-        Student student = getTheTestStudent();
+        Student student = getRandomNewStudent();
         dao.save(student,"1234");
         int oldsize = dao.getAll().size();
         dao.delete(student);

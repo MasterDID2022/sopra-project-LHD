@@ -1,5 +1,6 @@
 package fr.univtln.lhd.model.entities.dao.slots;
 
+import fr.univtln.lhd.exception.IdException;
 import fr.univtln.lhd.model.entities.dao.DAO;
 import fr.univtln.lhd.model.entities.dao.Datasource;
 import fr.univtln.lhd.model.entities.slots.Group;
@@ -119,14 +120,8 @@ public class GroupDAO implements DAO<Group> {
      * @param params Map of attributes and values
      */
     @Override
-    public void update(Group group, Map<String, String> params) {
-        try {
-            update.setString(1, group.getName());
-            update.setLong(2, group.getId());
-            update.executeUpdate();
-        } catch (SQLException e){
-            log.error(e.getMessage());
-        }
+    public Group update(Group group) throws IdException {
+        return null;
     }
 
     /**

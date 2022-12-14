@@ -34,9 +34,8 @@ public interface DAO<T> {
     /**
      * Update Data of Entity t
      * @param t Entity t
-     * @param params Map of attributes and values
      */
-    void update(T t, Map<String, String> params) throws IdException;
+    T update(T t) throws IdException;
 
     /**
      * Delete Entity t from Database
