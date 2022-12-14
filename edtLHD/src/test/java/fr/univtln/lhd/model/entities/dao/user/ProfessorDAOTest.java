@@ -12,7 +12,6 @@ import java.sql.SQLException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Slf4j
-@Disabled
 class ProfessorDAOTest {
 
     public ProfessorDAO getDAO() {

@@ -26,18 +26,18 @@ public class AdminDAO implements DAO<Admin> {
 
     public AdminDAO() throws SQLException {
         Connection connection = Datasource.getInstance().getConnection();
-        this.get = connection.prepareStatement("SELECT * FROM MANAGERS WHERE ID=?");
-        this.getAll = connection.prepareStatement("SELECT * FROM MANAGERS");
-        this.save = connection.prepareStatement("INSERT INTO MANAGERS VALUES (DEFAULT, ?, ?, ?, ?, ?)",RETURN_GENERATED_KEYS);
-        this.update = connection.prepareStatement("UPDATE MANAGERS SET name=?, fname=? ,email=?,dpt=? WHERE ID=?");
-        this.delete = connection.prepareStatement("DELETE FROM MANAGERS WHERE ID=?");
+        this.get = connection.prepareStatement("SELECT * FROM ADMINS WHERE ID=?");
+        this.getAll = connection.prepareStatement("SELECT * FROM ADMINS");
+        this.save = connection.prepareStatement("INSERT INTO ADMINS VALUES (DEFAULT, ?, ?, ?, ?, ?)",RETURN_GENERATED_KEYS);
+        this.update = connection.prepareStatement("UPDATE ADMINS SET name=?, fname=? ,email=?,title=? WHERE ID=?");
+        this.delete = connection.prepareStatement("DELETE FROM ADMINS WHERE ID=?");
     }
 
 
     /**
-     * Getter for one Admin
-     * @param id numerical long identifier for getting the Admin
-     * @return May return one Admin
+     * Getter for one Lecturer
+     * @param id numerical long identifier for getting the Lecturer
+     * @return May return one Lecturer
      */
     @Override
     public Optional<Admin> get(long id) {
@@ -62,8 +62,8 @@ public class AdminDAO implements DAO<Admin> {
     }
 
     /**
-     * Getter for all Admin
-     * @return List of all Admin
+     * Getter for all Lecturer
+     * @return List of all Lecturer
      */
     @Override
     public List<Admin> getAll() {
@@ -87,11 +87,11 @@ public class AdminDAO implements DAO<Admin> {
 
 
     /**
-     * Save Admin t to Database
+     * Save Lecturer t to Database
      * <!>SHOULD ONLY BE USED FOR TEST</!>
      * this methode save a User without a password
-     * please use save(Admin s,String password)
-     * @param admin Admin object to save
+     * please use save(Lecturer s,String password)
+     * @param admin Lecturer object to save
      */
     @Override
     public void save(Admin admin) {
@@ -102,19 +102,16 @@ public class AdminDAO implements DAO<Admin> {
             save.setString(4, "NO_PASSWORD");
             save.setString(5, admin.getFaculty());
             save.executeUpdate();
-            ResultSet id_set = save.getGeneratedKeys();
-            id_set.next();
-            admin.setId(id_set.getLong(1));
-        } catch (SQLException | IdException e){
+        } catch (SQLException e){
             log.error(e.getMessage());
         }
         log.error("Not supposed to be used");
     }
 
     /**
-     * Save Admin t to Database and add the ID generate by the database
-     * to admin, if the admin exist it will only update the ID
-     * @param admin Admin object to save
+     * Save Lecturer t to Database and add the ID generate by the database
+     * to lecturer, if the lecturer exist it will only update the ID
+     * @param admin Lecturer object to save
      * @param password password to save inside the database
      */
     public void save(Admin admin, String password) {
@@ -135,11 +132,13 @@ public class AdminDAO implements DAO<Admin> {
     }
 
     /**
-     * Update Data of Admin t and return the new admin
-     * @param admin a Admin
+     * Update the data of Lecturer in the database, without modifying the object lecturer,
+     * to get the new lecturer use <code>updateAndGet</code>
+     * @param admin a Lecturer
      */
     @Override
     public Admin update(Admin admin) throws IdException {
+
         try {
             update.setString(1,admin.getName());
             update.setString(2, admin.getFname());
@@ -152,16 +151,18 @@ public class AdminDAO implements DAO<Admin> {
             log.error(e.getMessage());
         }
         return admin;
+
     }
 
+
     /**
-     * Delete Admin from Database
-     * @param admin Admin to be deleted from the database
+     * Delete Lecturer from Database
+     * @param admin Lecturer to be deleted from the database
      */
     @Override
     public void delete(Admin admin) {
         try {
-            delete.setLong(1,admin.getId());
+            delete.setLong(1, admin.getId());
             delete.executeUpdate();
         }
         catch (SQLException e){

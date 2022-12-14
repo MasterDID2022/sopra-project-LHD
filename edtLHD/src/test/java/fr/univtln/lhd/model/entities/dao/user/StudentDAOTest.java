@@ -17,7 +17,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
-@Disabled
 class StudentDAOTest {
 
     public StudentDAO getDAO() {
