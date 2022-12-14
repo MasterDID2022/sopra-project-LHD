@@ -15,7 +15,7 @@ CREATE DOMAIN public.email AS character varying(254)
 	CONSTRAINT email_check CHECK (((VALUE)::text ~ '^[a-zA-Z0-9.!#$%&''*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$'::text));
 
 
---
+	--
 -- Name: check_date_overlap_trigger_function_group_slot(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -23,26 +23,26 @@ CREATE FUNCTION public.check_date_overlap_trigger_function_group_slot() RETURNS 
     LANGUAGE plpgsql
     AS $$
        begin
-       IF EXISTS(select from slots  s 
-           where id=new.id_slot--- we select the timerange from the id in the query
-            and exists (
-                    select from group_slot gs--- then we check whether there exists an overlapping one
-                    join slots s2 on gs.id_slot=s2.id  
-                    where gs.id_group = new.id_group 
-                    and s2.id <> new.id_slot--- we don't wanna compare the slot specified in the query to itself
-                    and s.timerange && s2.timerange  for share--- we use for share to prevent any modification while the trigger is run. 
-                       ) 
-       for share) 
+	       IF EXISTS(select from slots  s 
+		           where id=new.id_slot--- we select the timerange from the id in the query
+			            and exists (
+					                    select from group_slot gs--- then we check whether there exists an overlapping one
+							                    join slots s2 on gs.id_slot=s2.id  
+									                    where gs.id_group = new.id_group 
+											                    and s2.id <> new.id_slot--- we don't wanna compare the slot specified in the query to itself
+													                    and s.timerange && s2.timerange  for share--- we use for share to prevent any modification while the trigger is run. 
+															                       ) 
+																	       for share) 
 
-       THEN
-            RAISE unique_violation USING MESSAGE = 'Overlapping timeranges for group : ' || new.id_group;
-       END IF;
-   RETURN NEW;
-       end
-       $$;
+																		       THEN
+																		            RAISE unique_violation USING MESSAGE = 'Overlapping timeranges for group : ' || new.id_group;
+																			       END IF;
+																			   RETURN NEW;
+																			       end
+																			       $$;
 
 
---
+																			--
 -- Name: check_date_overlap_trigger_function_professor_slot(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -50,26 +50,26 @@ CREATE FUNCTION public.check_date_overlap_trigger_function_professor_slot() RETU
     LANGUAGE plpgsql
     AS $$
        begin
-       IF EXISTS(select from slots  s
-           where id=new.id_slot--- we select the timerange from the id in the query
-            and exists (
-                    select from professor_slot ls--- then we check whether there exists an overlapping one
-                    join slots s2 on ls.id_slot=s2.id
-                    where ls.id_professor = new.id_group
-                    and s2.id <> new.id_slot--- we don't wanna compare the slot specified in the query to itself
-                    and s.timerange && s2.timerange  for share--- we use for share to prevent any modification while the trigger is run.
-                       )
-       for share)
+	       IF EXISTS(select from slots  s
+		           where id=new.id_slot--- we select the timerange from the id in the query
+			            and exists (
+					                    select from professor_slot ls--- then we check whether there exists an overlapping one
+							                    join slots s2 on ls.id_slot=s2.id
+									                    where ls.id_professor = new.id_group
+											                    and s2.id <> new.id_slot--- we don't wanna compare the slot specified in the query to itself
+													                    and s.timerange && s2.timerange  for share--- we use for share to prevent any modification while the trigger is run.
+															                       )
+																	       for share)
 
-       THEN
-            RAISE unique_violation USING MESSAGE = 'Overlapping timeranges for group : ' || new.id_group;
-       END IF;
-   RETURN NEW;
-       end
-       $$;
+																		       THEN
+																		            RAISE unique_violation USING MESSAGE = 'Overlapping timeranges for group : ' || new.id_group;
+																			       END IF;
+																			   RETURN NEW;
+																			       end
+																			       $$;
 
 
---
+																			--
 -- Name: check_date_overlap_trigger_hook(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -77,15 +77,15 @@ CREATE FUNCTION public.check_date_overlap_trigger_hook() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
        begin
-       IF EXISTS(select from slots  s where id=new.id_slot and exists (select from group_slot gs2 join slots s2 on gs2.id_slot=s2.id  where gs2.id_group =new.id_group and s2.id <> new.id_slot and s.timerange && s2.timerange limit 1 for share) limit 1 for share) THEN
-                   RAISE EXCEPTION 'Timerange is overlapping between two courses';
-               END IF;
-           RETURN NEW;
-       end
-       $$;
+	       IF EXISTS(select from slots  s where id=new.id_slot and exists (select from group_slot gs2 join slots s2 on gs2.id_slot=s2.id  where gs2.id_group =new.id_group and s2.id <> new.id_slot and s.timerange && s2.timerange limit 1 for share) limit 1 for share) THEN
+		                   RAISE EXCEPTION 'Timerange is overlapping between two courses';
+				               END IF;
+					           RETURN NEW;
+						       end
+						       $$;
 
 
---
+						--
 -- Name: check_date_overlap_trigger_slot_update_group(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -93,30 +93,30 @@ CREATE FUNCTION public.check_date_overlap_trigger_slot_update_group() RETURNS tr
     LANGUAGE plpgsql
     AS $$
        begin
-       IF OLD.TIMERANGE @> NEW.TIMERANGE THEN 
-       RETURN NEW; 
-       END IF; 
-       
-       IF EXISTS (select from slots s join group_slot gs  
-       on s.id=gs.id_slot 
-       where s.id=new.id 
-     and exists (
-        select * from slots s2 join group_slot gs2 
-        on s2.id=gs2.id_slot 
-        where gs2.id_group = gs.id_group 
-            and s2.id <> new.id 
-            and s2.timerange && new.timerange)
-       for share)
+	       IF OLD.TIMERANGE @> NEW.TIMERANGE THEN 
+		       RETURN NEW; 
+		       END IF; 
+		       
+		       IF EXISTS (select from slots s join group_slot gs  
+			       on s.id=gs.id_slot 
+			       where s.id=new.id 
+			     and exists (
+				        select * from slots s2 join group_slot gs2 
+					        on s2.id=gs2.id_slot 
+						        where gs2.id_group = gs.id_group 
+							            and s2.id <> new.id 
+								            and s2.timerange && new.timerange)
+								       for share)
 
-       THEN
-            RAISE unique_violation USING MESSAGE = 'Unavailable group on slot : ' || new.id_slot;
-       END IF;
-   RETURN NEW;
-       end
-       $$;
+									       THEN
+									            RAISE unique_violation USING MESSAGE = 'Unavailable group on slot : ' || new.id_slot;
+										       END IF;
+										   RETURN NEW;
+										       end
+										       $$;
 
 
---
+										--
 -- Name: check_date_overlap_trigger_slot_update_professor(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -124,40 +124,40 @@ CREATE FUNCTION public.check_date_overlap_trigger_slot_update_professor() RETURN
     LANGUAGE plpgsql
     AS $$
        begin
-       IF OLD.TIMERANGE @> NEW.TIMERANGE THEN 
-       RETURN NEW; 
-       END IF; 
-       
-       IF EXISTS (select from slots s join group_professor gl
-       on s.id=gs.id_slot 
-       where s.id=new.id 
-     and exists (
-        select * from slots s2 join group_professor gl2 
-        on s2.id=gs2.id_slot 
-        where gl2.id_professor = gl.id_professor
-            and s2.id <> new.id 
-            and s2.timerange && new.timerange)
-       for share)
+	       IF OLD.TIMERANGE @> NEW.TIMERANGE THEN 
+		       RETURN NEW; 
+		       END IF; 
+		       
+		       IF EXISTS (select from slots s join group_professor gl
+			       on s.id=gs.id_slot 
+			       where s.id=new.id 
+			     and exists (
+				        select * from slots s2 join group_professor gl2 
+					        on s2.id=gs2.id_slot 
+						        where gl2.id_professor = gl.id_professor
+							            and s2.id <> new.id 
+								            and s2.timerange && new.timerange)
+								       for share)
 
-       THEN
-            RAISE unique_violation USING MESSAGE = 'Unavailable group on slot : ' || new.id_slot;
-       END IF;
-   RETURN NEW;
-       end
-       $$;
+									       THEN
+									            RAISE unique_violation USING MESSAGE = 'Unavailable group on slot : ' || new.id_slot;
+										       END IF;
+										   RETURN NEW;
+										       end
+										       $$;
 
 
-SET default_tablespace = '';
+										SET default_tablespace = '';
 
-SET default_table_access_method = heap;
+										SET default_table_access_method = heap;
 
---
+										--
 -- Name: classrooms; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.classrooms (
-    id bigint NOT NULL,
-    name character varying NOT NULL
+	    id bigint NOT NULL,
+	    name character varying NOT NULL
 );
 
 
@@ -166,12 +166,12 @@ CREATE TABLE public.classrooms (
 --
 
 CREATE TABLE public.slots (
-    id bigint NOT NULL,
-    timerange tstzrange,
-    classroom bigint,
-    memo character varying,
-    subject bigint NOT NULL,
-    type character varying
+	    id bigint NOT NULL,
+	    timerange tstzrange,
+	    classroom bigint,
+	    memo character varying,
+	    subject bigint NOT NULL,
+	    type character varying
 );
 
 
@@ -180,12 +180,12 @@ CREATE TABLE public.slots (
 --
 
 ALTER TABLE public.slots ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
-    SEQUENCE NAME public.creneau_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1
+	    SEQUENCE NAME public.creneau_id_seq
+	    START WITH 1
+	    INCREMENT BY 1
+	    NO MINVALUE
+	    NO MAXVALUE
+	    CACHE 1
 );
 
 
@@ -194,8 +194,8 @@ ALTER TABLE public.slots ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
 --
 
 CREATE TABLE public.group_slot (
-    id_group bigint NOT NULL,
-    id_slot bigint NOT NULL
+	    id_group bigint NOT NULL,
+	    id_slot bigint NOT NULL
 );
 
 
@@ -204,8 +204,8 @@ CREATE TABLE public.group_slot (
 --
 
 CREATE TABLE public.group_user (
-    id_group bigint NOT NULL,
-    id_user bigint NOT NULL
+	    id_group bigint NOT NULL,
+	    id_user bigint NOT NULL
 );
 
 
@@ -214,8 +214,8 @@ CREATE TABLE public.group_user (
 --
 
 CREATE TABLE public.groups (
-    id bigint NOT NULL,
-    name character varying NOT NULL
+	    id bigint NOT NULL,
+	    name character varying NOT NULL
 );
 
 
@@ -224,8 +224,8 @@ CREATE TABLE public.groups (
 --
 
 CREATE TABLE public.professor_slot (
-    id_professor bigint NOT NULL,
-    id_trange bigint NOT NULL
+	    id_professor bigint NOT NULL,
+	    id_trange bigint NOT NULL
 );
 
 
@@ -234,11 +234,11 @@ CREATE TABLE public.professor_slot (
 --
 
 CREATE TABLE public.users (
-    id bigint NOT NULL,
-    name character varying NOT NULL,
-    fname character varying NOT NULL,
-    email email NOT NULL,
-    password character varying NOT NULL
+	    id bigint NOT NULL,
+	    name character varying NOT NULL,
+	    fname character varying NOT NULL,
+	    email email NOT NULL,
+	    password character varying NOT NULL
 );
 
 
@@ -247,7 +247,7 @@ CREATE TABLE public.users (
 --
 
 CREATE TABLE public.professors (
-    title character varying NOT NULL
+	    title character varying NOT NULL
 )
 INHERITS (public.users);
 
@@ -257,12 +257,12 @@ INHERITS (public.users);
 --
 
 ALTER TABLE public.professors ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
-    SEQUENCE NAME public.professors_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1
+	    SEQUENCE NAME public.professors_id_seq
+	    START WITH 1
+	    INCREMENT BY 1
+	    NO MINVALUE
+	    NO MAXVALUE
+	    CACHE 1
 );
 
 
@@ -271,7 +271,7 @@ ALTER TABLE public.professors ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
 --
 
 CREATE TABLE public.admins (
-    dpt character varying
+	    dpt character varying
 )
 INHERITS (public.users);
 
@@ -281,12 +281,12 @@ INHERITS (public.users);
 --
 
 ALTER TABLE public.groups ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
-    SEQUENCE NAME public.promotion_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1
+	    SEQUENCE NAME public.promotion_id_seq
+	    START WITH 1
+	    INCREMENT BY 1
+	    NO MINVALUE
+	    NO MAXVALUE
+	    CACHE 1
 );
 
 
@@ -295,12 +295,12 @@ ALTER TABLE public.groups ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
 --
 
 ALTER TABLE public.classrooms ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
-    SEQUENCE NAME public.salle_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1
+	    SEQUENCE NAME public.salle_id_seq
+	    START WITH 1
+	    INCREMENT BY 1
+	    NO MINVALUE
+	    NO MAXVALUE
+	    CACHE 1
 );
 
 
@@ -309,10 +309,10 @@ ALTER TABLE public.classrooms ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
 --
 
 CREATE TABLE public.subject (
-    id bigint NOT NULL,
-    name character varying NOT NULL,
-    hour_count_max double precision NOT NULL,
-    nb_heure_max double precision NOT NULL
+	    id bigint NOT NULL,
+	    name character varying NOT NULL,
+	    hour_count_max double precision NOT NULL,
+	    nb_heure_max double precision NOT NULL
 );
 
 
@@ -321,12 +321,12 @@ CREATE TABLE public.subject (
 --
 
 ALTER TABLE public.subject ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
-    SEQUENCE NAME public.subject_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1
+	    SEQUENCE NAME public.subject_id_seq
+	    START WITH 1
+	    INCREMENT BY 1
+	    NO MINVALUE
+	    NO MAXVALUE
+	    CACHE 1
 );
 
 
@@ -335,12 +335,12 @@ ALTER TABLE public.subject ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
 --
 
 ALTER TABLE public.users ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
-    SEQUENCE NAME public.usager_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1
+	    SEQUENCE NAME public.usager_id_seq
+	    START WITH 1
+	    INCREMENT BY 1
+	    NO MINVALUE
+	    NO MAXVALUE
+	    CACHE 1
 );
 
 
@@ -550,4 +550,3 @@ ALTER TABLE ONLY public.slots
 --
 -- PostgreSQL database dump complete
 --
-
