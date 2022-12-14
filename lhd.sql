@@ -5,21 +5,37 @@
 -- Dumped from database version 14.6
 -- Dumped by pg_dump version 14.6
 
-CREATE EXTENSION IF NOT EXISTS btree_gist WITH SCHEMA public;
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
 
 --
--- Name: email; Type: DOMAIN; Schema: public; Owner: -
+-- Name: lhd; Type: SCHEMA; Schema: -; Owner: -
 --
 
-CREATE DOMAIN public.email AS character varying(254)
+CREATE SCHEMA lhd;
+
+
+--
+-- Name: email; Type: DOMAIN; Schema: lhd; Owner: -
+--
+
+CREATE DOMAIN lhd.email AS character varying(254)
 	CONSTRAINT email_check CHECK (((VALUE)::text ~ '^[a-zA-Z0-9.!#$%&''*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$'::text));
 
 
 --
--- Name: check_date_overlap_trigger_function_group_slot(); Type: FUNCTION; Schema: public; Owner: -
+-- Name: check_date_overlap_trigger_function_group_slot(); Type: FUNCTION; Schema: lhd; Owner: -
 --
 
-CREATE FUNCTION public.check_date_overlap_trigger_function_group_slot() RETURNS trigger
+CREATE FUNCTION lhd.check_date_overlap_trigger_function_group_slot() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
        begin
@@ -43,10 +59,10 @@ CREATE FUNCTION public.check_date_overlap_trigger_function_group_slot() RETURNS 
 
 
 --
--- Name: check_date_overlap_trigger_function_professor_slot(); Type: FUNCTION; Schema: public; Owner: -
+-- Name: check_date_overlap_trigger_function_professor_slot(); Type: FUNCTION; Schema: lhd; Owner: -
 --
 
-CREATE FUNCTION public.check_date_overlap_trigger_function_professor_slot() RETURNS trigger
+CREATE FUNCTION lhd.check_date_overlap_trigger_function_professor_slot() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
        begin
@@ -70,10 +86,10 @@ CREATE FUNCTION public.check_date_overlap_trigger_function_professor_slot() RETU
 
 
 --
--- Name: check_date_overlap_trigger_hook(); Type: FUNCTION; Schema: public; Owner: -
+-- Name: check_date_overlap_trigger_hook(); Type: FUNCTION; Schema: lhd; Owner: -
 --
 
-CREATE FUNCTION public.check_date_overlap_trigger_hook() RETURNS trigger
+CREATE FUNCTION lhd.check_date_overlap_trigger_hook() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
        begin
@@ -86,10 +102,10 @@ CREATE FUNCTION public.check_date_overlap_trigger_hook() RETURNS trigger
 
 
 --
--- Name: check_date_overlap_trigger_slot_update_group(); Type: FUNCTION; Schema: public; Owner: -
+-- Name: check_date_overlap_trigger_slot_update_group(); Type: FUNCTION; Schema: lhd; Owner: -
 --
 
-CREATE FUNCTION public.check_date_overlap_trigger_slot_update_group() RETURNS trigger
+CREATE FUNCTION lhd.check_date_overlap_trigger_slot_update_group() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
        begin
@@ -117,10 +133,10 @@ CREATE FUNCTION public.check_date_overlap_trigger_slot_update_group() RETURNS tr
 
 
 --
--- Name: check_date_overlap_trigger_slot_update_professor(); Type: FUNCTION; Schema: public; Owner: -
+-- Name: check_date_overlap_trigger_slot_update_professor(); Type: FUNCTION; Schema: lhd; Owner: -
 --
 
-CREATE FUNCTION public.check_date_overlap_trigger_slot_update_professor() RETURNS trigger
+CREATE FUNCTION lhd.check_date_overlap_trigger_slot_update_professor() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
        begin
@@ -152,20 +168,149 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- Name: classrooms; Type: TABLE; Schema: public; Owner: -
+-- Name: users; Type: TABLE; Schema: lhd; Owner: -
 --
 
-CREATE TABLE public.classrooms (
+CREATE TABLE lhd.users (
+    id bigint NOT NULL,
+    name character varying NOT NULL,
+    fname character varying NOT NULL,
+    email lhd.email NOT NULL,
+    password character varying NOT NULL
+);
+
+
+--
+-- Name: admins; Type: TABLE; Schema: lhd; Owner: -
+--
+
+CREATE TABLE lhd.admins (
+    dpt character varying
+)
+INHERITS (lhd.users);
+
+
+--
+-- Name: admins_id_seq; Type: SEQUENCE; Schema: lhd; Owner: -
+--
+
+ALTER TABLE lhd.admins ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME lhd.admins_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: classrooms; Type: TABLE; Schema: lhd; Owner: -
+--
+
+CREATE TABLE lhd.classrooms (
     id bigint NOT NULL,
     name character varying NOT NULL
 );
 
 
 --
--- Name: slots; Type: TABLE; Schema: public; Owner: -
+-- Name: classrooms_id_seq; Type: SEQUENCE; Schema: lhd; Owner: -
 --
 
-CREATE TABLE public.slots (
+ALTER TABLE lhd.classrooms ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME lhd.classrooms_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: group_slot; Type: TABLE; Schema: lhd; Owner: -
+--
+
+CREATE TABLE lhd.group_slot (
+    id_group bigint NOT NULL,
+    id_slot bigint NOT NULL
+);
+
+
+--
+-- Name: group_user; Type: TABLE; Schema: lhd; Owner: -
+--
+
+CREATE TABLE lhd.group_user (
+    id_group bigint NOT NULL,
+    id_user bigint NOT NULL
+);
+
+
+--
+-- Name: groups; Type: TABLE; Schema: lhd; Owner: -
+--
+
+CREATE TABLE lhd.groups (
+    id bigint NOT NULL,
+    name character varying NOT NULL
+);
+
+
+--
+-- Name: groups_id_seq; Type: SEQUENCE; Schema: lhd; Owner: -
+--
+
+ALTER TABLE lhd.groups ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME lhd.groups_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: professor_slot; Type: TABLE; Schema: lhd; Owner: -
+--
+
+CREATE TABLE lhd.professor_slot (
+    id_professor bigint NOT NULL,
+    id_trange bigint NOT NULL
+);
+
+
+--
+-- Name: professors; Type: TABLE; Schema: lhd; Owner: -
+--
+
+CREATE TABLE lhd.professors (
+    title character varying NOT NULL
+)
+INHERITS (lhd.users);
+
+
+--
+-- Name: professors_id_seq; Type: SEQUENCE; Schema: lhd; Owner: -
+--
+
+ALTER TABLE lhd.professors ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME lhd.professors_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: slots; Type: TABLE; Schema: lhd; Owner: -
+--
+
+CREATE TABLE lhd.slots (
     id bigint NOT NULL,
     timerange tstzrange,
     classroom bigint,
@@ -176,11 +321,11 @@ CREATE TABLE public.slots (
 
 
 --
--- Name: creneau_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: slots_id_seq; Type: SEQUENCE; Schema: lhd; Owner: -
 --
 
-ALTER TABLE public.slots ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
-    SEQUENCE NAME public.creneau_id_seq
+ALTER TABLE lhd.slots ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME lhd.slots_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -190,74 +335,22 @@ ALTER TABLE public.slots ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
 
 
 --
--- Name: group_slot; Type: TABLE; Schema: public; Owner: -
+-- Name: subjects; Type: TABLE; Schema: lhd; Owner: -
 --
 
-CREATE TABLE public.group_slot (
-    id_group bigint NOT NULL,
-    id_slot bigint NOT NULL
-);
-
-
---
--- Name: group_user; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.group_user (
-    id_group bigint NOT NULL,
-    id_user bigint NOT NULL
-);
-
-
---
--- Name: groups; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.groups (
-    id bigint NOT NULL,
-    name character varying NOT NULL
-);
-
-
---
--- Name: professor_slot; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.professor_slot (
-    id_professor bigint NOT NULL,
-    id_trange bigint NOT NULL
-);
-
-
---
--- Name: users; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.users (
+CREATE TABLE lhd.subjects (
     id bigint NOT NULL,
     name character varying NOT NULL,
-    fname character varying NOT NULL,
-    email email NOT NULL,
-    password character varying NOT NULL
+    hour_count_max double precision NOT NULL
 );
 
 
 --
--- Name: professors; Type: TABLE; Schema: public; Owner: -
+-- Name: subject_id_seq; Type: SEQUENCE; Schema: lhd; Owner: -
 --
 
-CREATE TABLE public.professors (
-    title character varying NOT NULL
-)
-INHERITS (public.users);
-
-
---
--- Name: professors_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-ALTER TABLE public.professors ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
-    SEQUENCE NAME public.professors_id_seq
+ALTER TABLE lhd.subjects ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME lhd.subject_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -267,21 +360,11 @@ ALTER TABLE public.professors ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
 
 
 --
--- Name: admins; Type: TABLE; Schema: public; Owner: -
+-- Name: users_id_seq; Type: SEQUENCE; Schema: lhd; Owner: -
 --
 
-CREATE TABLE public.admins (
-    dpt character varying
-)
-INHERITS (public.users);
-
-
---
--- Name: promotion_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-ALTER TABLE public.groups ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
-    SEQUENCE NAME public.promotion_id_seq
+ALTER TABLE lhd.users ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME lhd.users_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -291,260 +374,241 @@ ALTER TABLE public.groups ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
 
 
 --
--- Name: salle_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: classrooms classroom_unique; Type: CONSTRAINT; Schema: lhd; Owner: -
 --
 
-ALTER TABLE public.classrooms ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
-    SEQUENCE NAME public.salle_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1
-);
+ALTER TABLE ONLY lhd.classrooms
+    ADD CONSTRAINT classroom_unique UNIQUE (name);
 
 
 --
--- Name: subject; Type: TABLE; Schema: public; Owner: -
+-- Name: slots creneau_pkey; Type: CONSTRAINT; Schema: lhd; Owner: -
 --
 
-CREATE TABLE public.subject (
-    id bigint NOT NULL,
-    name character varying NOT NULL,
-    hour_count_max double precision NOT NULL,
-    nb_heure_max double precision NOT NULL
-);
-
-
---
--- Name: subject_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-ALTER TABLE public.subject ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
-    SEQUENCE NAME public.subject_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1
-);
-
-
---
--- Name: usager_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-ALTER TABLE public.users ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
-    SEQUENCE NAME public.usager_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1
-);
-
-
---
--- Name: slots creneau_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.slots
+ALTER TABLE ONLY lhd.slots
     ADD CONSTRAINT creneau_pkey PRIMARY KEY (id);
 
 
 --
--- Name: slots excl; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: groups group_unique; Type: CONSTRAINT; Schema: lhd; Owner: -
 --
 
-ALTER TABLE ONLY public.slots
-    ADD CONSTRAINT excl EXCLUDE USING gist (classroom WITH =, timerange WITH &&);
+ALTER TABLE ONLY lhd.groups
+    ADD CONSTRAINT group_unique UNIQUE (name);
 
 
 --
--- Name: professors lect_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: professors lect_pkey; Type: CONSTRAINT; Schema: lhd; Owner: -
 --
 
-ALTER TABLE ONLY public.professors
+ALTER TABLE ONLY lhd.professors
     ADD CONSTRAINT lect_pkey PRIMARY KEY (id);
 
 
 --
--- Name: group_slot promotion_creneau_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: group_slot promotion_creneau_pkey; Type: CONSTRAINT; Schema: lhd; Owner: -
 --
 
-ALTER TABLE ONLY public.group_slot
+ALTER TABLE ONLY lhd.group_slot
     ADD CONSTRAINT promotion_creneau_pkey PRIMARY KEY (id_group, id_slot);
 
 
 --
--- Name: professor_slot promotion_professors_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: professor_slot promotion_professors_pkey; Type: CONSTRAINT; Schema: lhd; Owner: -
 --
 
-ALTER TABLE ONLY public.professor_slot
+ALTER TABLE ONLY lhd.professor_slot
     ADD CONSTRAINT promotion_professors_pkey PRIMARY KEY (id_professor, id_trange);
 
 
 --
--- Name: group_user promotion_usager_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: group_user promotion_usager_pkey; Type: CONSTRAINT; Schema: lhd; Owner: -
 --
 
-ALTER TABLE ONLY public.group_user
+ALTER TABLE ONLY lhd.group_user
     ADD CONSTRAINT promotion_usager_pkey PRIMARY KEY (id_group, id_user);
 
 
 --
--- Name: classrooms salle_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: classrooms salle_pkey; Type: CONSTRAINT; Schema: lhd; Owner: -
 --
 
-ALTER TABLE ONLY public.classrooms
+ALTER TABLE ONLY lhd.classrooms
     ADD CONSTRAINT salle_pkey PRIMARY KEY (id);
 
 
 --
--- Name: subject subject_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: slots slots_classroom_timerange_excl; Type: CONSTRAINT; Schema: lhd; Owner: -
 --
 
-ALTER TABLE ONLY public.subject
+ALTER TABLE ONLY lhd.slots
+    ADD CONSTRAINT slots_classroom_timerange_excl EXCLUDE USING gist (classroom WITH =, timerange WITH &&);
+
+
+--
+-- Name: subjects subject_pkey; Type: CONSTRAINT; Schema: lhd; Owner: -
+--
+
+ALTER TABLE ONLY lhd.subjects
     ADD CONSTRAINT subject_pkey PRIMARY KEY (id);
 
 
 --
--- Name: groups user_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: subjects subject_unique; Type: CONSTRAINT; Schema: lhd; Owner: -
 --
 
-ALTER TABLE ONLY public.groups
+ALTER TABLE ONLY lhd.subjects
+    ADD CONSTRAINT subject_unique UNIQUE (name);
+
+
+--
+-- Name: groups user_pkey; Type: CONSTRAINT; Schema: lhd; Owner: -
+--
+
+ALTER TABLE ONLY lhd.groups
     ADD CONSTRAINT user_pkey PRIMARY KEY (id);
 
 
 --
--- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: lhd; Owner: -
 --
 
-ALTER TABLE ONLY public.users
+ALTER TABLE ONLY lhd.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
 
 
 --
--- Name: group_slot_id_trange_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: admins_lower_email_key; Type: INDEX; Schema: lhd; Owner: -
 --
 
-CREATE INDEX group_slot_id_trange_idx ON public.group_slot USING btree (id_slot);
-
-
---
--- Name: slots_timerange_idx; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX slots_timerange_idx ON public.slots USING btree (timerange);
+CREATE UNIQUE INDEX admins_lower_email_key ON lhd.admins USING btree (lower((email)::text));
 
 
 --
--- Name: unqiue_promotion_name; Type: INDEX; Schema: public; Owner: -
+-- Name: group_slot_id_trange_idx; Type: INDEX; Schema: lhd; Owner: -
 --
 
-CREATE UNIQUE INDEX unqiue_promotion_name ON public.groups USING btree (name);
-
-
---
--- Name: users_lower_email_key; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX users_lower_email_key ON public.users USING btree (lower((email)::text));
-
-CREATE UNIQUE INDEX professors_lower_email_key ON public.professors USING btree (lower((email)::text));
-
-CREATE UNIQUE INDEX admins_lower_email_key ON public.admins USING btree (lower((email)::text));
-
---
--- Name: group_slot check_timerange_overlap; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER check_timerange_overlap BEFORE INSERT OR UPDATE ON public.group_slot FOR EACH ROW EXECUTE FUNCTION public.check_date_overlap_trigger_function_group_slot();
+CREATE INDEX group_slot_id_trange_idx ON lhd.group_slot USING btree (id_slot);
 
 
 --
--- Name: professor_slot ls_check_trigger; Type: TRIGGER; Schema: public; Owner: -
+-- Name: professors_lower_email_key; Type: INDEX; Schema: lhd; Owner: -
 --
 
-CREATE TRIGGER ls_check_trigger BEFORE INSERT OR UPDATE ON public.professor_slot FOR EACH ROW EXECUTE FUNCTION public.check_date_overlap_trigger_function_professor_slot();
-
-
---
--- Name: slots update_slot_check_group; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER update_slot_check_group BEFORE UPDATE ON public.slots FOR EACH ROW EXECUTE FUNCTION public.check_date_overlap_trigger_slot_update_group();
+CREATE UNIQUE INDEX professors_lower_email_key ON lhd.professors USING btree (lower((email)::text));
 
 
 --
--- Name: slots update_slot_check_professor; Type: TRIGGER; Schema: public; Owner: -
+-- Name: slots_timerange_idx; Type: INDEX; Schema: lhd; Owner: -
 --
 
-CREATE TRIGGER update_slot_check_professor BEFORE UPDATE ON public.slots FOR EACH ROW EXECUTE FUNCTION public.check_date_overlap_trigger_slot_update_professor();
-
-
---
--- Name: group_slot fk_creneau; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.group_slot
-    ADD CONSTRAINT fk_creneau FOREIGN KEY (id_slot) REFERENCES public.slots(id);
+CREATE INDEX slots_timerange_idx ON lhd.slots USING btree (timerange);
 
 
 --
--- Name: professor_slot fk_creneau; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: unqiue_promotion_name; Type: INDEX; Schema: lhd; Owner: -
 --
 
-ALTER TABLE ONLY public.professor_slot
-    ADD CONSTRAINT fk_creneau FOREIGN KEY (id_trange) REFERENCES public.slots(id);
-
-
---
--- Name: group_user fk_promotions; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.group_user
-    ADD CONSTRAINT fk_promotions FOREIGN KEY (id_group) REFERENCES public.groups(id);
+CREATE UNIQUE INDEX unqiue_promotion_name ON lhd.groups USING btree (name);
 
 
 --
--- Name: group_slot fk_promotions; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: users_lower_email_key; Type: INDEX; Schema: lhd; Owner: -
 --
 
-ALTER TABLE ONLY public.group_slot
-    ADD CONSTRAINT fk_promotions FOREIGN KEY (id_group) REFERENCES public.groups(id);
-
-
---
--- Name: professor_slot fk_promotions; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.professor_slot
-    ADD CONSTRAINT fk_promotions FOREIGN KEY (id_professor) REFERENCES public.professors(id);
+CREATE UNIQUE INDEX users_lower_email_key ON lhd.users USING btree (lower((email)::text));
 
 
 --
--- Name: group_user fk_user; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: group_slot check_timerange_overlap; Type: TRIGGER; Schema: lhd; Owner: -
 --
 
-ALTER TABLE ONLY public.group_user
-    ADD CONSTRAINT fk_user FOREIGN KEY (id_user) REFERENCES public.users(id);
-
-
---
--- Name: slots salle_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.slots
-    ADD CONSTRAINT salle_fkey FOREIGN KEY (classroom) REFERENCES public.classrooms(id);
+CREATE TRIGGER check_timerange_overlap BEFORE INSERT OR UPDATE ON lhd.group_slot FOR EACH ROW EXECUTE FUNCTION lhd.check_date_overlap_trigger_function_group_slot();
 
 
 --
--- Name: slots subject_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: professor_slot ls_check_trigger; Type: TRIGGER; Schema: lhd; Owner: -
 --
 
-ALTER TABLE ONLY public.slots
-    ADD CONSTRAINT subject_fkey FOREIGN KEY (subject) REFERENCES public.subject(id);
+CREATE TRIGGER ls_check_trigger BEFORE INSERT OR UPDATE ON lhd.professor_slot FOR EACH ROW EXECUTE FUNCTION lhd.check_date_overlap_trigger_function_professor_slot();
+
+
+--
+-- Name: slots update_slot_check_group; Type: TRIGGER; Schema: lhd; Owner: -
+--
+
+CREATE TRIGGER update_slot_check_group BEFORE UPDATE ON lhd.slots FOR EACH ROW EXECUTE FUNCTION lhd.check_date_overlap_trigger_slot_update_group();
+
+
+--
+-- Name: slots update_slot_check_professor; Type: TRIGGER; Schema: lhd; Owner: -
+--
+
+CREATE TRIGGER update_slot_check_professor BEFORE UPDATE ON lhd.slots FOR EACH ROW EXECUTE FUNCTION lhd.check_date_overlap_trigger_slot_update_professor();
+
+
+--
+-- Name: group_slot fk_creneau; Type: FK CONSTRAINT; Schema: lhd; Owner: -
+--
+
+ALTER TABLE ONLY lhd.group_slot
+    ADD CONSTRAINT fk_creneau FOREIGN KEY (id_slot) REFERENCES lhd.slots(id);
+
+
+--
+-- Name: professor_slot fk_creneau; Type: FK CONSTRAINT; Schema: lhd; Owner: -
+--
+
+ALTER TABLE ONLY lhd.professor_slot
+    ADD CONSTRAINT fk_creneau FOREIGN KEY (id_trange) REFERENCES lhd.slots(id);
+
+
+--
+-- Name: group_user fk_promotions; Type: FK CONSTRAINT; Schema: lhd; Owner: -
+--
+
+ALTER TABLE ONLY lhd.group_user
+    ADD CONSTRAINT fk_promotions FOREIGN KEY (id_group) REFERENCES lhd.groups(id);
+
+
+--
+-- Name: group_slot fk_promotions; Type: FK CONSTRAINT; Schema: lhd; Owner: -
+--
+
+ALTER TABLE ONLY lhd.group_slot
+    ADD CONSTRAINT fk_promotions FOREIGN KEY (id_group) REFERENCES lhd.groups(id);
+
+
+--
+-- Name: professor_slot fk_promotions; Type: FK CONSTRAINT; Schema: lhd; Owner: -
+--
+
+ALTER TABLE ONLY lhd.professor_slot
+    ADD CONSTRAINT fk_promotions FOREIGN KEY (id_professor) REFERENCES lhd.professors(id);
+
+
+--
+-- Name: group_user fk_user; Type: FK CONSTRAINT; Schema: lhd; Owner: -
+--
+
+ALTER TABLE ONLY lhd.group_user
+    ADD CONSTRAINT fk_user FOREIGN KEY (id_user) REFERENCES lhd.users(id);
+
+
+--
+-- Name: slots salle_fkey; Type: FK CONSTRAINT; Schema: lhd; Owner: -
+--
+
+ALTER TABLE ONLY lhd.slots
+    ADD CONSTRAINT salle_fkey FOREIGN KEY (classroom) REFERENCES lhd.classrooms(id);
+
+
+--
+-- Name: slots subject_fkey; Type: FK CONSTRAINT; Schema: lhd; Owner: -
+--
+
+ALTER TABLE ONLY lhd.slots
+    ADD CONSTRAINT subject_fkey FOREIGN KEY (subject) REFERENCES lhd.subjects(id);
 
 
 --
