@@ -12,26 +12,25 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 @Slf4j
-public class LecturerDAO implements DAO<Professor> {
+public class ProfessorDAO implements DAO<Professor> {
     private final PreparedStatement getAll;
     private final PreparedStatement get;
     private final PreparedStatement save;
     private final PreparedStatement update;
     private final PreparedStatement delete;
 
-    public LecturerDAO() throws SQLException {
+    public ProfessorDAO() throws SQLException {
         Connection connection = Datasource.getInstance().getConnection();
-        this.get = connection.prepareStatement("SELECT * FROM LECTURERS WHERE ID=?");
-        this.getAll = connection.prepareStatement("SELECT * FROM LECTURERS");
-        this.save = connection.prepareStatement("INSERT INTO LECTURERS VALUES (DEFAULT, ?, ?, ?, ?, ?)",RETURN_GENERATED_KEYS);
-        this.update = connection.prepareStatement("UPDATE LECTURERS SET name=?, fname=? ,email=?,title=? WHERE ID=?");
-        this.delete = connection.prepareStatement("DELETE FROM LECTURERS WHERE ID=?");
+        this.get = connection.prepareStatement("SELECT * FROM PROFESSORS WHERE ID=?");
+        this.getAll = connection.prepareStatement("SELECT * FROM PROFESSORS");
+        this.save = connection.prepareStatement("INSERT INTO PROFESSORS VALUES (DEFAULT, ?, ?, ?, ?, ?)",RETURN_GENERATED_KEYS);
+        this.update = connection.prepareStatement("UPDATE PROFESSORS SET name=?, fname=? ,email=?,title=? WHERE ID=?");
+        this.delete = connection.prepareStatement("DELETE FROM PROFESSORS WHERE ID=?");
     }
 
 

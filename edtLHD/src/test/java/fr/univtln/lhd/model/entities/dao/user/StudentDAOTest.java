@@ -65,7 +65,6 @@ class StudentDAOTest {
         Student student = getRandomNewStudent();
         Student student1 = Student.of(student.getName()+"1",student.getFname()+"1",student.getEmail()+"1");
         dao.save(student,"1234");
-        System.out.println(student);
         student1.setId(student.getId());
         dao.update(student1);
         assertEquals(dao.get(student.getId()).get(),student1);
