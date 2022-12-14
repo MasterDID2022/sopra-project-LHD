@@ -1,5 +1,6 @@
 package fr.univtln.lhd.model.entities.dao.slots;
 
+import fr.univtln.lhd.exception.IdException;
 import fr.univtln.lhd.model.entities.dao.DAO;
 import fr.univtln.lhd.model.entities.dao.Datasource;
 import fr.univtln.lhd.model.entities.slots.Slot;
@@ -66,8 +67,8 @@ public class SlotDAO implements DAO<Slot> {
      * @param params Map of attributes and values
      */
     @Override
-    public void update(Slot slot, Map<String, String> params) {
-        //wip
+    public Slot update(Slot slot) throws IdException {
+        return null;
     }
 
     /**

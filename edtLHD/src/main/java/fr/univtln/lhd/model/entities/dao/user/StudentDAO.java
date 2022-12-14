@@ -1,6 +1,5 @@
 package fr.univtln.lhd.model.entities.dao.user;
 
-import com.zaxxer.hikari.HikariDataSource;
 import fr.univtln.lhd.exception.IdException;
 import fr.univtln.lhd.model.entities.dao.DAO;
 import fr.univtln.lhd.model.entities.dao.Datasource;
@@ -124,10 +123,8 @@ public class StudentDAO implements DAO<Student> {
             ResultSet id_set = save.getGeneratedKeys();
             id_set.next();
             student.setId(id_set.getLong(1));
-        } catch (SQLException e){
+        } catch (SQLException | IdException e){
             log.error(e.getMessage());
-        } catch (IdException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -135,44 +132,19 @@ public class StudentDAO implements DAO<Student> {
      * Update the data of Student in the database, without modifying the object student,
      * to get the new student use <code>updateAndGet</code>
      * @param student a Student
-     * @param params Map of attributes and values
      */
     @Override
-    public void update(Student student, Map params) throws IdException {
-        updateAndGet(student,params);
-    }
-
-    /**
-     * Update Data of Student t and return the new student
-     * @param student a Student
-     * @param params Map of attributes and values
-     */
-    public Student updateAndGet(Student student, Map<Object,Object> params) throws IdException {
-        String name = student.getName();
-        String fname = student.getFname();
-        String email = student.getEmail();
-        for (Object key : params.keySet())
-            if (key.equals("name")) {
-                name = params.get("name").toString();
-            } else if (key.equals("fname")) {
-                fname = params.get("fname").toString();
-            } else if (key.equals("email")) {
-                email = params.get("email").toString();
-            }
-        Student updatedStudent = Student.of(name, fname,email);
-        updatedStudent.setId(student.getId());
+    public Student update(Student student) throws IdException {
         try {
-            update.setString(1, updatedStudent.getName());
-            update.setString(2, updatedStudent.getFname());
-            update.setString(3,updatedStudent.getEmail());
-            update.setLong(4, updatedStudent.getId());
+            update.setString(1,student.getName());
+            update.setString(2, student.getFname());
+            update.setString(3,student.getEmail());
+            update.setLong(4,student.getId());
             update.executeUpdate();
-            return updatedStudent;
         }
         catch (SQLException e){
             log.error(e.getMessage());
         }
-        log.error("did not update the database");
         return student;
     }
 

@@ -1,5 +1,6 @@
 package fr.univtln.lhd.model.entities.dao.slots;
 
+import fr.univtln.lhd.exception.IdException;
 import fr.univtln.lhd.model.entities.dao.DAO;
 import fr.univtln.lhd.model.entities.dao.Datasource;
 import fr.univtln.lhd.model.entities.slots.Classroom;
@@ -116,13 +117,8 @@ public class ClassroomDAO implements DAO<Classroom>
      * @param params Map of attributes and values
      */
     @Override
-    public void update(Classroom classroom, Map<String, String> params) {
-        try {
-            update.setString(1, classroom.getName());
-            update.executeUpdate();
-        } catch (SQLException e){
-            log.error(e.getMessage());
-        }
+    public Classroom update(Classroom classroom) throws IdException {
+        return null;
     }
 
     /**

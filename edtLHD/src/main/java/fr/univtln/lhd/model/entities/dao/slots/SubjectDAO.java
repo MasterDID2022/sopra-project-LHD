@@ -112,16 +112,16 @@ public class SubjectDAO implements DAO<Subject> {
      * @param params Map of attributes and values
      */
     @Override
-    public void update(Subject subject, Map<String, String> params) {
-
-        try {
-            update.setString(1, subject.getName());
-            update.setFloat(2, subject.getHourCountMax());
-            update.setLong(3, subject.getId());
-            update.executeUpdate();
-        } catch (SQLException e){
-            log.error(e.getMessage());
-        }
+    public Subject update(Subject subject) {
+        //try {
+        //    update.setString(1, subject.getName());
+        //    update.setFloat(2, subject.getHourCountMax());
+        //    update.setLong(3, subject.getId());
+        //    update.executeUpdate();
+        //} catch (SQLException e){
+        //    log.error(e.getMessage());
+        //}
+        return null;
     }
 
     /**

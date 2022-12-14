@@ -3,7 +3,7 @@ package fr.univtln.lhd.model.entities.dao.user;
 import fr.univtln.lhd.exception.IdException;
 import fr.univtln.lhd.model.entities.dao.DAO;
 import fr.univtln.lhd.model.entities.dao.Datasource;
-import fr.univtln.lhd.model.entities.user.Lecturer;
+import fr.univtln.lhd.model.entities.user.Professor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
@@ -18,7 +18,7 @@ import java.util.Optional;
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 @Slf4j
-public class LecturerDAO implements DAO<Lecturer> {
+public class LecturerDAO implements DAO<Professor> {
     private final PreparedStatement getAll;
     private final PreparedStatement get;
     private final PreparedStatement save;
@@ -41,14 +41,14 @@ public class LecturerDAO implements DAO<Lecturer> {
      * @return May return one Lecturer
      */
     @Override
-    public Optional<Lecturer> get(long id) {
-        Optional<Lecturer> result = Optional.empty();
+    public Optional<Professor> get(long id) {
+        Optional<Professor> result = Optional.empty();
         try {
             get.setLong(1, id);
             ResultSet rs = get.executeQuery();
             if (rs.next()) {
                 result = Optional.of(
-                        Lecturer.of(
+                        Professor.of(
                                 rs.getString("NAME"),
                                 rs.getString("FNAME"),
                                 rs.getString("EMAIL"),
@@ -67,23 +67,23 @@ public class LecturerDAO implements DAO<Lecturer> {
      * @return List of all Lecturer
      */
     @Override
-    public List<Lecturer> getAll() {
-        List<Lecturer> lecturerList = new ArrayList<>();
+    public List<Professor> getAll() {
+        List<Professor> professorList = new ArrayList<>();
         try {
             ResultSet rs = getAll.executeQuery();
             while (rs.next()) {
-                Lecturer lecturer = Lecturer.of(
+                Professor professor = Professor.of(
                                 rs.getString("NAME"),
                                 rs.getString("FNAME"),
                                 rs.getString("EMAIL"),
                                 rs.getString("TITLE"));
-                lecturer.setId(rs.getLong("ID"));
-                lecturerList.add(lecturer);
+                professor.setId(rs.getLong("ID"));
+                professorList.add(professor);
             }
         } catch (SQLException | IdException e){
             log.error(e.getMessage());
         }
-        return lecturerList;
+        return professorList;
     }
 
 
@@ -92,16 +92,16 @@ public class LecturerDAO implements DAO<Lecturer> {
      * <!>SHOULD ONLY BE USED FOR TEST</!>
      * this methode save a User without a password
      * please use save(Lecturer s,String password)
-     * @param lecturer Lecturer object to save
+     * @param professor Lecturer object to save
      */
     @Override
-    public void save(Lecturer lecturer) {
+    public void save(Professor professor) {
         try{
-            save.setString(1, lecturer.getName());
-            save.setString(2, lecturer.getFname());
-            save.setString(3, lecturer.getEmail());
+            save.setString(1, professor.getName());
+            save.setString(2, professor.getFname());
+            save.setString(3, professor.getEmail());
             save.setString(4, "NO_PASSWORD");
-            save.setString(5, lecturer.getTitle());
+            save.setString(5, professor.getTitle());
             save.executeUpdate();
         } catch (SQLException e){
             log.error(e.getMessage());
@@ -112,21 +112,21 @@ public class LecturerDAO implements DAO<Lecturer> {
     /**
      * Save Lecturer t to Database and add the ID generate by the database
      * to lecturer, if the lecturer exist it will only update the ID
-     * @param lecturer Lecturer object to save
+     * @param professor Lecturer object to save
      * @param password password to save inside the database
      */
-    public void save(Lecturer lecturer, String password) {
+    public void save(Professor professor, String password) {
         ResultSet result;
         try{
-            save.setString(1, lecturer.getName());
-            save.setString(2, lecturer.getFname());
-            save.setString(3, lecturer.getEmail());
+            save.setString(1, professor.getName());
+            save.setString(2, professor.getFname());
+            save.setString(3, professor.getEmail());
             save.setString(4, password);
-            save.setString(5, lecturer.getEmail());
+            save.setString(5, professor.getEmail());
             save.executeUpdate();
             ResultSet id_set = save.getGeneratedKeys();
             id_set.next();
-            lecturer.setId(id_set.getLong(1));
+            professor.setId(id_set.getLong(1));
         } catch (SQLException | IdException e) {
             log.error(e.getMessage());
         }
@@ -135,60 +135,33 @@ public class LecturerDAO implements DAO<Lecturer> {
     /**
      * Update the data of Lecturer in the database, without modifying the object lecturer,
      * to get the new lecturer use <code>updateAndGet</code>
-     * @param lecturer a Lecturer
-     * @param params Map of attributes and values
+     * @param professor a Lecturer
      */
     @Override
-    public void update(Lecturer lecturer, Map params) throws IdException {
-        updateAndGet(lecturer,params);
-    }
-
-    /**
-     * Update Data of Lecturer t and return the new lecturer
-     * @param lecturer a Lecturer
-     * @param params Map of attributes and values
-     */
-    public Lecturer updateAndGet(Lecturer lecturer, Map<Object,Object> params) throws IdException {
-        String name = lecturer.getName();
-        String fname = lecturer.getFname();
-        String email = lecturer.getEmail();
-        String title = lecturer.getTitle();
-        for (Object key : params.keySet()) {
-            if (key.equals("name")) {
-                name = params.get("name").toString();
-            } else if (key.equals("fname")) {
-                fname = params.get("fname").toString();
-            } else if (key.equals("email")) {
-                email = params.get("email").toString();
-            } else if (key.equals("title")) {
-                title = params.get("title").toString();
-            }
-        }
-        Lecturer updatedLecturer = Lecturer.of(name, fname,email,title);
-        updatedLecturer.setId(lecturer.getId());
+    public Professor update(Professor professor) throws IdException {
         try {
-            update.setString(1, updatedLecturer.getName());
-            update.setString(2, updatedLecturer.getFname());
-            update.setString(3,updatedLecturer.getEmail());
-            update.setLong(4, updatedLecturer.getId());
+            update.setString(1,professor.getName());
+            update.setString(2, professor.getFname());
+            update.setString(3,professor.getEmail());
+            update.setString(4,professor.getTitle());
+            update.setLong(5,professor.getId());
             update.executeUpdate();
-            return updatedLecturer;
         }
         catch (SQLException e){
             log.error(e.getMessage());
         }
-        log.error("did not update the database");
-        return lecturer;
+        return professor;
     }
+
 
     /**
      * Delete Lecturer from Database
-     * @param lecturer Lecturer to be deleted from the database
+     * @param professor Lecturer to be deleted from the database
      */
     @Override
-    public void delete(Lecturer lecturer) {
+    public void delete(Professor professor) {
         try {
-            delete.setLong(1,lecturer.getId());
+            delete.setLong(1, professor.getId());
             delete.executeUpdate();
         }
         catch (SQLException e){
