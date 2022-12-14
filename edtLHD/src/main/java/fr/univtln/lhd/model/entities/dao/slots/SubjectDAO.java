@@ -1,5 +1,6 @@
 package fr.univtln.lhd.model.entities.dao.slots;
 
+import fr.univtln.lhd.exception.IdException;
 import fr.univtln.lhd.model.entities.dao.DAO;
 import fr.univtln.lhd.model.entities.dao.Datasource;
 import fr.univtln.lhd.model.entities.slots.Subject;
@@ -25,7 +26,7 @@ public class SubjectDAO implements DAO<Subject> {
      * Constructor of SubjectDao, initiate connection and prepared statement
      * @throws SQLException throw a SQLException if there is a problem with the connection or database prepared statement
      */
-    private SubjectDAO() throws SQLException {
+    public SubjectDAO() throws SQLException {
         this.conn = Datasource.getInstance().getConnection();
         this.get = conn.prepareStatement("SELECT * FROM SUBJECT WHERE ID=?");
         this.getAll = conn.prepareStatement("SELECT * FROM SUBJECT");
@@ -49,7 +50,6 @@ public class SubjectDAO implements DAO<Subject> {
     @Override
     public Optional<Subject> get(long id) {
         Optional<Subject> result = Optional.empty();
-
         try {
             get.setLong(1, id);
             ResultSet rs = get.executeQuery();
@@ -62,7 +62,6 @@ public class SubjectDAO implements DAO<Subject> {
                         rs.getFloat("HOUR_COUNT_MAX"))
                 );
             }
-
         }catch (SQLException e){
             log.error(e.getMessage());
         }
@@ -109,19 +108,20 @@ public class SubjectDAO implements DAO<Subject> {
     /**
      * Update Data of Subject Table
      * @param subject Subject instance to update
-     * @param params Map of attributes and values
      */
+
     @Override
-    public Subject update(Subject subject) {
-        //try {
-        //    update.setString(1, subject.getName());
-        //    update.setFloat(2, subject.getHourCountMax());
-        //    update.setLong(3, subject.getId());
-        //    update.executeUpdate();
-        //} catch (SQLException e){
-        //    log.error(e.getMessage());
-        //}
-        return null;
+    public Subject update(Subject subject) throws IdException {
+        try {
+            update.setString(1,subject.getName());
+            update.setFloat(2,subject.getHourCountMax());
+            update.setLong(5,subject.getId());
+            update.executeUpdate();
+        }
+        catch (SQLException e){
+            log.error(e.getMessage());
+        }
+        return subject;
     }
 
     /**
@@ -130,7 +130,6 @@ public class SubjectDAO implements DAO<Subject> {
      */
     @Override
     public void delete(Subject subject) {
-
         try {
             delete.setLong(1, subject.getId());
             delete.executeUpdate();
