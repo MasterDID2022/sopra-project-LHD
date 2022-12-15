@@ -1,10 +1,10 @@
 package fr.univtln.lhd.entities.user;
 
-import fr.univtln.lhd.exception.IdException;
+import fr.univtln.lhd.exceptions.IdException;
 import fr.univtln.lhd.model.entities.slots.Group;
-import fr.univtln.lhd.model.entities.user.Admin;
-import fr.univtln.lhd.model.entities.user.Student;
-import fr.univtln.lhd.model.entities.user.User;
+import fr.univtln.lhd.model.entities.users.Admin;
+import fr.univtln.lhd.model.entities.users.Student;
+import fr.univtln.lhd.model.entities.users.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
