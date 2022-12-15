@@ -5,6 +5,8 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.Objects;
+
 /**
  * Class defining a Classroom
  */
@@ -38,13 +40,37 @@ public class Classroom {
 
     /**
      * Set the id, should only be used by the DAO
-     * @param id
-     * @throws IdException
+     * @param id long unique identifier
+     * @throws IdException id is not allowed to be negative, Exception thrown otherwise
      */
     public void setId(long id) throws IdException {
         if (id<0) {
             throw  new IdException("Id Error");
         }
         this.id = id;
+    }
+
+    /**
+     * Override of Equal
+     * the equality depend on the name
+     * @param o Classroom
+     * @return True if equal False elif
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Classroom classroom = (Classroom) o;
+        return Objects.equals(name, classroom.getName());
+    }
+
+    /**
+     * Override of hashcode
+     * the resulting hashcode depend on the name of the Classroom
+     * @return hash
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 }
