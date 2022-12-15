@@ -13,10 +13,10 @@ public abstract class User {
     private final String email;
 
     /**
-     * Abstract constructor of user, should only be used by the child of User
-     * @param name name of a user
-     * @param fname first name of a user
-     * @param email email of a user
+     * Abstract constructor of users, should only be used by the child of User
+     * @param name name of a User
+     * @param fname first name of a User
+     * @param email email of a User
      */
     protected User(String name, String fname, String email) {
         this.name = name;
@@ -26,7 +26,7 @@ public abstract class User {
 
     /**
      * Override of Equal
-     * the equality depend of the name fistname and email
+     * the equality depends on the name, firstname and email
      * @param o User
      * @return True if equal False elif
      */
@@ -50,8 +50,8 @@ public abstract class User {
 
     /**
      * Set the id, should only be used by the DAO
-     * @param id
-     * @throws IdException
+     * @param id user ID
+     * @throws IdException if something goes wrong during insertion.
      */
     public void setId(long id) throws IdException {
         if (id<0) {

@@ -1,14 +1,24 @@
 # Created by https://www.toptal.com/developers/gitignore/api/intellij+all,java
 # Edit at https://www.toptal.com/developers/gitignore?templates=intellij+all,java
-
+############      ######        #################                                                
+############      ########       ###############                                                
+####              ###  #####          ####                                                       
+###########       ###    ###          ####                                                       
+####              ###  #####          ####                                                       
+############      ########            ####                                                       
+############      ######              ####                                                       
 ### Intellij+all Patch ###
 # Ignore everything but code style settings and run configurations
 # that are supposed to be shared within teams.
 
-*/.idea/*
-./idea/*
-!*/.idea/codeStyles
-!*/.idea/runConfigurations
+.idea/*
+!.idea/codeStyles
+!.idea/runConfigurations
+
+edtLHD/.idea/*
+!edtLHD/.idea/codeStyles
+!edtLHD/.idea/runConfigurations
+>>>>>>> develop
 *.iml
 *modules.xml
 *.ipr
