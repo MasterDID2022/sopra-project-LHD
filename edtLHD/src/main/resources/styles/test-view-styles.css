@@ -19,7 +19,6 @@ GridPane Label{
 
 EdtGrid FlowPane {
     -fx-alignment: center;
-    -fx-background-color: white;
     -fx-border-color: black;
     -fx-text-fill: black;
     -fx-font-size: 12;
