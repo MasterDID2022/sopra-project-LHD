@@ -1,18 +1,12 @@
 package fr.univtln.lhd.model.entities.dao.user;
 
-import fr.univtln.lhd.exception.IdException;
-import fr.univtln.lhd.model.entities.dao.Datasource;
-import fr.univtln.lhd.model.entities.user.Student;
+import fr.univtln.lhd.exceptions.IdException;
+import fr.univtln.lhd.model.entities.users.Student;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 

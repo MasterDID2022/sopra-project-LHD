@@ -1,12 +1,9 @@
 package fr.univtln.lhd.model.entities.dao.slots;
 
-import fr.univtln.lhd.exception.IdException;
+import fr.univtln.lhd.exceptions.IdException;
 import fr.univtln.lhd.model.entities.dao.DAO;
 import fr.univtln.lhd.model.entities.dao.Datasource;
 import fr.univtln.lhd.model.entities.slots.Classroom;
-import fr.univtln.lhd.model.entities.slots.Subject;
-import fr.univtln.lhd.model.entities.user.Admin;
-import fr.univtln.lhd.model.entities.user.Student;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
