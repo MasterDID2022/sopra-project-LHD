@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="550.0" prefWidth="950.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.univtln.lhd.view.controllers.EdtLhdController">
+   <children>
+      <BorderPane fx:id="borderPane" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <padding>
+            <Insets bottom="40.0" left="40.0" right="40.0" />
+         </padding>
+         <top>
+            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Label text="EDT LHD" textAlignment="CENTER" HBox.hgrow="ALWAYS">
+                     <font>
+                        <Font size="20.0" />
+                     </font>
+                  </Label>
+               </children></HBox>
+         </top>
+      </BorderPane>
+   </children>
+</AnchorPane>
