@@ -5,6 +5,8 @@ import fr.univtln.lhd.model.entities.dao.DAO;
 import fr.univtln.lhd.model.entities.dao.Datasource;
 import fr.univtln.lhd.model.entities.slots.Classroom;
 import fr.univtln.lhd.model.entities.slots.Subject;
+import fr.univtln.lhd.model.entities.user.Admin;
+import fr.univtln.lhd.model.entities.user.Student;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
@@ -12,6 +14,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 @Slf4j
 /**
@@ -31,13 +35,12 @@ public class ClassroomDAO implements DAO<Classroom>
      * @throws SQLException throw a SQLException if there is a problem with the connection or database prepared statement
      */
     private ClassroomDAO() throws SQLException {
-        this.conn = Datasource.getInstance().getConnection();
-
-        this.getAll = conn.prepareStatement("SELECT * FROM CLASSROOMS");
-        this.get = conn.prepareStatement("SELECT * FROM CLASSROOMS WHERE ID=?");
-        this.save = conn.prepareStatement("INSERT INTO CLASSROOMS VALUES (DEFAULT, ?)");
-        this.update = conn.prepareStatement("UPDATE CLASSROOMS SET NAME=? WHERE ID=?");
-        this.delete = conn.prepareStatement("DELETE FROM CLASSROOMS WHERE ID=?");
+        this.conn = Datasource.getConnection();
+        this.get = this.conn.prepareStatement("SELECT * FROM CLASSROOMS WHERE ID=?");
+        this.getAll = this.conn.prepareStatement("SELECT * FROM CLASSROOMS");
+        this.save = this.conn.prepareStatement("INSERT INTO CLASSROOMS VALUES (DEFAULT, ?)",RETURN_GENERATED_KEYS);
+        this.update = this.conn.prepareStatement("UPDATE CLASSROOMS SET NAME=? WHERE ID=?");
+        this.delete = this.conn.prepareStatement("DELETE FROM CLASSROOMS WHERE ID=?");
     }
 
     /**
@@ -62,13 +65,12 @@ public class ClassroomDAO implements DAO<Classroom>
 
             if (rs.next()) {
                 result = Optional.of(
-                        Classroom.getInstance(
-                                rs.getLong("ID"),
-                                rs.getString("NAME"))
+                        Classroom.getInstance( rs.getString("NAME") )
                 );
+                result.get().setId( rs.getLong("ID") );
             }
 
-        }catch (SQLException e){
+        }catch (SQLException | IdException e){
             log.error(e.getMessage());
         }
         return result;
@@ -85,13 +87,11 @@ public class ClassroomDAO implements DAO<Classroom>
         try {
             ResultSet rs = getAll.executeQuery();
             while (rs.next()) {
-                classroomList.add(
-                        Classroom.getInstance(
-                                rs.getLong("ID"),
-                                rs.getString("NAME"))
-                );
+                Classroom classroom = Classroom.getInstance( rs.getString("NAME") );
+                classroom.setId( rs.getLong("ID") );
+                classroomList.add(classroom);
             }
-        } catch (SQLException e){
+        } catch (SQLException | IdException e){
             log.error(e.getMessage());
         }
         return classroomList;
@@ -106,7 +106,10 @@ public class ClassroomDAO implements DAO<Classroom>
         try{
             save.setString(1, classroom.getName());
             save.executeUpdate();
-        } catch (SQLException e){
+            ResultSet id_set = save.getGeneratedKeys();
+            id_set.next();
+            classroom.setId(id_set.getLong(1));
+        } catch (SQLException | IdException e){
             log.error(e.getMessage());
         }
     }
@@ -114,11 +117,18 @@ public class ClassroomDAO implements DAO<Classroom>
     /**
      * Update Data of Classroom Table
      * @param classroom Classroom instance to update
-     * @param params Map of attributes and values
      */
     @Override
     public Classroom update(Classroom classroom) throws IdException {
-        return null;
+        try {
+            update.setString(1,classroom.getName());
+            update.setLong(2,classroom.getId());
+            update.executeUpdate();
+        }
+        catch (SQLException e){
+            log.error(e.getMessage());
+        }
+        return classroom;
     }
 
     /**
