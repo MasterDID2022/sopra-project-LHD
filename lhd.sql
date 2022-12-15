@@ -227,7 +227,7 @@ ALTER TABLE lhd.classrooms ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
     CACHE 1
 );
 
-
+ALTER TABLE  classrooms ADD CONSTRAINT unique_classroom UNIQUE(name);
 --
 -- Name: group_slot; Type: TABLE; Schema: lhd; Owner: -
 --
