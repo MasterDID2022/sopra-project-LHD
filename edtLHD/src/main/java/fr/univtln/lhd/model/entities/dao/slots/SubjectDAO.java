@@ -31,11 +31,11 @@ public class SubjectDAO implements DAO<Subject> {
      */
     public SubjectDAO() throws SQLException {
         this.conn = Datasource.getInstance().getConnection();
-        this.get = conn.prepareStatement("SELECT * FROM SUBJECT WHERE ID=?");
-        this.getAll = conn.prepareStatement("SELECT * FROM SUBJECT",RETURN_GENERATED_KEYS);
-        this.save = conn.prepareStatement("INSERT INTO SUBJECT VALUES (DEFAULT, ?, ?)");
-        this.update = conn.prepareStatement("UPDATE SUBJECT SET NAME=?, HOUR_COUNT_MAX=? WHERE ID=?");
-        this.delete = conn.prepareStatement("DELETE FROM SUBJECT WHERE ID=?");
+        this.get = conn.prepareStatement("SELECT * FROM SUBJECTS WHERE ID=?");
+        this.getAll = conn.prepareStatement("SELECT * FROM SUBJECTS",RETURN_GENERATED_KEYS);
+        this.save = conn.prepareStatement("INSERT INTO SUBJECTS VALUES (DEFAULT, ?, ?)");
+        this.update = conn.prepareStatement("UPDATE SUBJECTS SET NAME=?, HOUR_COUNT_MAX=? WHERE ID=?");
+        this.delete = conn.prepareStatement("DELETE FROM SUBJECTS WHERE ID=?");
     }
 
     /**
