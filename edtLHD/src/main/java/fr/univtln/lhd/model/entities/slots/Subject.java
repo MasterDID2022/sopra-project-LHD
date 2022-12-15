@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalLong;
 
@@ -45,7 +46,6 @@ public class Subject {
 
     /**
      * Set the id, should only be used by the DAO
-     *
      * @param id
      * @throws IdException
      */
@@ -53,5 +53,28 @@ public class Subject {
         if (id < 0) {
             throw new IdException("Id Error");
         }
+        this.id=id;
+    }
+
+    @Override
+    public String toString() {
+        return "Subject{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", hourCountMax=" + hourCountMax +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Subject subject = (Subject) o;
+        return id == subject.id && Float.compare(subject.hourCountMax, hourCountMax) == 0 && Objects.equals(name, subject.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, hourCountMax);
     }
 }

@@ -4,8 +4,6 @@ import fr.univtln.lhd.exception.IdException;
 import fr.univtln.lhd.model.entities.dao.DAO;
 import fr.univtln.lhd.model.entities.dao.Datasource;
 import fr.univtln.lhd.model.entities.slots.Group;
-import fr.univtln.lhd.model.entities.slots.Subject;
-import fr.univtln.lhd.model.entities.user.Student;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
@@ -13,6 +11,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 @Slf4j
 /**
@@ -33,12 +33,9 @@ public class GroupDAO implements DAO<Group> {
      */
     private GroupDAO() throws SQLException {
         conn = Datasource.getInstance().getConnection();
-
         this.getAll = conn.prepareStatement("SELECT * FROM GROUPS");
-        this.get = conn.prepareStatement("SELECT * FROM GROUPS WHERE ID=?");
-
+        this.get = conn.prepareStatement("SELECT * FROM GROUPS WHERE ID=?",RETURN_GENERATED_KEYS);
         this.save = conn.prepareStatement("INSERT INTO GROUPS VALUES (DEFAULT, ?)");
-
         this.update = conn.prepareStatement("UPDATE GROUPS SET NAME=? WHERE ID=?");
         this.delete = conn.prepareStatement("DELETE FROM GROUPS WHERE ID=?");
     }
@@ -58,20 +55,18 @@ public class GroupDAO implements DAO<Group> {
     @Override
     public Optional<Group> get(long id) {
         Optional<Group> result = Optional.empty();
-
         try {
             get.setLong(1, id);
             ResultSet rs = get.executeQuery();
-
             if (rs.next()) {
                 result = Optional.of(
                         Group.getInstance(
                                 rs.getLong("ID"),
                                 rs.getString("NAME"))
                 );
+                result.get().setId(rs.getLong("ID"));
             }
-
-        }catch (SQLException e){
+        }catch (SQLException| IdException e){
             log.error(e.getMessage());
         }
         return result;
@@ -84,7 +79,6 @@ public class GroupDAO implements DAO<Group> {
     @Override
     public List<Group> getAll() {
         List<Group> groupList = new ArrayList<>();
-
         try {
             ResultSet rs = getAll.executeQuery();
             while (rs.next()) {
@@ -109,7 +103,10 @@ public class GroupDAO implements DAO<Group> {
         try{
             save.setString(1, group.getName());
             save.executeUpdate();
-        } catch (SQLException e){
+            ResultSet id_set = save.getGeneratedKeys();
+            id_set.next();
+            group.setId(id_set.getLong(1));
+        } catch (SQLException| IdException e){
             log.error(e.getMessage());
         }
     }
@@ -117,11 +114,18 @@ public class GroupDAO implements DAO<Group> {
     /**
      * Update Data of Group Table
      * @param group Group instance to update
-     * @param params Map of attributes and values
      */
     @Override
     public Group update(Group group) throws IdException {
-        return null;
+        try {
+            update.setString(1,group.getName());
+            update.setLong(2,group.getId());
+            update.executeUpdate();
+        }
+        catch (SQLException e){
+            log.error(e.getMessage());
+        }
+        return group;
     }
 
     /**
