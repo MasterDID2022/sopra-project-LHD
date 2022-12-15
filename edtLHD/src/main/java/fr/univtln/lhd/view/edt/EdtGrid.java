@@ -1,8 +1,5 @@
 package fr.univtln.lhd.view.edt;
 
-import javafx.geometry.HPos;
-import javafx.geometry.Pos;
-import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
@@ -35,22 +32,24 @@ public class EdtGrid extends Grid {
 
         for (int i = 0; i < days.size(); i++){
             FlowPane f = new FlowPane(new Label( days.get(i) ));
-            f.setId("day");
+            //f.setId("day");
+            f.getStyleClass().add("day");
             add(f, 0, i+1);
         }
 
         FlowPane empty = new FlowPane();
-        empty.setId("hour");
+        //empty.setId("hour");
+        empty.getStyleClass().add("hour");
         add(empty, 0, 0);
 
         for (int i = 0; i < hours.size(); i++){
             FlowPane f = new FlowPane( new Label( hours.get(i) ) );
-            f.setId("hour");
+            //f.setId("hour");
+            f.getStyleClass().add("hour");
             add(f, i+1, 0);
         }
 
-
-        this.modifyColumnConstraints(0, 50);
+        this.modifyColumnConstraints(0, 65);
     }
 
     public static EdtGrid getInstance(){ return new EdtGrid(11, 6); }
@@ -60,5 +59,10 @@ public class EdtGrid extends Grid {
         int rowIndexEnd = hours.indexOf(hourEnd)+1;
         int columnIndex = days.indexOf(day)+1;
         super.add(node, rowIndex, columnIndex, rowIndexEnd - rowIndex, 1);
+    }
+
+    public void add(SlotUI slotUI){
+        //get slot ui info, then call add (node, day, hourstart, hourend)
+        //wip
     }
 }

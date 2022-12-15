@@ -113,4 +113,12 @@ public class Grid extends GridPane {
     public void setColumnAlignment(int columnIndex, HPos alignment){
         this.getColumnConstraints().get(columnIndex).setHalignment(alignment);
     }
+
+    public void setRowPriority(int rowIndex, Priority vGrow){
+        this.getRowConstraints().get(rowIndex).setVgrow(vGrow);
+    }
+
+    public void setColumnPriority(int columnIndex, Priority hGrow){
+        this.getColumnConstraints().get(columnIndex).setHgrow(hGrow);
+    }
 }

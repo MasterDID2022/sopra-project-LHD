@@ -13,7 +13,7 @@ import java.util.ResourceBundle;
 
 public class HelloController implements Initializable {
     @FXML public Tab first_tab;
-    @FXML private ChoiceBox choiceBox;
+    @FXML private ChoiceBox<String> choiceBox;
     @FXML private Label label;
 
     @Override
