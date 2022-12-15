@@ -1,0 +1,62 @@
+@font-face {
+    -fx-font-family: "Product Sans";
+    src: url("../fonts/Product-Sans-Regular.ttf");
+}
+@font-face {
+    -fx-font-family: "Product Sans Bold";
+    src: url("../fonts/Product-Sans-Bold.ttf");
+}
+
+* {
+    _dark-grey: #0B0C10;
+    _grey: #1F2833;
+    _light-grey: #C5C6C7;
+    _turquoise: #66FCF1;
+    _darker-turquoise: #45A29E;
+}
+
+AnchorPane {
+    -fx-background-color: _dark-grey;
+}
+
+Label {
+    -fx-text-fill: _turquoise;
+}
+
+EdtGrid {
+    -fx-border-color: _turquoise;
+}
+
+EdtGrid FlowPane {
+    -fx-alignment: center;
+    -fx-border-color: _darker-turquoise;
+    -fx-text-fill: _light-grey;
+    -fx-font-size: 15;
+    -fx-font-family: "Product Sans";
+    -fx-font-weight: normal;
+}
+
+.slot {
+    -fx-background-color: _darker-turquoise;
+    -fx-alignment: center;
+    -fx-font-family: "Product Sans Bold";
+    -fx-font-size: 14;
+    -fx-border-width: 0;
+}
+
+.slot Label{
+    -fx-text-fill: _dark-grey;
+}
+
+.day Label {
+    -fx-text-fill: _darker-turquoise;
+}
+
+.hour {
+    -fx-alignment: TOP_CENTER;
+}
+
+.hour Label {
+    -fx-text-fill: _darker-turquoise;
+    -fx-font-size: 12;
+}
