@@ -9,9 +9,12 @@ import lombok.extern.slf4j.Slf4j;
 import java.sql.*;
 import java.util.*;
 
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
+
 @Slf4j
-/**
- * SubjectDAO implementing DAO interface for Subject Object
+
+/*
+  SubjectDAO implementing DAO interface for Subject Object
  */
 public class SubjectDAO implements DAO<Subject> {
 
@@ -29,7 +32,7 @@ public class SubjectDAO implements DAO<Subject> {
     public SubjectDAO() throws SQLException {
         this.conn = Datasource.getInstance().getConnection();
         this.get = conn.prepareStatement("SELECT * FROM SUBJECT WHERE ID=?");
-        this.getAll = conn.prepareStatement("SELECT * FROM SUBJECT");
+        this.getAll = conn.prepareStatement("SELECT * FROM SUBJECT",RETURN_GENERATED_KEYS);
         this.save = conn.prepareStatement("INSERT INTO SUBJECT VALUES (DEFAULT, ?, ?)");
         this.update = conn.prepareStatement("UPDATE SUBJECT SET NAME=?, HOUR_COUNT_MAX=? WHERE ID=?");
         this.delete = conn.prepareStatement("DELETE FROM SUBJECT WHERE ID=?");
@@ -100,7 +103,10 @@ public class SubjectDAO implements DAO<Subject> {
             save.setString(1, subject.getName());
             save.setFloat(2, subject.getHourCountMax());
             save.executeUpdate();
-        } catch (SQLException e){
+            ResultSet id_set = save.getGeneratedKeys();
+            id_set.next();
+            subject.setId(id_set.getLong(1));
+        } catch (SQLException|IdException e){
             log.error(e.getMessage());
         }
     }
@@ -115,7 +121,7 @@ public class SubjectDAO implements DAO<Subject> {
         try {
             update.setString(1,subject.getName());
             update.setFloat(2,subject.getHourCountMax());
-            update.setLong(5,subject.getId());
+            update.setLong(3,subject.getId());
             update.executeUpdate();
         }
         catch (SQLException e){

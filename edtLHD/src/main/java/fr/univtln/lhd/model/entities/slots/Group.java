@@ -1,5 +1,6 @@
 package fr.univtln.lhd.model.entities.slots;
 
+import fr.univtln.lhd.exception.IdException;
 import fr.univtln.lhd.model.entities.user.Student;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -7,6 +8,7 @@ import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Class for defining a Group
@@ -40,5 +42,29 @@ public class Group {
         return new Group(-1, name);
     }
 
-    public void setId(long id){ this.id = id; }
+    /**
+     * Set the id, should only be used by the DAO
+     * @param id
+     * @throws IdException
+     */
+    public void setId(long id) throws IdException {
+        System.out.println("EHHHHHHHHHHH");
+        if (id<0) {
+            throw  new IdException("Id Error");
+        }
+        this.id = id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Group group = (Group) o;
+        return id == group.id && Objects.equals(name, group.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
+    }
 }
