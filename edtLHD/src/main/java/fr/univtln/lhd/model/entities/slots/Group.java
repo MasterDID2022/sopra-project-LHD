@@ -1,13 +1,10 @@
 package fr.univtln.lhd.model.entities.slots;
 
-import fr.univtln.lhd.exception.IdException;
-import fr.univtln.lhd.model.entities.user.Student;
+import fr.univtln.lhd.exceptions.IdException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 /**

@@ -1,4 +1,4 @@
-package fr.univtln.lhd.model.entities.user;
+package fr.univtln.lhd.model.entities.users;
 
 import fr.univtln.lhd.model.entities.slots.Group;
 import lombok.Getter;

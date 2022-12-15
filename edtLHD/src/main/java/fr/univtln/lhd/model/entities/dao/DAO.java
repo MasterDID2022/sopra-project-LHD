@@ -1,9 +1,8 @@
 package fr.univtln.lhd.model.entities.dao;
 
-import fr.univtln.lhd.exception.IdException;
+import fr.univtln.lhd.exceptions.IdException;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 /**

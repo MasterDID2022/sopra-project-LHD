@@ -1,13 +1,12 @@
 package fr.univtln.lhd.model.entities.slots;
 
-import fr.univtln.lhd.exception.IdException;
+import fr.univtln.lhd.exceptions.IdException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
-import java.util.OptionalLong;
 
 /**
  * Class defining a Slot

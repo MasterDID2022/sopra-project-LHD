@@ -1,6 +1,6 @@
 package fr.univtln.lhd.entities.user;
 
-import fr.univtln.lhd.model.entities.user.Admin;
+import fr.univtln.lhd.model.entities.users.Admin;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

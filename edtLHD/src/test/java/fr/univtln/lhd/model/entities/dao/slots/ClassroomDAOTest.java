@@ -1,6 +1,6 @@
 package fr.univtln.lhd.model.entities.dao.slots;
 
-import fr.univtln.lhd.exception.IdException;
+import fr.univtln.lhd.exceptions.IdException;
 import fr.univtln.lhd.model.entities.slots.Classroom;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

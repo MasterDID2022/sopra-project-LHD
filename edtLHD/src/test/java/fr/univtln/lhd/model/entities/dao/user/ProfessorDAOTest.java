@@ -1,10 +1,9 @@
 package fr.univtln.lhd.model.entities.dao.user;
 
-import fr.univtln.lhd.exception.IdException;
-import fr.univtln.lhd.model.entities.user.Professor;
+import fr.univtln.lhd.exceptions.IdException;
+import fr.univtln.lhd.model.entities.users.Professor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
