@@ -4,6 +4,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -45,9 +46,16 @@ public class EdtGrid extends Grid {
         }
 
         this.modifyColumnConstraints(0, 65);
+        changeTodayStyleClass();
     }
 
     public static EdtGrid getInstance(){ return new EdtGrid(11, 6); }
+
+    private void changeTodayStyleClass(){
+        int dayIndex = LocalDate.now().getDayOfWeek().ordinal();
+        if (dayIndex >= Days.values().length) return;
+        getChildren().get(dayIndex+1).getStyleClass().add("today");
+    }
 
     private String convertIntToHourLabel(int hour){
         String hourStart = "";
@@ -75,7 +83,10 @@ public class EdtGrid extends Grid {
         LocalDateTime localDateTimeStart = LocalDateTime.ofInstant(interval.getStart(), ZoneId.systemDefault());
         LocalTime localTimeEnd = LocalTime.ofInstant(interval.getEnd(), ZoneId.systemDefault());
 
-        Days day = Days.values()[ localDateTimeStart.getDayOfWeek().ordinal()-1 ];
+        int dayIndex = localDateTimeStart.getDayOfWeek().ordinal();
+        if (dayIndex >= Days.values().length) dayIndex = Days.values().length-1;
+
+        Days day = Days.values()[ dayIndex ];
 
         String hourStart = convertIntToHourLabel( localDateTimeStart.getHour() );
         String hourEnd = convertIntToHourLabel( localTimeEnd.getHour() );

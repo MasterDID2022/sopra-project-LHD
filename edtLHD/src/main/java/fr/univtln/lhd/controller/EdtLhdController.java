@@ -1,6 +1,7 @@
 package fr.univtln.lhd.controller;
 
 import fr.univtln.lhd.view.edt.EdtGrid;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -12,6 +13,7 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 
+import javafx.scene.layout.Pane;
 import org.threeten.extra.Interval;
 
 public class EdtLhdController implements Initializable {
@@ -19,9 +21,13 @@ public class EdtLhdController implements Initializable {
     @FXML public BorderPane borderPane;
     @FXML public Label edtTopDateLabel;
     @FXML public Label edtTopSectionLabel;
+    @FXML public Pane addSlotPane;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+
+        addSlotPane.setVisible(false);
+
         EdtGrid edtGrid = EdtGrid.getInstance();
 
         edtTopSectionLabel.setText("Semaine");
@@ -54,8 +60,8 @@ public class EdtLhdController implements Initializable {
         edtGrid.add(flowPane3, EdtGrid.Days.MARDI, "13:00", "19:00");
 
         //Instant parse use UTC format, here it's UTC+1.. so 09:02am is actually 10:02am
-        //2022-12-17T09:02:00.00Z => Friday 17 December 2022, 10:02 am in timezone UTC+1
-        edtGrid.add(flowPane4, Interval.of(Instant.parse("2022-12-17T09:02:00.00Z"), Duration.ofHours(3)));
+        //2022-12-17T09:02:00.00Z => Friday 16 December 2022, 10:02 am in timezone UTC+1
+        edtGrid.add(flowPane4, Interval.of(Instant.parse("2022-12-16T09:02:00.00+01:00"), Duration.ofHours(3)));
 
 
 
@@ -70,4 +76,10 @@ public class EdtLhdController implements Initializable {
 
         borderPane.setCenter(edtGrid);
     }
+
+    @FXML
+    protected void addBtnOnClick(ActionEvent actionEvent) { addSlotPane.setVisible(true); }
+
+    @FXML
+    protected void addCancelBtnOnClick(ActionEvent actionEvent) { addSlotPane.setVisible(false); }
 }
