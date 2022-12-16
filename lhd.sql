@@ -19,9 +19,12 @@ SET row_security = off;
 --
 -- Name: lhd; Type: SCHEMA; Schema: -; Owner: -
 --
-
+DROP SCHEMA IF EXISTS PUBLIC CASCADE;
+DROP SCHEMA IF EXISTS lhd CASCADE ;
 CREATE SCHEMA lhd;
-
+SET search_path to lhd;
+ALTER DATABASE lhd SET search_path to lhd;
+CREATE EXTENSION IF NOT EXISTS btree_gist WITH SCHEMA lhd;
 
 --
 -- Name: email; Type: DOMAIN; Schema: lhd; Owner: -
@@ -226,8 +229,6 @@ ALTER TABLE lhd.classrooms ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
     NO MAXVALUE
     CACHE 1
 );
-
-ALTER TABLE  classrooms ADD CONSTRAINT unique_classroom UNIQUE(name);
 --
 -- Name: group_slot; Type: TABLE; Schema: lhd; Owner: -
 --
