@@ -5,7 +5,9 @@ import fr.univtln.lhd.model.entities.slots.Group;
 import fr.univtln.lhd.model.entities.slots.Slot;
 import fr.univtln.lhd.model.entities.slots.Subject;
 import org.junit.jupiter.api.Test;
+import org.threeten.extra.Interval;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,15 +34,15 @@ class SlotTest {
     }
 
     public Slot getInstanceOfSlot () {
-        return Slot.getInstance(Slot.SlotType.CM, getInstanceOfClassroom().getId(), getInstanceOfSubject().getId(), getListOfGroup(), "10");
+        return Slot.getInstance(Slot.SlotType.CM, getInstanceOfClassroom().getId(), getInstanceOfSubject().getId(), getListOfGroup(), Interval.of(Instant.now(),Instant.now().plusSeconds(10)));
     }
 
     public Slot getInstanceOfSlotWithMemo () {
-        return Slot.getInstance(Slot.SlotType.CM, getInstanceOfClassroom().getId(), getInstanceOfSubject().getId(), getListOfGroup(), "10","memo");
+        return Slot.getInstance(Slot.SlotType.CM, getInstanceOfClassroom().getId(), getInstanceOfSubject().getId(), getListOfGroup(), Interval.of(Instant.now(),Instant.now().plusSeconds(10)),"memo");
     }
 
     @Test
-    void ShouldBeSetable() {
+    void ShouldBeSettable () {
         Slot slot = getInstanceOfSlot();
         slot.setMemo("memo");
         assertEquals("memo",slot.getMemo());
