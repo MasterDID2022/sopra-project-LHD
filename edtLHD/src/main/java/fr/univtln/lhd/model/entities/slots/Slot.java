@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.threeten.extra.Interval;
 
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class Slot {
     private final long subjectId;
     private final List<Group> group;
 
-    private String timeRange; //time range type needs to be changed to Time Range Wrapper Class
+    private Interval timeRange; //time range type needs to be changed to Time Range Wrapper Class
 
     private String memo; //Slot annotation
 
@@ -40,7 +41,7 @@ public class Slot {
      * @param memo a little annotations for that Slot
      * @return an instance of Slot
      */
-    public static Slot getInstance(long id, SlotType type, long classroom, long subject, List<Group> group, String timeRange, String memo){
+    public static Slot getInstance(long id, SlotType type, long classroom, long subject, List<Group> group, Interval timeRange, String memo){
         return new Slot(id, type, classroom, subject, group, timeRange, memo);
     }
 
@@ -53,7 +54,7 @@ public class Slot {
      * @param timeRange indicates the Time taken by the Slot
      * @return an instance of Slot
      */
-    public static Slot getInstance(SlotType type, long classroom, long subject, List<Group> group, String timeRange){
+    public static Slot getInstance(SlotType type, long classroom, long subject, List<Group> group, Interval timeRange){
         return getInstance(-1, type, classroom, subject, group, timeRange, "");
     }
 
@@ -66,7 +67,7 @@ public class Slot {
      * @param timeRange indicates the Time taken by the Slot
      * @return an instance of Slot
      */
-    public static Slot getInstance(SlotType type, long classroom, long subject, List<Group> group, String timeRange, String memo){
+    public static Slot getInstance(SlotType type, long classroom, long subject, List<Group> group, Interval timeRange, String memo){
         return getInstance(-1, type, classroom, subject, group, timeRange, memo);
     }
 
