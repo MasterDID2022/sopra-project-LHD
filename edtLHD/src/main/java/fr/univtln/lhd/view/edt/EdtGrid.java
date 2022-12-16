@@ -46,15 +46,27 @@ public class EdtGrid extends Grid {
         }
 
         this.modifyColumnConstraints(0, 65);
+        setupEmptyGrid();
         changeTodayStyleClass();
     }
 
     public static EdtGrid getInstance(){ return new EdtGrid(11, 6); }
 
+    private void setupEmptyGrid(){
+        for (int i = 1; i < getRowNumber(); i++){
+            for (int j = 1; j < getColumnNumber(); j++){
+                FlowPane f = new FlowPane( new Label("") );
+                f.getStyleClass().add("cell");
+                add(f, i, j);
+            }
+        }
+    }
+
     private void changeTodayStyleClass(){
         int dayIndex = LocalDate.now().getDayOfWeek().ordinal();
         if (dayIndex >= Days.values().length) return;
-        getChildren().get(dayIndex+1).getStyleClass().add("today");
+
+        get(0, dayIndex+1).getStyleClass().add("today");
     }
 
     private String convertIntToHourLabel(int hour){

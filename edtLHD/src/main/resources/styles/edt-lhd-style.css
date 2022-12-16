@@ -43,6 +43,11 @@ EdtGrid FlowPane {
     -fx-font-weight: normal;
 }
 
+/* CELL */
+.cell {
+    -fx-border-style: none solid;
+    -fx-border-width: 0.5;
+}
 
 
 
