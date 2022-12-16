@@ -66,7 +66,10 @@ public class EdtGrid extends Grid {
         int dayIndex = LocalDate.now().getDayOfWeek().ordinal();
         if (dayIndex >= Days.values().length) return;
 
-        get(0, dayIndex+1).getStyleClass().add("today");
+        for (int i = 0; i < getRowNumber(); i++)
+            get(i, dayIndex+1)
+                    .getStyleClass()
+                    .add(i == 0 ? "today" : "cell_today");
     }
 
     private String convertIntToHourLabel(int hour){
