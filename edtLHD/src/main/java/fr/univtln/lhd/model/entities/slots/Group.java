@@ -13,9 +13,7 @@ import java.util.Objects;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Group {
-
     private long id;
-
     private final String name;
 
     /**
@@ -45,7 +43,6 @@ public class Group {
      * @throws IdException
      */
     public void setId(long id) throws IdException {
-        System.out.println("EHHHHHHHHHHH");
         if (id<0) {
             throw  new IdException("Id Error");
         }

@@ -1,8 +1,10 @@
-package fr.univtln.lhd.model.entities.dao.user;
+package fr.univtln.lhd.model.entities.dao.users;
 
 import fr.univtln.lhd.exceptions.IdException;
 import fr.univtln.lhd.model.entities.dao.DAO;
 import fr.univtln.lhd.model.entities.dao.Datasource;
+import fr.univtln.lhd.model.entities.dao.slots.GroupDAO;
+import fr.univtln.lhd.model.entities.slots.Group;
 import fr.univtln.lhd.model.entities.users.Student;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,12 +26,16 @@ public class StudentDAO implements DAO<Student> {
     private final PreparedStatement save;
     private final PreparedStatement update;
     private final PreparedStatement delete;
+    private final PreparedStatement getAllGroup;
+    private final PreparedStatement saveGroup;
 
     public StudentDAO() throws SQLException {
         this.connection = Datasource.getInstance().getConnection();
         this.get = this.connection.prepareStatement("SELECT * FROM USERS WHERE ID=?");
         this.getAll = this.connection.prepareStatement("SELECT * FROM USERS");
         this.save = this.connection.prepareStatement("INSERT INTO USERS VALUES (DEFAULT, ?, ?, ?, ?)",RETURN_GENERATED_KEYS);
+        this.saveGroup = this.connection.prepareStatement("INSERT INTO GROUP_USER VALUES (?, ?)");
+        this.getAllGroup = this.connection.prepareStatement("SELECT * FROM GROUP_USER WHERE ID_USER=?");
         this.update = this.connection.prepareStatement("UPDATE USERS SET name=?, fname=? ,email=? WHERE ID=?");
         this.delete = this.connection.prepareStatement("DELETE FROM USERS WHERE ID=?");
     }
@@ -53,6 +59,14 @@ public class StudentDAO implements DAO<Student> {
                                 rs.getString("EMAIL"))
                 );
                 result.get().setId(rs.getLong("ID"));
+                long  IDgroupStudent;
+                getAllGroup.setLong(1,result.get().getId());
+                ResultSet rsGroup = getAllGroup.executeQuery();
+                GroupDAO dao = GroupDAO.getInstance();
+                while (rsGroup.next()) {
+                    IDgroupStudent = rsGroup.getLong("id_group");
+                    result.get().add(dao.get(IDgroupStudent).get());
+                }
             }
         }catch (SQLException | IdException e){
             log.error(e.getMessage());
@@ -67,6 +81,7 @@ public class StudentDAO implements DAO<Student> {
     @Override
     public List<Student> getAll() {
         List<Student> studentList = new ArrayList<>();
+        long  IDgroupStudent;
         try {
             ResultSet rs = getAll.executeQuery();
             while (rs.next()) {
@@ -75,6 +90,13 @@ public class StudentDAO implements DAO<Student> {
                                 rs.getString("FNAME"),
                                 rs.getString("EMAIL"));
                 student.setId(rs.getLong("ID"));
+                getAllGroup.setLong(1,student.getId());
+                ResultSet rsGroup = getAllGroup.executeQuery();
+                GroupDAO dao = GroupDAO.getInstance();
+                while (rsGroup.next()) {
+                    IDgroupStudent = rsGroup.getLong("id_group");
+                    student.add(dao.get(IDgroupStudent).get());
+                }
                 studentList.add(student);
             }
         } catch (SQLException | IdException e){
@@ -122,6 +144,13 @@ public class StudentDAO implements DAO<Student> {
             ResultSet id_set = save.getGeneratedKeys();
             id_set.next();
             student.setId(id_set.getLong(1));
+            if (student.getStudendGroup()!=null){
+                GroupDAO dao = GroupDAO.getInstance();
+                dao.save((Group) student.getStudendGroup());
+                saveGroup.setLong(1,((Group) student.getStudendGroup()).getId());
+                saveGroup.setLong(2,student.getId());
+                save.executeUpdate();
+            }
         } catch (SQLException | IdException e){
             log.error(e.getMessage());
         }

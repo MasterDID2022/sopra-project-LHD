@@ -1,4 +1,4 @@
-package fr.univtln.lhd.model.entities.dao.user;
+package fr.univtln.lhd.model.entities.dao.users;
 
 import fr.univtln.lhd.exceptions.IdException;
 import fr.univtln.lhd.model.entities.users.Student;
