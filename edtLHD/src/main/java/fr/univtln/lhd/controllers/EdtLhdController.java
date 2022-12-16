@@ -1,4 +1,4 @@
-package fr.univtln.lhd.controller;
+package fr.univtln.lhd.controllers;
 
 import fr.univtln.lhd.view.edt.EdtGrid;
 import javafx.event.ActionEvent;
@@ -59,8 +59,7 @@ public class EdtLhdController implements Initializable {
         edtGrid.add(flowPane2, "VENDREDI", "14:00", "16:00");
         edtGrid.add(flowPane3, EdtGrid.Days.MARDI, "13:00", "19:00");
 
-        //Instant parse use UTC format, here it's UTC+1.. so 09:02am is actually 10:02am
-        //2022-12-17T09:02:00.00Z => Friday 16 December 2022, 10:02 am in timezone UTC+1
+        //2022-12-16T09:02:00.00+01:00 => Friday 16 December 2022, 09:02am in timezone UTC+1
         edtGrid.add(flowPane4, Interval.of(Instant.parse("2022-12-16T09:02:00.00+01:00"), Duration.ofHours(3)));
 
 
