@@ -45,8 +45,15 @@ EdtGrid FlowPane {
 
 /* CELL */
 .cell {
-    -fx-border-style: none solid;
-    -fx-border-width: 0.5;
+    -fx-border-style: solid;
+    -fx-border-width: 0.3;
+}
+
+.cell_today {
+    -fx-background-color: _turquoise;
+    -fx-opacity: 0.2;
+    -fx-border-width: 0.3;
+    -fx-border-color: _dark-grey;
 }
 
 
@@ -84,7 +91,6 @@ EdtGrid FlowPane {
     -fx-font-family: "Product Sans Bold";
     -fx-text-fill: _dark-grey;
 }
-
 
 
 
@@ -126,6 +132,11 @@ EdtGrid FlowPane {
     -fx-border-radius: 5;
     -fx-border-color: _turquoise;
 }
+.addBtn:hover {
+    -fx-background-color: _turquoise;
+    -fx-text-fill: _dark-grey;
+}
+
 
 .addSlotPane {
     -fx-background-color: _grey;
@@ -134,10 +145,15 @@ EdtGrid FlowPane {
     -fx-border-color: _turquoise;
 }
 
+
 .addOkBtn {
     -fx-font-family: "Product Sans Bold";
     -fx-text-fill: _dark-grey;
     -fx-background-color: _turquoise;
+}
+.addOkBtn:hover {
+    -fx-background-color: _dark-grey;
+    -fx-text-fill: _turquoise;
 }
 
 .addCancelBtn {
@@ -146,4 +162,8 @@ EdtGrid FlowPane {
     -fx-font-family: "Product Sans";
     -fx-text-fill: _darker-turquoise;
     -fx-border-color: _darker-turquoise;
+}
+.addCancelBtn:hover {
+    -fx-background-color: _darker-turquoise;
+    -fx-text-fill: _grey;
 }
