@@ -1,3 +1,5 @@
+/* IMPORT CUSTOM FONT */
+
 @font-face {
     -fx-font-family: "Product Sans";
     src: url("../fonts/Product-Sans-Regular.ttf");
@@ -15,6 +17,10 @@
     _darker-turquoise: #45A29E;
 }
 
+
+
+
+/* BASE */
 AnchorPane {
     -fx-background-color: _dark-grey;
 }
@@ -25,6 +31,7 @@ Label {
 
 EdtGrid {
     -fx-border-color: _turquoise;
+    -fx-border-radius: 5;
 }
 
 EdtGrid FlowPane {
@@ -35,6 +42,11 @@ EdtGrid FlowPane {
     -fx-font-family: "Product Sans";
     -fx-font-weight: normal;
 }
+
+
+
+
+/* SLOT */
 
 .slot {
     -fx-background-color: _darker-turquoise;
@@ -48,18 +60,42 @@ EdtGrid FlowPane {
     -fx-text-fill: _dark-grey;
 }
 
+
+
+
+/* DAY */
+
+.day {
+
+}
 .day Label {
     -fx-text-fill: _darker-turquoise;
 }
+.today {
+    -fx-background-color: _darker-turquoise;
+    -fx-border-radius: 5;
+}
+.today Label {
+    -fx-font-family: "Product Sans Bold";
+    -fx-text-fill: _dark-grey;
+}
+
+
+
+
+/* HOUR */
 
 .hour {
     -fx-alignment: TOP_CENTER;
 }
-
 .hour Label {
     -fx-text-fill: _darker-turquoise;
     -fx-font-size: 12;
 }
+
+
+
+/* TOP LABEL */
 
 .edtSection {
     -fx-text-fill: _darker-turquoise;
@@ -70,4 +106,39 @@ EdtGrid FlowPane {
     -fx-font-family: "Product Sans Bold";
     -fx-text-fill: _turquoise;
     -fx-font-size: 19;
+}
+
+
+
+
+/* BUTTONS */
+
+.addBtn {
+    -fx-font-family: "Product Sans Bold";
+    -fx-text-fill: _turquoise;
+    -fx-background-color: _dark-grey;
+    -fx-border-width: 1;
+    -fx-border-radius: 5;
+    -fx-border-color: _turquoise;
+}
+
+.addSlotPane {
+    -fx-background-color: _grey;
+    -fx-border-width: 2;
+    -fx-border-radius: 5;
+    -fx-border-color: _turquoise;
+}
+
+.addOkBtn {
+    -fx-font-family: "Product Sans Bold";
+    -fx-text-fill: _dark-grey;
+    -fx-background-color: _turquoise;
+}
+
+.addCancelBtn {
+    -fx-border-width: 1;
+    -fx-background-color: _grey;
+    -fx-font-family: "Product Sans";
+    -fx-text-fill: _darker-turquoise;
+    -fx-border-color: _darker-turquoise;
 }
