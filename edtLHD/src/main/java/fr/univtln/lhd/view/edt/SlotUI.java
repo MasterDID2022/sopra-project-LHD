@@ -4,6 +4,9 @@ import fr.univtln.lhd.model.entities.slots.Slot;
 import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
 
+/**
+ * WIP
+ */
 public class SlotUI extends FlowPane {
 
     private String slotColor = "yellow";

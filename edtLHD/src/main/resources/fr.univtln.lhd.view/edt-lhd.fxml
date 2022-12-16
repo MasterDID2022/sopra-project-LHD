@@ -5,21 +5,33 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="550.0" prefWidth="950.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.univtln.lhd.view.controllers.EdtLhdController">
+<AnchorPane prefHeight="350.0" prefWidth="550.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.univtln.lhd.controller.EdtLhdController">
    <children>
       <BorderPane fx:id="borderPane" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <padding>
             <Insets bottom="40.0" left="40.0" right="40.0" />
          </padding>
          <top>
-            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <HBox alignment="BOTTOM_LEFT" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                <children>
-                  <Label text="EDT LHD" textAlignment="CENTER" HBox.hgrow="ALWAYS">
-                     <font>
-                        <Font size="20.0" />
-                     </font>
-                  </Label>
-               </children></HBox>
+                  <VBox alignment="BOTTOM_LEFT" fillWidth="false" prefHeight="97.0" prefWidth="200.0">
+                     <children>
+                        <Label fx:id="edtTopSectionLabel" styleClass="edtSection" text="EDT Section" VBox.vgrow="ALWAYS">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="edtTopDateLabel" layoutX="10.0" layoutY="80.0" styleClass="edtDate" text="EDT Date" VBox.vgrow="ALWAYS">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </VBox>
+               </children>
+               <BorderPane.margin>
+                  <Insets bottom="10.0" />
+               </BorderPane.margin></HBox>
          </top>
       </BorderPane>
    </children>

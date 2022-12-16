@@ -15,7 +15,7 @@ public class EdtApp extends Application {
 
         FXMLLoader fxmlLoader = new FXMLLoader(url);
         Parent root = fxmlLoader.load();
-        Scene scene = new Scene(root);
+        Scene scene = new Scene(root, 950, 550);
 
         stage.setTitle("EDT LHD");
         scene.getStylesheets().add("/styles/edt-lhd-style.css");
