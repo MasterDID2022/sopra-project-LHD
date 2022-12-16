@@ -60,3 +60,14 @@ EdtGrid FlowPane {
     -fx-text-fill: _darker-turquoise;
     -fx-font-size: 12;
 }
+
+.edtSection {
+    -fx-text-fill: _darker-turquoise;
+    -fx-font-size: 14;
+}
+
+.edtDate {
+    -fx-font-family: "Product Sans Bold";
+    -fx-text-fill: _turquoise;
+    -fx-font-size: 19;
+}
