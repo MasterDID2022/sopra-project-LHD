@@ -9,7 +9,7 @@ import javafx.scene.layout.FlowPane;
  */
 public class SlotUI extends FlowPane {
 
-    private String slotColor = "yellow";
+    private final String slotColor = "yellow";
 
     private SlotUI(Slot slot){
         super( new Label(slot.getClass().getName()) );

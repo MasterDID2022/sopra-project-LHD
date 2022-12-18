@@ -55,7 +55,7 @@ public abstract class User {
      */
     public void setId(long id) throws IdException {
         if (id<0) {
-            throw  new IdException("Id Error");
+            throw  new IdException();
         }
         this.id = id;
     }

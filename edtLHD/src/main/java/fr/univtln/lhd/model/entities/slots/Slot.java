@@ -1,6 +1,5 @@
 package fr.univtln.lhd.model.entities.slots;
 
-import fr.univtln.lhd.exceptions.IdException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -69,17 +68,5 @@ public class Slot {
      */
     public static Slot getInstance(SlotType type, long classroom, long subject, List<Group> group, Interval timeRange, String memo){
         return getInstance(-1, type, classroom, subject, group, timeRange, memo);
-    }
-
-    /**
-     * Set the id, should only be used by the DAO
-     * @param id
-     * @throws IdException
-     */
-    public void setId(long id) throws IdException {
-        if (id<0) {
-            throw  new IdException("Id Error");
-        }
-        this.id = id;
     }
 }

@@ -1,64 +1,65 @@
 package fr.univtln.lhd.model.entities.slots;
 
-import fr.univtln.lhd.exceptions.IdException;
+import fr.univtln.lhd.model.entities.users.Student;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class for defining a Group
  */
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Data
 public class Group {
+
     private long id;
+
     private final String name;
+    private List<Student> students; //modify List<Student class>
 
     /**
      * Factory for a Group given a list of students
      * @param id long identifier for a Group (default -1)
      * @param name Group name
-     * //@param students Group students list
+     * @param students Group students list
      * @return an instance of a Group
      */
-    public static Group getInstance(long id, String name) {
-        return new Group(id, name);
+    public static Group getInstance(long id, String name, List<Student> students) {
+        return new Group(id, name, students);
     }
 
     /**
      * Factory for a Group given a list of students
      * @param name Group name
-     * //@param students Group students list
+     * @param students Group students list
      * @return an instance of a Group
      */
-    public static Group getInstance(String name) {
-        return new Group(-1, name);
+    public static Group getInstance(String name, List<Student> students) {
+        return new Group(-1, name, students);
     }
 
     /**
-     * Set the id, should only be used by the DAO
-     * @param id
-     * @throws IdException
+     * Factory for a Group with no students
+     * @param name Group name
+     * @return an instance of a Group
      */
-    public void setId(long id) throws IdException {
-        if (id<0) {
-            throw  new IdException("Id Error");
-        }
-        this.id = id;
+    public static Group getInstance(String name){
+        return getInstance(-1, name, new ArrayList<>());
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Group group = (Group) o;
-        return id == group.id && Objects.equals(name, group.name);
+    /**
+     * Take a Student and add it to the List of students of the Group
+     * @param student student to be added
+     */
+    public void add(Student student){
+        student.add(this);
+        this.students.add(student);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name);
-    }
+    public void setId(long id){ this.id = id; }
 }

@@ -16,7 +16,7 @@ import org.threeten.extra.Interval;
 public class EdtGrid extends Grid {
 
     public enum Days { LUNDI, MARDI, MERCREDI, JEUDI, VENDREDI }
-    private List<String> hours;
+    private final List<String> hours;
 
     private EdtGrid(int rowNumber, int columnNumber){
         super( Grid.builder(rowNumber, columnNumber) );
