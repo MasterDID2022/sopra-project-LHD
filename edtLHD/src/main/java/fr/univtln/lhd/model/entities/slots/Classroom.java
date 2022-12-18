@@ -1,17 +1,14 @@
 package fr.univtln.lhd.model.entities.slots;
 
-import fr.univtln.lhd.exceptions.IdException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-
-import java.util.Objects;
+import lombok.Data;
 
 /**
  * Class defining a Classroom
  */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Getter
+@Data
 public class Classroom {
 
     private long id;
@@ -36,41 +33,5 @@ public class Classroom {
      */
     public static Classroom getInstance(String name) {
         return getInstance(-1, name);
-    }
-
-    /**
-     * Set the id, should only be used by the DAO
-     * @param id long unique identifier
-     * @throws IdException id is not allowed to be negative, Exception thrown otherwise
-     */
-    public void setId(long id) throws IdException {
-        if (id<0) {
-            throw  new IdException("Id Error");
-        }
-        this.id = id;
-    }
-
-    /**
-     * Override of Equal
-     * the equality depend on the name
-     * @param o Classroom
-     * @return True if equal False elif
-     */
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Classroom classroom = (Classroom) o;
-        return Objects.equals(name, classroom.getName());
-    }
-
-    /**
-     * Override of hashcode
-     * the resulting hashcode depend on the name of the Classroom
-     * @return hash
-     */
-    @Override
-    public int hashCode() {
-        return Objects.hash(name);
     }
 }

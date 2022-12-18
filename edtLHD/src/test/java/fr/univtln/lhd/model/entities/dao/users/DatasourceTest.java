@@ -8,15 +8,17 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.*;
 
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
+
 @Slf4j
 class DatasourceTest {
     Student E1 = Student.of("Dupont", "Martin", "martin.dupont@lhd.org");
-    String insertsqlstmt = "insert into users values (DEFAULT,(?),(?),(?),'password') " +
+    String insertSQLStmt = "insert into users values (DEFAULT,(?),(?),(?),'password') " +
             "on conflict (lower(email)) do update set name = excluded.name ";
     /* The 'on conflict' clause is there to forcibly induce an operation on the row (here a useless update),
        So that the test work whether the test user exists or not.
      */
-    String selectsqlstmt = "select id from users where email=(?)";
+    String selectSQLStmt = "select id from users where email=(?)";
 
     @Test
     void insertGetTest() {
@@ -24,7 +26,7 @@ class DatasourceTest {
         long fetchedUserid;
         try (
                 Connection conn = Datasource.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(insertsqlstmt, Statement.RETURN_GENERATED_KEYS)) {
+                PreparedStatement stmt = conn.prepareStatement(insertSQLStmt, RETURN_GENERATED_KEYS)) {
             stmt.setString(1, E1.getName());
             stmt.setString(2, E1.getFname());
             stmt.setString(3, E1.getEmail());
@@ -41,7 +43,7 @@ class DatasourceTest {
 
         try (
                 Connection conn = Datasource.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(selectsqlstmt)
+                PreparedStatement stmt = conn.prepareStatement(selectSQLStmt)
         ) {
             stmt.setString(1, E1.getEmail());
             ResultSet rs = stmt.executeQuery();
