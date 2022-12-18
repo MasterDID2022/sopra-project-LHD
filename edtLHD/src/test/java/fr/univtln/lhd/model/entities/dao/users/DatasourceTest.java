@@ -46,7 +46,7 @@ class DatasourceTest {
             stmt.setString(1, E1.getEmail());
             ResultSet rs = stmt.executeQuery();
             Assertions.assertTrue(rs.next());
-            fetchedUserid = rs.getInt(1);
+            fetchedUserid = rs.getLong(1);
             Assertions.assertEquals(userId, fetchedUserid);
         } catch (SQLException e) {
             log.error(e.getMessage());
