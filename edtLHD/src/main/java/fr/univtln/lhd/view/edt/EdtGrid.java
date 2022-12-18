@@ -1,5 +1,6 @@
 package fr.univtln.lhd.view.edt;
 
+import fr.univtln.lhd.model.entities.slots.Slot;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
@@ -108,10 +109,15 @@ public class EdtGrid extends Grid {
 
         add(node, day, hourStart, hourEnd);
     }
-    /*
+
     public void add(SlotUI slotUI){
         //get slot ui info, then call add (node, day, hourstart, hourend)
         //wip
+        add(slotUI, slotUI.getSlot().getTimeRange());
     }
-     */
+
+    public void add(Slot slot){
+        SlotUI slotUI = SlotUI.of(slot);
+        add( slotUI );
+    }
 }
