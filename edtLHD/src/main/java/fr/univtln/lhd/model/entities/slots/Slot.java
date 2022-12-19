@@ -1,19 +1,16 @@
 package fr.univtln.lhd.model.entities.slots;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.threeten.extra.Interval;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Class defining a Slot
  */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Getter
-@Setter
+@Data
 public class Slot {
 
     public enum SlotType { CM, TD, TP, EXAM, CONFERENCE, REUNION, OTHER }
@@ -21,13 +18,18 @@ public class Slot {
     private long id;
 
     private final SlotType type;
-    private final long classroomId;
-    private final long subjectId;
+    private final Classroom  classroom;
+    private final Subject subject;
     private final List<Group> group;
 
     private Interval timeRange; //time range type needs to be changed to Time Range Wrapper Class
-
+    @Getter(AccessLevel.NONE)
     private String memo; //Slot annotation
+
+    public Optional <String> getMemo () {
+        return Optional.ofNullable(memo);
+    }
+
 
     /**
      * Factory for a Slot class
@@ -40,7 +42,7 @@ public class Slot {
      * @param memo a little annotations for that Slot
      * @return an instance of Slot
      */
-    public static Slot getInstance(long id, SlotType type, long classroom, long subject, List<Group> group, Interval timeRange, String memo){
+    public static Slot getInstance(long id, SlotType type, Classroom classroom, Subject subject, List<Group> group, Interval timeRange, String memo){
         return new Slot(id, type, classroom, subject, group, timeRange, memo);
     }
 
@@ -53,8 +55,8 @@ public class Slot {
      * @param timeRange indicates the Time taken by the Slot
      * @return an instance of Slot
      */
-    public static Slot getInstance(SlotType type, long classroom, long subject, List<Group> group, Interval timeRange){
-        return getInstance(-1, type, classroom, subject, group, timeRange, "");
+    public static Slot getInstance(SlotType type, Classroom classroom, Subject subject, List<Group> group, Interval timeRange){
+        return getInstance(-1, type, classroom, subject, group, timeRange, null);
     }
 
     /**
@@ -66,7 +68,7 @@ public class Slot {
      * @param timeRange indicates the Time taken by the Slot
      * @return an instance of Slot
      */
-    public static Slot getInstance(SlotType type, long classroom, long subject, List<Group> group, Interval timeRange, String memo){
+    public static Slot getInstance(SlotType type, Classroom classroom, Subject subject, List<Group> group, Interval timeRange, String memo){
         return getInstance(-1, type, classroom, subject, group, timeRange, memo);
     }
 }
