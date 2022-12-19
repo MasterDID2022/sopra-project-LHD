@@ -2,7 +2,6 @@ package fr.univtln.lhd.model.entities.users;
 
 import fr.univtln.lhd.exceptions.IdException;
 import lombok.Getter;
-
 import java.util.Objects;
 
 @Getter

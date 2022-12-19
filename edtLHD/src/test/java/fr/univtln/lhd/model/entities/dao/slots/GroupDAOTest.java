@@ -24,8 +24,7 @@ class GroupDAOTest {
 
 
     private Group getGroup(){//no cons on unicity random is useless
-        Group group = Group.getInstance("Matiere A"+Math.random());
-        return group;
+        return Group.getInstance("Matiere A"+Math.random());
     }
 
     @Test
@@ -47,12 +46,12 @@ class GroupDAOTest {
     void updateAGroup() throws IdException {
         GroupDAO dao = getDAO();
         Optional<Group> group = dao.get(2);
-        System.out.println("tt="+group.get());
-        Group group1 = Group.getInstance(group.get().getName()+"1");
+        System.out.println("tt="+group.orElse(null));
+        Group group1 = Group.getInstance(group.orElseThrow().getName()+"1");
         group1.setId(2);
         System.out.println(group1);
         dao.update(group1);
-        assertEquals(group1,dao.get(group.get().getId()).get());
+        assertEquals(group1,dao.get(group.get().getId()).orElse(null));
     }
 
 }
