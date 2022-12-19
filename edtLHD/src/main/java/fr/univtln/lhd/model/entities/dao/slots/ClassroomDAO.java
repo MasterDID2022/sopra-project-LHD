@@ -36,7 +36,7 @@ public class ClassroomDAO implements DAO<Classroom>
         this.get = this.conn.prepareStatement("SELECT * FROM CLASSROOMS WHERE ID=?");
         this.getAll = this.conn.prepareStatement("SELECT * FROM CLASSROOMS");
         this.save = this.conn.prepareStatement("INSERT INTO CLASSROOMS VALUES (DEFAULT, ?)",RETURN_GENERATED_KEYS);
-        this.update = this.conn.prepareStatement("UPDATE CLASSROOMS SET NAME=? WHERE ID=?");
+        this.update = this.conn.prepareStatement("UPDATE CLASSROOMS SET name=? WHERE ID=?");
         this.delete = this.conn.prepareStatement("DELETE FROM CLASSROOMS WHERE ID=?");
     }
 
@@ -67,7 +67,7 @@ public class ClassroomDAO implements DAO<Classroom>
                 result.get().setId( rs.getLong("ID") );
             }
 
-        }catch (SQLException | IdException e){
+        }catch (SQLException e){
             log.error(e.getMessage());
         }
         return result;
@@ -88,7 +88,7 @@ public class ClassroomDAO implements DAO<Classroom>
                 classroom.setId( rs.getLong("ID") );
                 classroomList.add(classroom);
             }
-        } catch (SQLException | IdException e){
+        } catch (SQLException e){
             log.error(e.getMessage());
         }
         return classroomList;
@@ -106,7 +106,7 @@ public class ClassroomDAO implements DAO<Classroom>
             ResultSet id_set = save.getGeneratedKeys();
             id_set.next();
             classroom.setId(id_set.getLong(1));
-        } catch (SQLException | IdException e){
+        } catch (SQLException  e){
             log.error(e.getMessage());
         }
     }
@@ -116,7 +116,7 @@ public class ClassroomDAO implements DAO<Classroom>
      * @param classroom Classroom instance to update
      */
     @Override
-    public Classroom update(Classroom classroom) throws IdException {
+    public Classroom update(Classroom classroom)  {
         try {
             update.setString(1,classroom.getName());
             update.setLong(2,classroom.getId());

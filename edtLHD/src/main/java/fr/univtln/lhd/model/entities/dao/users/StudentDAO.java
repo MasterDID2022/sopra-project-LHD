@@ -29,7 +29,7 @@ public class StudentDAO implements DAO<Student> {
     private final PreparedStatement getAllGroup;
     private final PreparedStatement saveGroup;
 
-    public StudentDAO() throws SQLException {
+    private StudentDAO () throws SQLException {
         this.connection = Datasource.getInstance().getConnection();
         this.get = this.connection.prepareStatement("SELECT * FROM USERS WHERE ID=?");
         this.getAll = this.connection.prepareStatement("SELECT * FROM USERS");
@@ -38,6 +38,10 @@ public class StudentDAO implements DAO<Student> {
         this.getAllGroup = this.connection.prepareStatement("SELECT * FROM GROUP_USER WHERE ID_USER=?");
         this.update = this.connection.prepareStatement("UPDATE USERS SET name=?, fname=? ,email=? WHERE ID=?");
         this.delete = this.connection.prepareStatement("DELETE FROM USERS WHERE ID=?");
+    }
+
+    public static StudentDAO getInstance () throws SQLException {
+        return new StudentDAO();
     }
 
     /**
@@ -146,13 +150,10 @@ public class StudentDAO implements DAO<Student> {
             student.setId(id_set.getLong(1));
             if (student.getStudendGroup()!=null){
                 GroupDAO dao = GroupDAO.getInstance();
-                for (Group group:
-                        student.getStudendGroup()) {
-                    dao.save((Group) student.getStudendGroup());
-                    saveGroup.setLong(1,((Group) student.getStudendGroup()).getId());
-                    saveGroup.setLong(2,student.getId());
-                    save.executeUpdate();
-                }
+                dao.save((Group) student.getStudendGroup());
+                saveGroup.setLong(1,((Group) student.getStudendGroup()).getId());
+                saveGroup.setLong(2,student.getId());
+                save.executeUpdate();
             }
         } catch (SQLException | IdException e){
             log.error(e.getMessage());

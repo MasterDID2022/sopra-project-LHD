@@ -3,7 +3,9 @@ package fr.univtln.lhd.model.entities.dao.slots;
 import fr.univtln.lhd.exceptions.IdException;
 import fr.univtln.lhd.model.entities.dao.DAO;
 import fr.univtln.lhd.model.entities.dao.Datasource;
+import fr.univtln.lhd.model.entities.dao.users.StudentDAO;
 import fr.univtln.lhd.model.entities.slots.Group;
+import fr.univtln.lhd.model.entities.users.Student;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
@@ -54,22 +56,21 @@ public class GroupDAO implements DAO<Group> {
      */
     @Override
     public Optional<Group> get(long id) {
-        Optional<Group> result = Optional.empty();
+        Group result=null;
         try {
             get.setLong(1, id);
             ResultSet rs = get.executeQuery();
             if (rs.next()) {
-                result = Optional.of(
-                        Group.getInstance(
-                                rs.getLong("ID"),
-                                rs.getString("NAME"))
-                );
-                result.get().setId(rs.getLong("ID"));
+                result = Group.getInstance(
+                                rs.getString("NAME"));
+                result.setId(rs.getLong("ID"));
+                result.setStudents(getStudentsOfGroup(result));
+
             }
-        }catch (SQLException| IdException e){
+        }catch (SQLException e){
             log.error(e.getMessage());
         }
-        return result;
+        return Optional.ofNullable(result);
     }
 
     /**
@@ -82,18 +83,46 @@ public class GroupDAO implements DAO<Group> {
         try {
             ResultSet rs = getAll.executeQuery();
             while (rs.next()) {
-                groupList.add(
-                        Group.getInstance(
-                                rs.getLong("ID"),
-                                rs.getString("NAME"))
-                );
+                Group group;
+                        group = Group.getInstance(rs.getString("NAME"));
+                        group.setStudents(getStudentsOfGroup(group));
+                groupList.add(group);
             }
         } catch (SQLException e){
             log.error(e.getMessage());
         }
         return groupList;
     }
-
+    public  List<Student> getStudentsOfGroup ( final Group group) {
+        List<Student> studentList= new ArrayList<>();
+        try (PreparedStatement stmt = conn.prepareStatement("SELECT id_user from group_user where id_group= ?")){
+            stmt.setLong(1,group.getId());
+            log.info(group.getId() + "got");
+            stmt.executeQuery();
+            ResultSet rs =stmt.getResultSet();
+            while (rs.next()) {
+                studentList.add(StudentDAO.getInstance().get(rs.getLong(1)).orElseThrow(SQLException::new));
+            }
+        }
+        catch (SQLException e) {
+            log.error(e.getMessage());
+        }
+        return Collections.unmodifiableList(studentList);
+    }
+    public List<Group> getGroupOfSlot(final long slotID) {
+        List<Group> groupList = new ArrayList<>();
+        try (PreparedStatement stmt = conn.prepareStatement("SELECT id_group from group_slot where id_slot= ?")){
+           stmt.setLong(1,slotID);
+           ResultSet rs = stmt.executeQuery();
+           while (rs.next()){
+               groupList.add(get(rs.getLong(1)).orElseThrow(SQLException::new));
+           }
+       }
+       catch (SQLException e ) {
+           log.error(e.getMessage());
+       }
+        return Collections.unmodifiableList(groupList);
+    }
     /**
      * Save Group to Database
      * @param group Group object to save
@@ -103,10 +132,10 @@ public class GroupDAO implements DAO<Group> {
         try{
             save.setString(1, group.getName());
             save.executeUpdate();
-            ResultSet id_set = save.getGeneratedKeys();
-            id_set.next();
-            group.setId(id_set.getLong(1));
-        } catch (SQLException| IdException e){
+            ResultSet idSet = save.getGeneratedKeys();
+            idSet.next();
+            group.setId(idSet.getLong(1));
+        } catch (SQLException e){
             log.error(e.getMessage());
         }
     }

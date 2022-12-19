@@ -4,11 +4,11 @@ import fr.univtln.lhd.model.entities.slots.Classroom;
 import fr.univtln.lhd.model.entities.slots.Group;
 import fr.univtln.lhd.model.entities.slots.Slot;
 import fr.univtln.lhd.model.entities.slots.Subject;
+import fr.univtln.lhd.model.entities.users.Professor;
 import org.junit.jupiter.api.Test;
 import org.threeten.extra.Interval;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -27,19 +27,16 @@ class SlotTest {
     public Group getInstanceOfGroup () {
         return Group.getInstance("Name");
     }
-
-    public List<Group> getListOfGroup () {
-        List<Group> groups = new ArrayList<>();
-        groups.add(getInstanceOfGroup());
-        return groups;
-    }
+    public Professor getInstanceOfProfessor(){return Professor.of("Name","fname","email@lhd.org","test");}
+    public List<Professor> getListOfProfessor(){return  List.of(getInstanceOfProfessor());}
+    public List<Group> getListOfGroup () {return List.of(getInstanceOfGroup());}
 
     public Slot getInstanceOfSlot () {
-        return Slot.getInstance(Slot.SlotType.CM, getInstanceOfClassroom(), getInstanceOfSubject(), getListOfGroup(), Interval.of(Instant.now(), Instant.now().plusSeconds(10)));
+        return Slot.getInstance(Slot.SlotType.CM, getInstanceOfClassroom(), getInstanceOfSubject(), getListOfGroup(), getListOfProfessor(),Interval.of(Instant.now(), Instant.now().plusSeconds(10)));
     }
 
     public Slot getInstanceOfSlotWithMemo () {
-        return Slot.getInstance(Slot.SlotType.CM, getInstanceOfClassroom(), getInstanceOfSubject(), getListOfGroup(), Interval.of(Instant.now(), Instant.now().plusSeconds(10)), "memo");
+        return Slot.getInstance(Slot.SlotType.CM, getInstanceOfClassroom(), getInstanceOfSubject(), getListOfGroup(),getListOfProfessor(),Interval.of(Instant.now(), Instant.now().plusSeconds(10)), "memo");
     }
 
     @Test

@@ -2,10 +2,12 @@ package fr.univtln.lhd.model.entities.users;
 
 import fr.univtln.lhd.exceptions.IdException;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.util.Objects;
 
 @Getter
+@ToString
 public abstract class User {
     private final String name;
     private Long id= (long) -1;

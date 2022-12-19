@@ -106,7 +106,7 @@ public class SubjectDAO implements DAO<Subject> {
             ResultSet id_set = save.getGeneratedKeys();
             id_set.next();
             subject.setId(id_set.getLong(1));
-        } catch (SQLException|IdException e){
+        } catch (SQLException e){
             log.error(e.getMessage());
         }
     }
@@ -117,7 +117,7 @@ public class SubjectDAO implements DAO<Subject> {
      */
 
     @Override
-    public Subject update(Subject subject) throws IdException {
+    public Subject update(Subject subject) {
         try {
             update.setString(1,subject.getName());
             update.setFloat(2,subject.getHourCountMax());
