@@ -146,10 +146,13 @@ public class StudentDAO implements DAO<Student> {
             student.setId(id_set.getLong(1));
             if (student.getStudendGroup()!=null){
                 GroupDAO dao = GroupDAO.getInstance();
-                dao.save((Group) student.getStudendGroup());
-                saveGroup.setLong(1,((Group) student.getStudendGroup()).getId());
-                saveGroup.setLong(2,student.getId());
-                save.executeUpdate();
+                for (Group group:
+                        student.getStudendGroup()) {
+                    dao.save((Group) student.getStudendGroup());
+                    saveGroup.setLong(1,((Group) student.getStudendGroup()).getId());
+                    saveGroup.setLong(2,student.getId());
+                    save.executeUpdate();
+                }
             }
         } catch (SQLException | IdException e){
             log.error(e.getMessage());
