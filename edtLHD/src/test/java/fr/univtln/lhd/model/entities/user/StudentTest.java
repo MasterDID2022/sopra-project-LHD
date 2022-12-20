@@ -1,4 +1,4 @@
-package fr.univtln.lhd.entities.user;
+package fr.univtln.lhd.model.entities.user;
 
 import fr.univtln.lhd.model.entities.slots.Group;
 import fr.univtln.lhd.model.entities.users.Student;
