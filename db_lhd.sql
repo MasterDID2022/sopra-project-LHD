@@ -74,14 +74,14 @@ CREATE FUNCTION lhd.check_date_overlap_trigger_function_professor_slot() RETURNS
             and exists (
                     select from professor_slot ls--- then we check whether there exists an overlapping one
                     join slots s2 on ls.id_slot=s2.id
-                    where ls.id_professor = new.id_group
-                    and s2.id <> new.id_slot--- we don't wanna compare the slot specified in the query to itself
+                    where ls.id_professor = new.id_professor
+                    and s2.id <> new.id_professor--- we don't wanna compare the slot specified in the query to itself
                     and s.timerange && s2.timerange  for share--- we use for share to prevent any modification while the trigger is run.
                        )
        for share)
 
        THEN
-            RAISE unique_violation USING MESSAGE = 'Overlapping timeranges for group : ' || new.id_group;
+            RAISE unique_violation USING MESSAGE = 'Overlapping timeranges for group : ' || new.id_professor;
        END IF;
    RETURN NEW;
        end
@@ -279,7 +279,7 @@ ALTER TABLE lhd.groups ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
 
 CREATE TABLE lhd.professor_slot (
     id_professor bigint NOT NULL,
-    id_trange bigint NOT NULL
+    id_slot bigint NOT NULL
 );
 
 
@@ -419,7 +419,7 @@ ALTER TABLE ONLY lhd.group_slot
 --
 
 ALTER TABLE ONLY lhd.professor_slot
-    ADD CONSTRAINT promotion_professors_pkey PRIMARY KEY (id_professor, id_trange);
+    ADD CONSTRAINT promotion_professors_pkey PRIMARY KEY (id_professor, id_slot);
 
 
 --
@@ -486,10 +486,10 @@ CREATE UNIQUE INDEX admins_lower_email_key ON lhd.admins USING btree (lower((ema
 
 
 --
--- Name: group_slot_id_trange_idx; Type: INDEX; Schema: lhd; Owner: -
+-- Name: group_slot_id_slot_idx; Type: INDEX; Schema: lhd; Owner: -
 --
 
-CREATE INDEX group_slot_id_trange_idx ON lhd.group_slot USING btree (id_slot);
+CREATE INDEX group_slot_id_slot_idx ON lhd.group_slot USING btree (id_slot);
 
 
 --
@@ -561,7 +561,7 @@ ALTER TABLE ONLY lhd.group_slot
 --
 
 ALTER TABLE ONLY lhd.professor_slot
-    ADD CONSTRAINT fk_creneau FOREIGN KEY (id_trange) REFERENCES lhd.slots(id);
+    ADD CONSTRAINT fk_creneau FOREIGN KEY (id_slot) REFERENCES lhd.slots(id);
 
 
 --
