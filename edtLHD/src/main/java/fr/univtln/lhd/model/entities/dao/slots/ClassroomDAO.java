@@ -1,6 +1,5 @@
 package fr.univtln.lhd.model.entities.dao.slots;
 
-import fr.univtln.lhd.exceptions.IdException;
 import fr.univtln.lhd.model.entities.dao.DAO;
 import fr.univtln.lhd.model.entities.dao.Datasource;
 import fr.univtln.lhd.model.entities.slots.Classroom;
@@ -15,37 +14,27 @@ import java.util.*;
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 @Slf4j
-/**
+/*
  * ClassroomDAO implementing DAO interface for Classroom Object
  */
 public class ClassroomDAO implements DAO<Classroom>
 {
-    private final Connection conn;
-    private final PreparedStatement getAll;
-    private final PreparedStatement get;
-    private final PreparedStatement save;
-    private final PreparedStatement update;
-    private final PreparedStatement delete;
+    private static final String GET_STMT = "SELECT * FROM CLASSROOMS WHERE ID=?";
+    private static final String GET_ALL_STMT = "SELECT * FROM CLASSROOMS";
+    private static final String SAVE_STMT = "INSERT INTO CLASSROOMS VALUES (DEFAULT, ?)";
+    private static final String UPDATE_STMT = "UPDATE CLASSROOMS SET name=? WHERE ID=?";
+    private static final String DELETE_STMT = "DELETE FROM CLASSROOMS WHERE ID=?";
 
     /**
-     * Constructor of ClassroomDAO, initiate connection and prepared statement
-     * @throws SQLException throw a SQLException if there is a problem with the connection or database prepared statement
+     * Constructor of ClassroomDAO
      */
-    private ClassroomDAO() throws SQLException {
-        this.conn = Datasource.getConnection();
-        this.get = this.conn.prepareStatement("SELECT * FROM CLASSROOMS WHERE ID=?");
-        this.getAll = this.conn.prepareStatement("SELECT * FROM CLASSROOMS");
-        this.save = this.conn.prepareStatement("INSERT INTO CLASSROOMS VALUES (DEFAULT, ?)",RETURN_GENERATED_KEYS);
-        this.update = this.conn.prepareStatement("UPDATE CLASSROOMS SET name=? WHERE ID=?");
-        this.delete = this.conn.prepareStatement("DELETE FROM CLASSROOMS WHERE ID=?");
-    }
+    private ClassroomDAO() { }
 
     /**
      * Factory for ClassroomDAO
      * @return an instance of ClassroomDAO
-     * @throws SQLException throw a SQLException if there is a problem with the connection or database prepared statement
      */
-    public static ClassroomDAO getInstance() throws SQLException { return new ClassroomDAO(); }
+    public static ClassroomDAO getInstance() { return new ClassroomDAO(); }
 
     /**
      * Getter for one Classroom
@@ -53,12 +42,14 @@ public class ClassroomDAO implements DAO<Classroom>
      * @return May return one Classroom instance
      */
     @Override
-    public Optional<Classroom> get(long id) {
+    public Optional<Classroom> get(long id) throws SQLException {
         Optional<Classroom> result = Optional.empty();
 
-        try {
-            get.setLong(1, id);
-            ResultSet rs = get.executeQuery();
+        try (Connection conn = Datasource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(GET_STMT)
+        ){
+            stmt.setLong(1, id);
+            ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
                 result = Optional.of(
@@ -69,6 +60,7 @@ public class ClassroomDAO implements DAO<Classroom>
 
         }catch (SQLException e){
             log.error(e.getMessage());
+            throw e;
         }
         return result;
     }
@@ -78,11 +70,13 @@ public class ClassroomDAO implements DAO<Classroom>
      * @return List of all Classrooms
      */
     @Override
-    public List<Classroom> getAll() {
+    public List<Classroom> getAll() throws SQLException {
         List<Classroom> classroomList = new ArrayList<>();
 
-        try {
-            ResultSet rs = getAll.executeQuery();
+        try (Connection conn = Datasource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(GET_ALL_STMT)
+        ){
+            ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 Classroom classroom = Classroom.getInstance( rs.getString("NAME") );
                 classroom.setId( rs.getLong("ID") );
@@ -90,6 +84,7 @@ public class ClassroomDAO implements DAO<Classroom>
             }
         } catch (SQLException e){
             log.error(e.getMessage());
+            throw e;
         }
         return classroomList;
     }
@@ -99,15 +94,18 @@ public class ClassroomDAO implements DAO<Classroom>
      * @param classroom Classroom object to save
      */
     @Override
-    public void save(Classroom classroom) {
-        try{
-            save.setString(1, classroom.getName());
-            save.executeUpdate();
-            ResultSet id_set = save.getGeneratedKeys();
-            id_set.next();
-            classroom.setId(id_set.getLong(1));
+    public void save(Classroom classroom) throws SQLException {
+        try(Connection conn = Datasource.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(SAVE_STMT, RETURN_GENERATED_KEYS)
+        ){
+            stmt.setString(1, classroom.getName());
+            stmt.executeUpdate();
+            ResultSet idSet = stmt.getGeneratedKeys();
+            idSet.next();
+            classroom.setId(idSet.getLong(1));
         } catch (SQLException  e){
             log.error(e.getMessage());
+            throw e;
         }
     }
 
@@ -116,14 +114,17 @@ public class ClassroomDAO implements DAO<Classroom>
      * @param classroom Classroom instance to update
      */
     @Override
-    public Classroom update(Classroom classroom)  {
-        try {
-            update.setString(1,classroom.getName());
-            update.setLong(2,classroom.getId());
-            update.executeUpdate();
+    public Classroom update(Classroom classroom) throws SQLException {
+        try(Connection conn = Datasource.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(UPDATE_STMT)
+        ){
+            stmt.setString(1,classroom.getName());
+            stmt.setLong(2,classroom.getId());
+            stmt.executeUpdate();
         }
         catch (SQLException e){
             log.error(e.getMessage());
+            throw e;
         }
         return classroom;
     }
@@ -133,12 +134,15 @@ public class ClassroomDAO implements DAO<Classroom>
      * @param classroom Classroom object to delete
      */
     @Override
-    public void delete(Classroom classroom) {
-        try {
-            delete.setLong(1, classroom.getId());
-            delete.executeUpdate();
+    public void delete(Classroom classroom) throws SQLException {
+        try(Connection conn = Datasource.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(DELETE_STMT)
+        ){
+            stmt.setLong(1, classroom.getId());
+            stmt.executeUpdate();
         } catch (SQLException e){
             log.error(e.getMessage());
+            throw e;
         }
     }
 }
