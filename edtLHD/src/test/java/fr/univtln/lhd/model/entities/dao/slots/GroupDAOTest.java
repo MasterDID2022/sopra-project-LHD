@@ -1,27 +1,18 @@
 package fr.univtln.lhd.model.entities.dao.slots;
 
-import fr.univtln.lhd.exceptions.IdException;
 import fr.univtln.lhd.model.entities.slots.Group;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class GroupDAOTest {
 
     public GroupDAO getDAO() {
-        GroupDAO st = null;
-        try {
-            st = GroupDAO.getInstance();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return st;
+        return GroupDAO.getInstance();
     }
-
 
     private Group getGroup(){//no cons on unicity random is useless
         return Group.getInstance("Matiere A"+Math.random());
@@ -36,22 +27,30 @@ class GroupDAOTest {
     void SaveGroup(){
         GroupDAO dao = getDAO();
         Group group = getGroup();
-        int oldsize = dao.getAll().size();
-        dao.save(group);
-        assertEquals(oldsize+1,dao.getAll().size());
+        try {
+            int oldSize = dao.getAll().size();
+            dao.save(group);
+            assertEquals(oldSize+1,dao.getAll().size());
+        } catch (SQLException e){
+            throw new RuntimeException();
+        }
     }
 
 
     @Test
-    void updateAGroup() throws IdException {
+    void updateAGroup() {
         GroupDAO dao = getDAO();
-        Optional<Group> group = dao.get(2);
-        System.out.println("tt="+group.orElse(null));
-        Group group1 = Group.getInstance(group.orElseThrow().getName()+"1");
-        group1.setId(2);
-        System.out.println(group1);
-        dao.update(group1);
-        assertEquals(group1,dao.get(group.get().getId()).orElse(null));
+        Group group = getGroup();
+        Group group1 = Group.getInstance( group.getName() + "1" );
+
+        try {
+            dao.save(group);
+            group1.setId(group.getId());
+            dao.update(group1);
+            assertEquals(dao.get(group.getId()).get(), group1);
+        } catch (SQLException e){
+            throw new RuntimeException();
+        }
     }
 
 }

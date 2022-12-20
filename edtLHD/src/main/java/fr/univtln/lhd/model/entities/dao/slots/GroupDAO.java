@@ -1,6 +1,5 @@
 package fr.univtln.lhd.model.entities.dao.slots;
 
-import fr.univtln.lhd.exceptions.IdException;
 import fr.univtln.lhd.model.entities.dao.DAO;
 import fr.univtln.lhd.model.entities.dao.Datasource;
 import fr.univtln.lhd.model.entities.dao.users.StudentDAO;
@@ -17,37 +16,29 @@ import java.util.*;
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 @Slf4j
-/**
+/*
  * GroupDAO implementing DAO interface for Group Object
  */
 public class GroupDAO implements DAO<Group> {
 
-    private final Connection conn;
-    private final PreparedStatement getAll;
-    private final PreparedStatement get;
-    private final PreparedStatement save;
-    private final PreparedStatement update;
-    private final PreparedStatement delete;
+    private static final String GET_STMT = "SELECT * FROM GROUPS WHERE ID=?";
+    private static final String GET_ALL_STMT = "SELECT * FROM GROUPS";
+    private static final String GET_STUDENT_GROUP_STMT = "SELECT id_user from group_user where id_group= ?";
+    private static final String GET_SLOT_GROUP_STMT = "SELECT id_group from group_slot where id_slot= ?";
+    private static final String SAVE_STMT = "INSERT INTO GROUPS VALUES (DEFAULT, ?)";
+    private static final String UPDATE_STMT = "UPDATE GROUPS SET NAME=? WHERE ID=?";
+    private static final String DELETE_STMT = "DELETE FROM GROUPS WHERE ID=?";
 
     /**
-     * Constructor of GroupDAO, initiate connection and prepared statement
-     * @throws SQLException throw a SQLException if there is a problem with the connection or database prepared statement
+     * Constructor of GroupDAO
      */
-    private GroupDAO() throws SQLException {
-        conn = Datasource.getInstance().getConnection();
-        this.getAll = conn.prepareStatement("SELECT * FROM GROUPS");
-        this.get = conn.prepareStatement("SELECT * FROM GROUPS WHERE ID=?",RETURN_GENERATED_KEYS);
-        this.save = conn.prepareStatement("INSERT INTO GROUPS VALUES (DEFAULT, ?)");
-        this.update = conn.prepareStatement("UPDATE GROUPS SET NAME=? WHERE ID=?");
-        this.delete = conn.prepareStatement("DELETE FROM GROUPS WHERE ID=?");
-    }
+    private GroupDAO() { }
 
     /**
      * Factory for GroupDAO
      * @return an instance of GroupDAO
-     * @throws SQLException throw a SQLException if there is a problem with the connection or database prepared statement
      */
-    public static GroupDAO getInstance() throws SQLException { return new GroupDAO(); }
+    public static GroupDAO getInstance() { return new GroupDAO(); }
 
     /**
      * Getter for one Group
@@ -55,22 +46,25 @@ public class GroupDAO implements DAO<Group> {
      * @return May return one Group instance
      */
     @Override
-    public Optional<Group> get(long id) {
-        Group result=null;
-        try {
-            get.setLong(1, id);
-            ResultSet rs = get.executeQuery();
+    public Optional<Group> get(long id) throws SQLException {
+        Optional<Group> result = Optional.empty();
+        try (Connection conn = Datasource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(GET_STMT)
+        ){
+            stmt.setLong(1, id);
+            ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                result = Group.getInstance(
-                                rs.getString("NAME"));
-                result.setId(rs.getLong("ID"));
-                result.setStudents(getStudentsOfGroup(result));
-
+                result = Optional.of(
+                        Group.getInstance(rs.getString("NAME"))
+                );
+                result.get().setId( rs.getLong("ID") );
+                result.get().setStudents( getStudentsOfGroup(result.get()) );
             }
         }catch (SQLException e){
             log.error(e.getMessage());
+            throw e;
         }
-        return Optional.ofNullable(result);
+        return result;
     }
 
     /**
@@ -78,64 +72,85 @@ public class GroupDAO implements DAO<Group> {
      * @return List of all Groups
      */
     @Override
-    public List<Group> getAll() {
+    public List<Group> getAll() throws SQLException {
         List<Group> groupList = new ArrayList<>();
-        try {
-            ResultSet rs = getAll.executeQuery();
+
+        try (Connection conn = Datasource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(GET_ALL_STMT)
+        ){
+            ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                Group group;
-                        group = Group.getInstance(rs.getString("NAME"));
-                        group.setStudents(getStudentsOfGroup(group));
+                Group group = Group.getInstance(rs.getString("NAME"));
+                group.setId( rs.getLong("ID") );
+                group.setStudents(getStudentsOfGroup(group));
                 groupList.add(group);
             }
         } catch (SQLException e){
             log.error(e.getMessage());
+            throw e;
         }
         return groupList;
     }
-    public  List<Student> getStudentsOfGroup ( final Group group) {
+    public  List<Student> getStudentsOfGroup ( final Group group) throws SQLException {
         List<Student> studentList= new ArrayList<>();
-        try (PreparedStatement stmt = conn.prepareStatement("SELECT id_user from group_user where id_group= ?")){
+
+        try (Connection conn = Datasource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(GET_STUDENT_GROUP_STMT)
+        ){
             stmt.setLong(1,group.getId());
             stmt.executeQuery();
             ResultSet rs =stmt.getResultSet();
             while (rs.next()) {
-                studentList.add(StudentDAO.getInstance().get(rs.getLong(1)).orElseThrow(SQLException::new));
+                studentList.add(
+                        StudentDAO.getInstance().get(rs.getLong(1)).orElseThrow(SQLException::new)
+                );
             }
         }
         catch (SQLException e) {
             log.error(e.getMessage());
+            throw e;
         }
+
         return Collections.unmodifiableList(studentList);
     }
-    public List<Group> getGroupOfSlot(final long slotID) {
+    public List<Group> getGroupOfSlot(final long slotID) throws SQLException {
         List<Group> groupList = new ArrayList<>();
-        try (PreparedStatement stmt = conn.prepareStatement("SELECT id_group from group_slot where id_slot= ?")){
+
+        try (Connection conn = Datasource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(GET_SLOT_GROUP_STMT)
+        ){
            stmt.setLong(1,slotID);
            ResultSet rs = stmt.executeQuery();
            while (rs.next()){
-               groupList.add(get(rs.getLong(1)).orElseThrow(SQLException::new));
+               groupList.add(
+                       get(rs.getLong(1)).orElseThrow(SQLException::new)
+               );
            }
        }
-       catch (SQLException e ) {
+       catch (SQLException e) {
            log.error(e.getMessage());
+           throw e;
        }
-        return Collections.unmodifiableList(groupList);
+
+       return Collections.unmodifiableList(groupList);
     }
     /**
      * Save Group to Database
      * @param group Group object to save
      */
     @Override
-    public void save(Group group) {
-        try{
-            save.setString(1, group.getName());
-            save.executeUpdate();
-            ResultSet idSet = save.getGeneratedKeys();
+    public void save(Group group) throws SQLException {
+        try (Connection conn = Datasource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(SAVE_STMT, RETURN_GENERATED_KEYS)
+        ){
+            stmt.setString(1, group.getName());
+            stmt.executeUpdate();
+            ResultSet idSet = stmt.getGeneratedKeys();
             idSet.next();
             group.setId(idSet.getLong(1));
         } catch (SQLException e){
             log.error(e.getMessage());
+            throw e;
         }
     }
 
@@ -144,14 +159,17 @@ public class GroupDAO implements DAO<Group> {
      * @param group Group instance to update
      */
     @Override
-    public Group update(Group group) throws IdException {
-        try {
-            update.setString(1,group.getName());
-            update.setLong(2,group.getId());
-            update.executeUpdate();
+    public Group update(Group group) throws SQLException {
+        try (Connection conn = Datasource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(UPDATE_STMT)
+        ){
+            stmt.setString(1,group.getName());
+            stmt.setLong(2,group.getId());
+            stmt.executeUpdate();
         }
         catch (SQLException e){
             log.error(e.getMessage());
+            throw e;
         }
         return group;
     }
@@ -161,12 +179,15 @@ public class GroupDAO implements DAO<Group> {
      * @param group Group object to delete
      */
     @Override
-    public void delete(Group group) {
-        try {
-            delete.setLong(1, group.getId());
-            delete.executeUpdate();
+    public void delete(Group group) throws SQLException {
+        try (Connection conn = Datasource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(DELETE_STMT)
+        ){
+            stmt.setLong(1, group.getId());
+            stmt.executeUpdate();
         } catch (SQLException e){
             log.error(e.getMessage());
+            throw e;
         }
     }
 }
