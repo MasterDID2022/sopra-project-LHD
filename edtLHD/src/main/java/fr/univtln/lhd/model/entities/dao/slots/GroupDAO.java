@@ -97,7 +97,6 @@ public class GroupDAO implements DAO<Group> {
         List<Student> studentList= new ArrayList<>();
         try (PreparedStatement stmt = conn.prepareStatement("SELECT id_user from group_user where id_group= ?")){
             stmt.setLong(1,group.getId());
-            log.info(group.getId() + "got");
             stmt.executeQuery();
             ResultSet rs =stmt.getResultSet();
             while (rs.next()) {
