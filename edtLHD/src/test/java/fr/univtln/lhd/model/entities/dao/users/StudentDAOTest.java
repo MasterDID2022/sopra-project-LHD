@@ -18,7 +18,7 @@ class StudentDAOTest {
     public static StudentDAO getDAO() {
         StudentDAO st = null;
         try {
-            st = new StudentDAO();
+            st = StudentDAO.getInstance();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
