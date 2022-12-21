@@ -16,14 +16,12 @@ class StudentDAOTest {
     public static final StudentDAO dao = StudentDAOTest.getDAO();
 
     public static StudentDAO getDAO() {
-        StudentDAO st = StudentDAO.getInstance();
-        return st;
+        return StudentDAO.getInstance();
     }
 
     private Student getRandomNewStudent(){
-        Student student = Student.of("UnitTest","UnitTestFirstName",
-                "UnitTestName.Firstname"+Math.random()+"@email.com");//A student is a new one if is email is new
-        return student;
+        return Student.of("UnitTest","UnitTestFirstName",
+                "UnitTestName.Firstname"+Math.random()+"@email.com");
     }
 
     private Student getRandomNewStudentWithGroup(){
@@ -35,9 +33,8 @@ class StudentDAOTest {
     }
 
     private Student getTheTestStudent(){
-        Student student = Student.of("TheTestStudent","UnitTestFirstName",
+        return Student.of("TheTestStudent","UnitTestFirstName",
                 "UnitTestName.Firstname@email.com");
-        return student;
     }
 
     @Test
@@ -71,7 +68,7 @@ class StudentDAOTest {
         dao.save(student,"1234");
         student1.setId(student.getId());
         dao.update(student1);
-        assertEquals(dao.get(student.getId()).get(),student1);
+        assertEquals(dao.get(student.getId()).orElseThrow(AssertionError::new),student1);
     }
 
     @Test
