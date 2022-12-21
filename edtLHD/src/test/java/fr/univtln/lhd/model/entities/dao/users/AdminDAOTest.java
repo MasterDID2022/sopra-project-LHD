@@ -16,25 +16,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class AdminDAOTest {
 
     public AdminDAO getDAO() {
-        AdminDAO st = null;
-        try {
-            st = new AdminDAO();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return st;
+        return AdminDAO.of();
     }
 
     private Admin getRandomNewAdmin(){
         Admin admin = Admin.of("UnitTest","UnitTestFirstName",
-                "UnitTestName.Firstname"+Math.random()+"@email.com","REseracher");//A admin is a new one if is email is new
+                "UnitTestName.Firstname"+Math.random()+"@email.com","ScienceUnique");//A admin is a new one if is email is new
         return admin;
     }
 
     
     private Admin getTheTestAdmin(){
         Admin admin = Admin.of("TheTestAdmin","UnitTestFirstName",
-                "UnitTestName.Firstname@email.com","Researcher");
+                "UnitTestName.Firstname@email.com","RandomSciences");
         return admin;
     }
 
