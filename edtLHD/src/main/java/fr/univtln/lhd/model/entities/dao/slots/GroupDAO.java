@@ -58,7 +58,7 @@ public class GroupDAO implements DAO<Group> {
                         Group.getInstance(rs.getString("NAME"))
                 );
                 result.get().setId( rs.getLong("ID") );
-                result.get().setStudents( getStudentsOfGroup(result.get()) );
+                //result.get().setStudents( getStudentsOfGroup(result.get()) );
             }
         }catch (SQLException e){
             log.error(e.getMessage());
