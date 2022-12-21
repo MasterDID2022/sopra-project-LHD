@@ -16,12 +16,7 @@ class StudentDAOTest {
     public static final StudentDAO dao = StudentDAOTest.getDAO();
 
     public static StudentDAO getDAO() {
-        StudentDAO st = null;
-        try {
-            st = StudentDAO.getInstance();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        StudentDAO st = StudentDAO.getInstance();
         return st;
     }
 
@@ -51,16 +46,17 @@ class StudentDAOTest {
     }
 
     @Test
-    void addNewStudent(){
+    void addNewStudent() throws SQLException {
         Student student = getRandomNewStudent();
         int oldsize = dao.getAll().size();
+        System.out.println(oldsize);
         dao.save(student,"1234");
         assertEquals(oldsize+1,dao.getAll().size());
         dao.delete(student);
     }
 
     @Test
-    void addNewStudentWithGroup(){
+    void addNewStudentWithGroup() throws SQLException {
         Student student = getRandomNewStudentWithGroup();
         int oldsize = dao.getAll().size();
         dao.save(student,"1234");
@@ -69,7 +65,7 @@ class StudentDAOTest {
     }
 
     @Test
-    void updateAstudent() throws IdException {
+    void updateAstudent() throws IdException, SQLException {
         Student student = getRandomNewStudent();
         Student student1 = Student.of(student.getName()+"1",student.getFname()+"1",student.getEmail()+"1");
         dao.save(student,"1234");
@@ -79,7 +75,7 @@ class StudentDAOTest {
     }
 
     @Test
-    void addSameStudent(){
+    void addSameStudent() throws SQLException {
         Student student = getTheTestStudent();
         dao.save(student,"1234");
         int oldsize = dao.getAll().size();
@@ -89,7 +85,7 @@ class StudentDAOTest {
 
 
     @Test
-    void deleteTheStudent(){
+    void deleteTheStudent() throws SQLException {
         Student student = getRandomNewStudent();
         dao.save(student,"1234");
         int oldsize = dao.getAll().size();
