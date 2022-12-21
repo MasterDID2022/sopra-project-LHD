@@ -18,40 +18,38 @@ import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 @Slf4j
 public class AdminDAO implements DAO<Admin> {
-    private final PreparedStatement getAll;
-    private final PreparedStatement get;
-    private final PreparedStatement save;
-    private final PreparedStatement update;
-    private final PreparedStatement delete;
+    private final String GET="SELECT * FROM ADMINS WHERE ID=?";
 
-    public AdminDAO() throws SQLException {
-        Connection connection = Datasource.getInstance().getConnection();
-        this.get = connection.prepareStatement("SELECT * FROM ADMINS WHERE ID=?");
-        this.getAll = connection.prepareStatement("SELECT * FROM ADMINS");
-        this.save = connection.prepareStatement("INSERT INTO ADMINS VALUES (DEFAULT, ?, ?, ?, ?, ?)",RETURN_GENERATED_KEYS);
-        this.update = connection.prepareStatement("UPDATE ADMINS SET name=?, fname=? ,email=?,title=? WHERE ID=?");
-        this.delete = connection.prepareStatement("DELETE FROM ADMINS WHERE ID=?");
-    }
+    private final String GET_ALL="SELECT * FROM ADMINS";
+    private final String SAVE="INSERT INTO ADMINS VALUES (DEFAULT, ?, ?, ?, ?, ?)";
+    private final String UPDATE="UPDATE ADMINS SET name=?, fname=? ,email=?,dpt=? WHERE ID=?";
+    private final String DELETE="DELETE FROM ADMINS WHERE ID=?";
+
+    private AdminDAO(){ };
+
+    public static AdminDAO of (){ return new AdminDAO(); }
 
 
     /**
-     * Getter for one Lecturer
-     * @param id numerical long identifier for getting the Lecturer
-     * @return May return one Lecturer
+     * Getter for one Admin
+     * @param id numerical long identifier for getting the admin
+     * @return May return one admin
      */
     @Override
     public Optional<Admin> get(long id) {
         Optional<Admin> result = Optional.empty();
-        try {
-            get.setLong(1, id);
-            ResultSet rs = get.executeQuery();
+        try  (Connection conn = Datasource.getConnection();
+              PreparedStatement stmt = conn.prepareStatement(GET)
+        ){
+            stmt.setLong(1, id);
+            ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 result = Optional.of(
                         Admin.of(
                                 rs.getString("NAME"),
                                 rs.getString("FNAME"),
                                 rs.getString("EMAIL"),
-                                rs.getString("TITLE"))
+                                rs.getString("DPT"))
                 );
                 result.get().setId(rs.getLong("ID"));
             }
@@ -62,20 +60,22 @@ public class AdminDAO implements DAO<Admin> {
     }
 
     /**
-     * Getter for all Lecturer
-     * @return List of all Lecturer
+     * Getter for all admin
+     * @return List of all admin
      */
     @Override
     public List<Admin> getAll() {
         List<Admin> adminList = new ArrayList<>();
-        try {
-            ResultSet rs = getAll.executeQuery();
+        try  (Connection conn = Datasource.getConnection();
+              PreparedStatement stmt = conn.prepareStatement(GET_ALL)
+        ){
+            ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 Admin admin = Admin.of(
                                 rs.getString("NAME"),
                                 rs.getString("FNAME"),
                                 rs.getString("EMAIL"),
-                                rs.getString("TITLE"));
+                                rs.getString("DPT"));
                 admin.setId(rs.getLong("ID"));
                 adminList.add(admin);
             }
@@ -87,21 +87,23 @@ public class AdminDAO implements DAO<Admin> {
 
 
     /**
-     * Save Lecturer t to Database
+     * Save admin t to Database
      * <!>SHOULD ONLY BE USED FOR TEST</!>
      * this methode save a User without a password
-     * please use save(Lecturer s,String password)
-     * @param admin Lecturer object to save
+     * please use save(admin s,String password)
+     * @param admin admin object to save
      */
     @Override
     public void save(Admin admin) {
-        try{
-            save.setString(1, admin.getName());
-            save.setString(2, admin.getFname());
-            save.setString(3, admin.getEmail());
-            save.setString(4, "NO_PASSWORD");
-            save.setString(5, admin.getFaculty());
-            save.executeUpdate();
+        try (Connection conn = Datasource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(SAVE)
+        ){
+            stmt.setString(1, admin.getName());
+            stmt.setString(2, admin.getFname());
+            stmt.setString(3, admin.getEmail());
+            stmt.setString(4, "NO_PASSWORD");
+            stmt.setString(5, admin.getFaculty());
+            stmt.executeUpdate();
         } catch (SQLException e){
             log.error(e.getMessage());
         }
@@ -109,21 +111,23 @@ public class AdminDAO implements DAO<Admin> {
     }
 
     /**
-     * Save Lecturer t to Database and add the ID generate by the database
-     * to lecturer, if the lecturer exist it will only update the ID
-     * @param admin Lecturer object to save
+     * Save admin to the Database and add the ID generate by the database
+     * to admin, if the admin exist it will only update the ID
+     * @param admin admin object to save
      * @param password password to save inside the database
      */
     public void save(Admin admin, String password) {
         ResultSet result;
-        try{
-            save.setString(1, admin.getName());
-            save.setString(2, admin.getFname());
-            save.setString(3, admin.getEmail());
-            save.setString(4, password);
-            save.setString(5, admin.getEmail());
-            save.executeUpdate();
-            ResultSet id_set = save.getGeneratedKeys();
+        try (Connection conn = Datasource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(SAVE, RETURN_GENERATED_KEYS)
+        ){
+            stmt.setString(1, admin.getName());
+            stmt.setString(2, admin.getFname());
+            stmt.setString(3, admin.getEmail());
+            stmt.setString(4, password);
+            stmt.setString(5, admin.getEmail());
+            stmt.executeUpdate();
+            ResultSet id_set = stmt.getGeneratedKeys();
             id_set.next();
             admin.setId(id_set.getLong(1));
         } catch (SQLException | IdException e) {
@@ -132,20 +136,21 @@ public class AdminDAO implements DAO<Admin> {
     }
 
     /**
-     * Update the data of Lecturer in the database, without modifying the object lecturer,
-     * to get the new lecturer use <code>updateAndGet</code>
-     * @param admin a Lecturer
+     * Update the data of admin in the database, without modifying the object admin,
+     * to get the new admin use <code>updateAndGet</code>
+     * @param admin a admin
      */
     @Override
     public Admin update(Admin admin) throws IdException {
-
-        try {
-            update.setString(1,admin.getName());
-            update.setString(2, admin.getFname());
-            update.setString(3,admin.getEmail());
-            update.setString(4,admin.getFaculty());
-            update.setLong(5,admin.getId());
-            update.executeUpdate();
+        try  (Connection conn = Datasource.getConnection();
+              PreparedStatement stmt = conn.prepareStatement(UPDATE)
+        ){
+            stmt.setString(1,admin.getName());
+            stmt.setString(2, admin.getFname());
+            stmt.setString(3,admin.getEmail());
+            stmt.setString(4,admin.getFaculty());
+            stmt.setLong(5,admin.getId());
+            stmt.executeUpdate();
         }
         catch (SQLException e){
             log.error(e.getMessage());
@@ -156,14 +161,16 @@ public class AdminDAO implements DAO<Admin> {
 
 
     /**
-     * Delete Lecturer from Database
-     * @param admin Lecturer to be deleted from the database
+     * Delete admin from Database
+     * @param admin admin to be deleted from the database
      */
     @Override
     public void delete(Admin admin) {
-        try {
-            delete.setLong(1, admin.getId());
-            delete.executeUpdate();
+        try  (Connection conn = Datasource.getConnection();
+              PreparedStatement stmt = conn.prepareStatement(DELETE)
+        ){
+            stmt.setLong(1, admin.getId());
+            stmt.executeUpdate();
         }
         catch (SQLException e){
             log.error(e.getMessage());
