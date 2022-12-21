@@ -1,15 +1,14 @@
 package fr.univtln.lhd.model.entities.dao.slots;
 
-import fr.univtln.lhd.exceptions.IdException;
 import fr.univtln.lhd.model.entities.dao.DAO;
 import fr.univtln.lhd.model.entities.dao.Datasource;
 import fr.univtln.lhd.model.entities.slots.Subject;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.*;
-import java.util.*;
-
-import static java.sql.Statement.RETURN_GENERATED_KEYS;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 
@@ -18,32 +17,26 @@ import static java.sql.Statement.RETURN_GENERATED_KEYS;
  */
 public class SubjectDAO implements DAO<Subject> {
 
-    private final Connection conn;
-    private final PreparedStatement getAll;
-    private final PreparedStatement get;
-    private final PreparedStatement save;
-    private final PreparedStatement update;
-    private final PreparedStatement delete;
+    private static final String GETALL_STMT = "SELECT * FROM SUBJECTS";
+    private static final String GET_STMT = "SELECT * FROM SUBJECTS WHERE ID=?";
+    private static final String SAVE_STMT = "INSERT INTO SUBJECTS VALUES (DEFAULT, ?, ?)";
+    private static final String UPDATE_STMT = "UPDATE SUBJECTS SET NAME=?, HOUR_COUNT_MAX=? WHERE ID=?";
+    private static final String DELETE_STMT = "DELETE FROM SUBJECTS WHERE ID=?";
 
     /**
      * Constructor of SubjectDao, initiate connection and prepared statement
      * @throws SQLException throw a SQLException if there is a problem with the connection or database prepared statement
      */
-    public SubjectDAO() throws SQLException {
-        this.conn = Datasource.getInstance().getConnection();
-        this.get = conn.prepareStatement("SELECT * FROM SUBJECTS WHERE ID=?");
-        this.getAll = conn.prepareStatement("SELECT * FROM SUBJECTS",RETURN_GENERATED_KEYS);
-        this.save = conn.prepareStatement("INSERT INTO SUBJECTS VALUES (DEFAULT, ?, ?)");
-        this.update = conn.prepareStatement("UPDATE SUBJECTS SET NAME=?, HOUR_COUNT_MAX=? WHERE ID=?");
-        this.delete = conn.prepareStatement("DELETE FROM SUBJECTS WHERE ID=?");
-    }
+
 
     /**
      * Factory for SubjectDao
+     *
      * @return an instance of SubjectDAO
-     * @throws SQLException throw a SQLException if there is a problem with the connection or database prepared statement
      */
-    public static SubjectDAO getInstance() throws SQLException { return new SubjectDAO(); }
+    public static SubjectDAO getInstance () {
+        return new SubjectDAO();
+    }
 
     /**
      * Getter for one Subject
@@ -51,24 +44,24 @@ public class SubjectDAO implements DAO<Subject> {
      * @return May return one Subject instance
      */
     @Override
-    public Optional<Subject> get(long id) {
-        Optional<Subject> result = Optional.empty();
-        try {
-            get.setLong(1, id);
-            ResultSet rs = get.executeQuery();
+    public Optional<Subject> get(long id ) {
+        Subject result = null;
+        try (Connection conn = Datasource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(GET_STMT)
+        ) {
+            stmt.setLong(1, id);
+            ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                result = Optional.of(
-                        Subject.getInstance(
+                result = Subject.getInstance(
                         rs.getLong("ID"),
                         rs.getString("NAME"),
-                        rs.getFloat("HOUR_COUNT_MAX"))
-                );
+                        rs.getFloat("HOUR_COUNT_MAX"));
             }
-        }catch (SQLException e){
+        } catch (SQLException e) {
             log.error(e.getMessage());
         }
-        return result;
+        return Optional.ofNullable(result);
     }
 
     /**
@@ -76,10 +69,12 @@ public class SubjectDAO implements DAO<Subject> {
      * @return List of all Subjects
      */
     @Override
-    public List<Subject> getAll() {
+    public List<Subject> getAll () {
         List<Subject> subjectList = new ArrayList<>();
-        try {
-            ResultSet rs = getAll.executeQuery();
+        try (Connection conn = Datasource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(GETALL_STMT);
+             ResultSet rs = stmt.executeQuery()
+        ) {
             while (rs.next()) {
                 Subject s = Subject.getInstance(
                         rs.getLong("ID"),
@@ -87,7 +82,7 @@ public class SubjectDAO implements DAO<Subject> {
                         rs.getFloat("HOUR_COUNT_MAX"));
                 subjectList.add(s);
             }
-        } catch (SQLException e){
+        } catch (SQLException e) {
             log.error(e.getMessage());
         }
         return subjectList;
@@ -98,15 +93,17 @@ public class SubjectDAO implements DAO<Subject> {
      * @param subject Subject object to save
      */
     @Override
-    public void save(Subject subject) {
-        try{
-            save.setString(1, subject.getName());
-            save.setFloat(2, subject.getHourCountMax());
-            save.executeUpdate();
-            ResultSet id_set = save.getGeneratedKeys();
-            id_set.next();
-            subject.setId(id_set.getLong(1));
-        } catch (SQLException e){
+    public void save(Subject subject ) {
+        try (Connection conn = Datasource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(SAVE_STMT, Statement.RETURN_GENERATED_KEYS)
+        ) {
+            stmt.setString(1, subject.getName());
+            stmt.setFloat(2, subject.getHourCountMax());
+            stmt.executeUpdate();
+            ResultSet idSet = stmt.getGeneratedKeys();
+            idSet.next();
+            subject.setId(idSet.getLong(1));
+        } catch (SQLException e) {
             log.error(e.getMessage());
         }
     }
@@ -117,14 +114,15 @@ public class SubjectDAO implements DAO<Subject> {
      */
 
     @Override
-    public Subject update(Subject subject) {
-        try {
-            update.setString(1,subject.getName());
-            update.setFloat(2,subject.getHourCountMax());
-            update.setLong(3,subject.getId());
-            update.executeUpdate();
-        }
-        catch (SQLException e){
+    public Subject update(Subject subject ) {
+        try (Connection conn = Datasource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(UPDATE_STMT)
+        ) {
+            stmt.setString(1, subject.getName());
+            stmt.setFloat(2, subject.getHourCountMax());
+            stmt.setLong(3, subject.getId());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
             log.error(e.getMessage());
         }
         return subject;
@@ -135,11 +133,13 @@ public class SubjectDAO implements DAO<Subject> {
      * @param subject Subject object to delete
      */
     @Override
-    public void delete(Subject subject) {
-        try {
-            delete.setLong(1, subject.getId());
-            delete.executeUpdate();
-        } catch (SQLException e){
+    public void delete(Subject subject ) {
+        try (Connection conn = Datasource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(DELETE_STMT)
+        ) {
+            stmt.setLong(1, subject.getId());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
             log.error(e.getMessage());
         }
     }
