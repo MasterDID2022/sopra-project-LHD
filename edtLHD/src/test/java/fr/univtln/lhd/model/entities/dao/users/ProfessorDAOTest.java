@@ -12,16 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Slf4j
 class ProfessorDAOTest {
-
-    public ProfessorDAO getDAO() {
-        ProfessorDAO st = null;
-        try {
-            st = new ProfessorDAO();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return st;
-    }
+    public static final ProfessorDAO dao = ProfessorDAO.of();
 
     private Professor getRandomNewProfessor(){
         Professor professor = Professor.of("UnitTest","UnitTestFirstName",
@@ -38,13 +29,11 @@ class ProfessorDAOTest {
 
     @Test
     void CreateADAO(){
-        ProfessorDAO dao = getDAO();
         Assertions.assertNotNull(dao);
     }
 
     @Test
     void addNewProfessor(){
-        ProfessorDAO dao = getDAO();
         Professor professor = getRandomNewProfessor();
         int oldsize = dao.getAll().size();
         dao.save(professor,"1234");
@@ -54,7 +43,6 @@ class ProfessorDAOTest {
 
     @Test
     void updateAprofessor() throws IdException {
-        ProfessorDAO dao = getDAO();
         Professor professor = getRandomNewProfessor();
         Professor professor1 = Professor.of(professor.getName()+"1",professor.getFname()+"1",professor.getEmail()+"1", professor.getTitle());
         dao.save(professor,"1234");
@@ -63,9 +51,14 @@ class ProfessorDAOTest {
         assertEquals(dao.get(professor.getId()).get(),professor1);
     }
 
+    @Test//Not realy a test must be change when slot is implemented TODO
+    void getProfessorOfASlot(){
+        System.out.println(dao.getProfessorOfSlots(3));
+        assertEquals(2,1+1);
+    }
+
     @Test
     void addSameProfessor(){
-        ProfessorDAO dao = getDAO();
         Professor professor = getTheTestProfessor();
         dao.save(professor,"1234");
         int oldsize = dao.getAll().size();
@@ -76,7 +69,6 @@ class ProfessorDAOTest {
 
     @Test
     void deleteTheProfessor(){
-        ProfessorDAO dao = getDAO();
         Professor professor = getRandomNewProfessor();
         dao.save(professor,"1234");
         int oldsize = dao.getAll().size();

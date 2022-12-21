@@ -14,10 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @Slf4j
 @Disabled
 class AdminDAOTest {
-
-    public AdminDAO getDAO() {
-        return AdminDAO.of();
-    }
+    public static final AdminDAO dao = AdminDAO.of();
 
     private Admin getRandomNewAdmin(){
         Admin admin = Admin.of("UnitTest","UnitTestFirstName",
@@ -34,13 +31,11 @@ class AdminDAOTest {
 
     @Test
     void CreateADAO(){
-        AdminDAO dao = getDAO();
         Assertions.assertNotNull(dao);
     }
 
     @Test
     void addNewAdmin(){
-        AdminDAO dao = getDAO();
         Admin admin = getRandomNewAdmin();
         int oldsize = dao.getAll().size();
         dao.save(admin,"1234");
@@ -50,7 +45,6 @@ class AdminDAOTest {
 
     @Test
     void updateAadmin() throws IdException {
-        AdminDAO dao = getDAO();
         Admin admin = getRandomNewAdmin();
         Admin admin1 = Admin.of(admin.getName()+"1",admin.getFname()+"1",admin.getEmail()+"1", admin.getFaculty());
         dao.save(admin,"1234");
@@ -61,7 +55,6 @@ class AdminDAOTest {
 
     @Test
     void addSameAdmin(){
-        AdminDAO dao = getDAO();
         Admin admin = getTheTestAdmin();
         dao.save(admin,"1234");
         int oldsize = dao.getAll().size();
@@ -72,7 +65,6 @@ class AdminDAOTest {
 
     @Test
     void deleteTheAdmin(){
-        AdminDAO dao = getDAO();
         Admin admin = getRandomNewAdmin();
         dao.save(admin,"1234");
         int oldsize = dao.getAll().size();
