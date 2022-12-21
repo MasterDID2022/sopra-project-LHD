@@ -33,7 +33,7 @@ public class SlotDAO implements DAO<Slot> {
     //private final String save = "INSERT INTO slots (DEFAULT,(?),(?),(?),(?),(?)";
     //private final String  update;
 
-    private  static final String DELETE_STMT = "DELETE FROM slots WHERE id=(?) CASCADE";
+    private  static final String DELETE_STMT = "DELETE FROM slots WHERE id=(?)";
 
     public static SlotDAO getInstance () {
         return new SlotDAO();

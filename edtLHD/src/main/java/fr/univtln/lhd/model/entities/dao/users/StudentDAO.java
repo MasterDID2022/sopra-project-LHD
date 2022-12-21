@@ -38,10 +38,6 @@ public class StudentDAO implements DAO<Student> {
      * @param statement
      * @return the string into a PreparedStatement
      */
-    private PreparedStatement CompileStatement( String statement) throws SQLException {
-        Connection connection = Datasource.getInstance().getConnection();
-        return connection.prepareStatement(statement);
-    }
 
     /**
      * Getter for one Student
@@ -50,31 +46,25 @@ public class StudentDAO implements DAO<Student> {
      */
     @Override
     public Optional<Student> get(long id) throws SQLException {
-        PreparedStatement getDao; PreparedStatement getAllGroupDao;
-        try {
-            getDao = CompileStatement(get);
-            getAllGroupDao = CompileStatement(getAllGroup);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        Optional<Student> result = Optional.empty();
-        try {
-            getDao.setLong(1, id);
-            ResultSet rs = getDao.executeQuery();
+        Student result=null;
+        try (Connection conn = Datasource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(get)
+        )
+        {
+            stmt.setLong(1, id);
+            ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                result = Optional.of(
-                        Student.of(
+                result = Student.of(
                                 rs.getString("NAME"),
                                 rs.getString("FNAME"),
-                                rs.getString("EMAIL"))
-                );
-                result.get().setId(rs.getLong("ID"));
-                updateStudentGroup(result.get());
+                                rs.getString("EMAIL"));
+                result.setId(rs.getLong("ID"));
+                updateStudentGroup(result);
             }
         }catch (SQLException | IdException e){
             log.error(e.getMessage());
         }
-        return result;
+        return Optional.ofNullable(result);
     }
 
     /**
@@ -82,14 +72,17 @@ public class StudentDAO implements DAO<Student> {
      * @param student
      */
     private void updateStudentGroup(Student student) throws SQLException {
-        PreparedStatement getAllGroupDao = CompileStatement(getAllGroup);
-        getAllGroupDao.setLong(1,student.getId());
-        ResultSet resultSetGroupOfStudent = getAllGroupDao.executeQuery();
+        ResultSet resultSetGroupOfStudent;
+        try (Connection conn = Datasource.getConnection();
+                PreparedStatement getAllGroupDao = conn.prepareStatement(getAllGroup)) {
+            getAllGroupDao.setLong(1, student.getId());
+            resultSetGroupOfStudent = getAllGroupDao.executeQuery();
+        }
         GroupDAO dao = GroupDAO.getInstance();
-        long  IDgroupStudent;
+        long  idGroupStudent;
         while (resultSetGroupOfStudent.next()) {
-            IDgroupStudent = resultSetGroupOfStudent.getLong("id_group");
-            student.add(dao.get(IDgroupStudent).get());
+            idGroupStudent = resultSetGroupOfStudent.getLong("id_group");
+            student.add(dao.get(idGroupStudent).orElseThrow());
         }
     }
 
@@ -100,14 +93,10 @@ public class StudentDAO implements DAO<Student> {
     @Override
     public List<Student> getAll() throws SQLException {
         List<Student> studentList = new ArrayList<>();
-        PreparedStatement getAllDao;
-        try {
-            getAllDao = CompileStatement(getAll);
-        } catch (SQLException e) {
-            throw new SQLException(e);
-        }
-        try {
-            ResultSet rs = getAllDao.executeQuery();
+        try (Connection conn = Datasource.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(getAll);
+             ResultSet rs = stmt.executeQuery();)
+        {
             while (rs.next()) {
                 Student student = Student.of(
                                 rs.getString("NAME"),
@@ -133,14 +122,16 @@ public class StudentDAO implements DAO<Student> {
      */
     @Override
     public void save(Student student) throws SQLException {
-        PreparedStatement saveDao;
-        saveDao = CompileStatement(save);
-        try{
-            saveDao.setString(1, student.getName());
-            saveDao.setString(2, student.getFname());
-            saveDao.setString(3, student.getEmail());
-            saveDao.setString(4, "NO_PASSWORD");
-            saveDao.executeUpdate();
+        try(
+                Connection conn = Datasource.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(save)
+                )
+        {
+            stmt.setString(1, student.getName());
+            stmt.setString(2, student.getFname());
+            stmt.setString(3, student.getEmail());
+            stmt.setString(4, "NO_PASSWORD");
+            stmt.executeUpdate();
         } catch (SQLException e){
             log.error(e.getMessage());
         }
@@ -154,18 +145,18 @@ public class StudentDAO implements DAO<Student> {
      * @param password password to save inside the database
      */
     public void save(Student student, String password) throws SQLException {
-        ResultSet result;
-        PreparedStatement saveDao;
-        saveDao = CompileStatement(save);
-        try{
-            saveDao.setString(1, student.getName());
-            saveDao.setString(2, student.getFname());
-            saveDao.setString(3, student.getEmail());
-            saveDao.setString(4, password);
-            saveDao.executeUpdate();
-            ResultSet id_set = saveDao.getGeneratedKeys();
-            id_set.next();
-            student.setId(id_set.getLong(1));
+        try(
+                Connection conn = Datasource.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(save);
+                ){
+            stmt.setString(1, student.getName());
+            stmt.setString(2, student.getFname());
+            stmt.setString(3, student.getEmail());
+            stmt.setString(4, password);
+            stmt.executeUpdate();
+            ResultSet idSet = stmt.getGeneratedKeys();
+            idSet.next();
+            student.setId(idSet.getLong(1));
 
         } catch (SQLException | IdException e){
             log.error(e.getMessage());
@@ -178,16 +169,19 @@ public class StudentDAO implements DAO<Student> {
      * @throws SQLException
      */
     private void SaveStudentGroup(Student student) throws SQLException {
-        if (student.getStudendGroup()!=null){
+        if (student.getStudendGroup() != null) {
             GroupDAO dao = GroupDAO.getInstance();
             dao.save((Group) student.getStudendGroup());
-            PreparedStatement saveGroupDao = CompileStatement(saveGroup);
-            saveGroupDao.setLong(1,((Group) student.getStudendGroup()).getId());
-            saveGroupDao.setLong(2,student.getId());
-            saveGroupDao.executeUpdate();
+            try (Connection conn = Datasource.getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(saveGroup)
+            ) {
+
+                stmt.setLong(1, ((Group) student.getStudendGroup()).getId());
+                stmt.setLong(2, student.getId());
+                stmt.executeUpdate();
+            }
         }
     }
-
 
     /**
      * Update the data of Student in the database, without modifying the object student,
@@ -196,14 +190,15 @@ public class StudentDAO implements DAO<Student> {
      */
     @Override
     public Student update(Student student) throws SQLException {
-        PreparedStatement updateDao;
-        updateDao = CompileStatement(update);
-        try {
-            updateDao.setString(1,student.getName());
-            updateDao.setString(2, student.getFname());
-            updateDao.setString(3,student.getEmail());
-            updateDao.setLong(4,student.getId());
-            updateDao.executeUpdate();
+        try(
+                Connection conn = Datasource.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(update)
+                ) {
+            stmt.setString(1,student.getName());
+            stmt.setString(2, student.getFname());
+            stmt.setString(3,student.getEmail());
+            stmt.setLong(4,student.getId());
+            stmt.executeUpdate();
         }
         catch (SQLException e){
             log.error(e.getMessage());
@@ -217,11 +212,11 @@ public class StudentDAO implements DAO<Student> {
      */
     @Override
     public void delete(Student student) throws SQLException {
-        PreparedStatement deleteDao;
-        deleteDao = CompileStatement(delete);
-        try {
-            deleteDao.setLong(1,student.getId());
-            deleteDao.executeUpdate();
+        try(Connection conn = Datasource.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(delete);
+        ) {
+            stmt.setLong(1,student.getId());
+            stmt.executeUpdate();
         }
         catch (SQLException e){
             log.error(e.getMessage());
