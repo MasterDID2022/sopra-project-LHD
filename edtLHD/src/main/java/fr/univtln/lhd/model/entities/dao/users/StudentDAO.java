@@ -22,7 +22,7 @@ import static java.sql.Statement.RETURN_GENERATED_KEYS;
 public class StudentDAO implements DAO<Student> {
     private final String get="SELECT * FROM USERS WHERE ID=?";
     private final String getAll="SELECT * FROM USERS";
-    private final String save="INSERT INTO GROUP_USER VALUES (?, ?)";
+    private final String save="INSERT INTO USERS VALUES (DEFAULT,?, ?,?,?)";
     private final String update="UPDATE USERS SET name=?, fname=? ,email=? WHERE ID=?";
     private final String delete="DELETE FROM USERS WHERE ID=?";
     private final String getAllGroup="SELECT * FROM GROUP_USER WHERE ID_USER=?";
@@ -72,17 +72,16 @@ public class StudentDAO implements DAO<Student> {
      * @param student
      */
     private void updateStudentGroup(Student student) throws SQLException {
-        ResultSet resultSetGroupOfStudent;
         try (Connection conn = Datasource.getConnection();
-                PreparedStatement getAllGroupDao = conn.prepareStatement(getAllGroup)) {
+             PreparedStatement getAllGroupDao = conn.prepareStatement(getAllGroup)) {
             getAllGroupDao.setLong(1, student.getId());
-            resultSetGroupOfStudent = getAllGroupDao.executeQuery();
-        }
-        GroupDAO dao = GroupDAO.getInstance();
-        long  idGroupStudent;
-        while (resultSetGroupOfStudent.next()) {
-            idGroupStudent = resultSetGroupOfStudent.getLong("id_group");
-            student.add(dao.get(idGroupStudent).orElseThrow());
+            ResultSet resultSetGroupOfStudent = getAllGroupDao.executeQuery();
+            GroupDAO dao = GroupDAO.getInstance();
+            long idGroupStudent;
+            while (resultSetGroupOfStudent.next()) {
+                idGroupStudent = resultSetGroupOfStudent.getLong("id_group");
+                student.add(dao.get(idGroupStudent).orElseThrow());
+            }
         }
     }
 
@@ -95,8 +94,10 @@ public class StudentDAO implements DAO<Student> {
         List<Student> studentList = new ArrayList<>();
         try (Connection conn = Datasource.getConnection();
             PreparedStatement stmt = conn.prepareStatement(getAll);
-             ResultSet rs = stmt.executeQuery();)
+             )
         {
+            ResultSet rs = stmt.executeQuery();
+            log.error(rs.isClosed()+"");
             while (rs.next()) {
                 Student student = Student.of(
                                 rs.getString("NAME"),
@@ -131,7 +132,8 @@ public class StudentDAO implements DAO<Student> {
             stmt.setString(2, student.getFname());
             stmt.setString(3, student.getEmail());
             stmt.setString(4, "NO_PASSWORD");
-            stmt.executeUpdate();
+             int i = stmt.executeUpdate();
+             log.info(i+" inserts");
         } catch (SQLException e){
             log.error(e.getMessage());
         }
@@ -147,7 +149,7 @@ public class StudentDAO implements DAO<Student> {
     public void save(Student student, String password) throws SQLException {
         try(
                 Connection conn = Datasource.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(save);
+                PreparedStatement stmt = conn.prepareStatement(save,RETURN_GENERATED_KEYS);
                 ){
             stmt.setString(1, student.getName());
             stmt.setString(2, student.getFname());
