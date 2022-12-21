@@ -18,12 +18,12 @@ import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 @Slf4j
 public class AdminDAO implements DAO<Admin> {
-    private final String GET="SELECT * FROM ADMINS WHERE ID=?";
+    private static final String GET="SELECT * FROM ADMINS WHERE ID=?";
 
-    private final String GET_ALL="SELECT * FROM ADMINS";
-    private final String SAVE="INSERT INTO ADMINS VALUES (DEFAULT, ?, ?, ?, ?, ?)";
-    private final String UPDATE="UPDATE ADMINS SET name=?, fname=? ,email=?,dpt=? WHERE ID=?";
-    private final String DELETE="DELETE FROM ADMINS WHERE ID=?";
+    private static final String GET_ALL="SELECT * FROM ADMINS";
+    private static final String SAVE="INSERT INTO ADMINS VALUES (DEFAULT, ?, ?, ?, ?, ?)";
+    private static final String UPDATE="UPDATE ADMINS SET name=?, fname=? ,email=?,dpt=? WHERE ID=?";
+    private static final String DELETE="DELETE FROM ADMINS WHERE ID=?";
 
     private AdminDAO(){ };
 

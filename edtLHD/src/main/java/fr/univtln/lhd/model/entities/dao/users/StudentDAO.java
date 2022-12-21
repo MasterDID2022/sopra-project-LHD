@@ -20,13 +20,13 @@ import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 @Slf4j
 public class StudentDAO implements DAO<Student> {
-    private final String get="SELECT * FROM USERS WHERE ID=?";
-    private final String getAll="SELECT * FROM USERS";
-    private final String save="INSERT INTO USERS VALUES (DEFAULT,?, ?,?,?)";
-    private final String update="UPDATE USERS SET name=?, fname=? ,email=? WHERE ID=?";
-    private final String delete="DELETE FROM USERS WHERE ID=?";
-    private final String getAllGroup="SELECT * FROM GROUP_USER WHERE ID_USER=?";
-    private final String saveGroup="INSERT INTO GROUP_USER VALUES (?, ?)";
+    private static final String GET="SELECT * FROM USERS WHERE ID=?";
+    private static final String GET_ALl="SELECT * FROM USERS";
+    private static final String SAVE="INSERT INTO USERS VALUES (DEFAULT,?, ?,?,?)";
+    private static final String UPDATE="UPDATE USERS SET name=?, fname=? ,email=? WHERE ID=?";
+    private static final String DELETE="DELETE FROM USERS WHERE ID=?";
+    private static final String GET_ALL_GROUP="SELECT * FROM GROUP_USER WHERE ID_USER=?";
+    private static final String SAVE_GROUP="INSERT INTO GROUP_USER VALUES (?, ?)";
 
     private StudentDAO (){ }
 
@@ -48,7 +48,7 @@ public class StudentDAO implements DAO<Student> {
     public Optional<Student> get(long id) throws SQLException {
         Student result=null;
         try (Connection conn = Datasource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(get)
+             PreparedStatement stmt = conn.prepareStatement(GET)
         )
         {
             stmt.setLong(1, id);
@@ -73,7 +73,8 @@ public class StudentDAO implements DAO<Student> {
      */
     private void updateStudentGroup(Student student) throws SQLException {
         try (Connection conn = Datasource.getConnection();
-             PreparedStatement getAllGroupDao = conn.prepareStatement(getAllGroup)) {
+             PreparedStatement getAllGroupDao = conn.prepareStatement(GET_ALL_GROUP))
+        {
             getAllGroupDao.setLong(1, student.getId());
             ResultSet resultSetGroupOfStudent = getAllGroupDao.executeQuery();
             GroupDAO dao = GroupDAO.getInstance();
@@ -93,11 +94,10 @@ public class StudentDAO implements DAO<Student> {
     public List<Student> getAll() throws SQLException {
         List<Student> studentList = new ArrayList<>();
         try (Connection conn = Datasource.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(getAll);
+            PreparedStatement stmt = conn.prepareStatement(GET_ALl);
              )
         {
             ResultSet rs = stmt.executeQuery();
-            log.error(rs.isClosed()+"");
             while (rs.next()) {
                 Student student = Student.of(
                                 rs.getString("NAME"),
@@ -125,15 +125,15 @@ public class StudentDAO implements DAO<Student> {
     public void save(Student student) throws SQLException {
         try(
                 Connection conn = Datasource.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(save)
+                PreparedStatement stmt = conn.prepareStatement(SAVE)
                 )
         {
             stmt.setString(1, student.getName());
             stmt.setString(2, student.getFname());
             stmt.setString(3, student.getEmail());
             stmt.setString(4, "NO_PASSWORD");
-             int i = stmt.executeUpdate();
-             log.info(i+" inserts");
+            stmt.executeUpdate();
+            saveStudentGroup(student);
         } catch (SQLException e){
             log.error(e.getMessage());
         }
@@ -149,7 +149,7 @@ public class StudentDAO implements DAO<Student> {
     public void save(Student student, String password) throws SQLException {
         try(
                 Connection conn = Datasource.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(save,RETURN_GENERATED_KEYS);
+                PreparedStatement stmt = conn.prepareStatement(SAVE,RETURN_GENERATED_KEYS);
                 ){
             stmt.setString(1, student.getName());
             stmt.setString(2, student.getFname());
@@ -159,7 +159,7 @@ public class StudentDAO implements DAO<Student> {
             ResultSet idSet = stmt.getGeneratedKeys();
             idSet.next();
             student.setId(idSet.getLong(1));
-
+            saveStudentGroup(student);
         } catch (SQLException | IdException e){
             log.error(e.getMessage());
         }
@@ -170,12 +170,12 @@ public class StudentDAO implements DAO<Student> {
      * @param student
      * @throws SQLException
      */
-    private void SaveStudentGroup(Student student) throws SQLException {
+    private void saveStudentGroup(Student student) throws SQLException {
         if (student.getStudendGroup() != null) {
             GroupDAO dao = GroupDAO.getInstance();
             dao.save((Group) student.getStudendGroup());
             try (Connection conn = Datasource.getConnection();
-                 PreparedStatement stmt = conn.prepareStatement(saveGroup)
+                 PreparedStatement stmt = conn.prepareStatement(SAVE_GROUP)
             ) {
 
                 stmt.setLong(1, ((Group) student.getStudendGroup()).getId());
@@ -194,7 +194,7 @@ public class StudentDAO implements DAO<Student> {
     public Student update(Student student) throws SQLException {
         try(
                 Connection conn = Datasource.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(update)
+                PreparedStatement stmt = conn.prepareStatement(UPDATE)
                 ) {
             stmt.setString(1,student.getName());
             stmt.setString(2, student.getFname());
@@ -215,7 +215,7 @@ public class StudentDAO implements DAO<Student> {
     @Override
     public void delete(Student student) throws SQLException {
         try(Connection conn = Datasource.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(delete);
+            PreparedStatement stmt = conn.prepareStatement(DELETE);
         ) {
             stmt.setLong(1,student.getId());
             stmt.executeUpdate();
