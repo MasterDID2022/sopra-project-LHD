@@ -2,28 +2,25 @@ package fr.univtln.lhd.model.entities.dao.slots;
 
 import fr.univtln.lhd.exceptions.IdException;
 import fr.univtln.lhd.model.entities.slots.Classroom;
-import fr.univtln.lhd.model.entities.slots.Group;
 import fr.univtln.lhd.model.entities.slots.Slot;
 import fr.univtln.lhd.model.entities.slots.Subject;
-import fr.univtln.lhd.model.entities.users.Professor;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.threeten.extra.Interval;
 
 import java.sql.SQLException;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class SlotDAOTest {
 
-    public SlotDAO getDAO() {
+    public SlotDAO getDAO () {
         return SlotDAO.getInstance();
     }
 
-    private Slot getRandomNewSlot(){
+    private Slot getRandomNewSlot () {
         try {
             Classroom classroom = ClassroomDAO.getInstance().get(3).get();
             Subject subject = SubjectDAO.getInstance().get(1).get();
@@ -34,37 +31,37 @@ class SlotDAOTest {
                     subject,
                     new ArrayList<>(),
                     new ArrayList<>(),
-                    Interval.of(Instant.ofEpochSecond((long) (1+Math.random())), Instant.ofEpochSecond((long) (100+Math.random())))
+                    Interval.of(Instant.ofEpochSecond((long) (1 + Math.random())), Instant.ofEpochSecond((long) (100 + Math.random())))
             );
-        }catch (SQLException e){
-            throw new RuntimeException();
+        } catch (SQLException e) {
+            throw new AssertionError();
         }
     }
 
-    private Slot getTestSlot(){
+    private Slot getTestSlot () {
         try {
             return getDAO().get(3).get();
-        }catch (SQLException e){
-            throw new RuntimeException();
+        } catch (Exception e) {
+            throw new AssertionError();
         }
     }
 
     @Test
-    void CreateDAO(){
+    void CreateDAO () {
         SlotDAO dao = getDAO();
         Assertions.assertNotNull(dao);
     }
 
     @Test
-    void saveNewSlot(){
+    void saveNewSlot () {
         SlotDAO dao = getDAO();
         Slot slot = getRandomNewSlot();
         try {
             int oldSize = dao.getAll().size();
             dao.save(slot);
-            assertEquals(oldSize+1, dao.getAll().size());
+            assertEquals(oldSize + 1, dao.getAll().size());
             dao.delete(slot);
-        } catch (SQLException e){
+        } catch (SQLException e) {
             throw new RuntimeException();
         }
     }
@@ -83,7 +80,7 @@ class SlotDAOTest {
     }
 
     @Test
-    void updateSlot() {
+    void updateSlot () {
         SlotDAO dao = getDAO();
         Slot slot = getRandomNewSlot();
         Slot slot1 = Slot.getInstance(
@@ -99,16 +96,16 @@ class SlotDAOTest {
             dao.save(slot);
             slot1.setId(slot.getId());
             dao.update(slot1);
-            assertEquals(dao.get(slot.getId()).get(), slot1);
+            assertEquals(dao.get(slot.getId()).orElseThrow(AssertionError::new), slot1);
 
             dao.delete(slot);
-        } catch (SQLException | IdException e){
+        } catch (SQLException | IdException e) {
             throw new RuntimeException();
         }
     }
 
     @Test
-    void addSameSlot(){
+    void addSameSlot () {
         SlotDAO dao = getDAO();
         Slot slot = getTestSlot();
         final String defaultMsg = "Done Save Without Error";
@@ -123,7 +120,7 @@ class SlotDAOTest {
     }
 
     @Test
-    void deleteSlot(){
+    void deleteSlot () {
         SlotDAO dao = getDAO();
         Slot slot = getRandomNewSlot();
 
@@ -131,7 +128,7 @@ class SlotDAOTest {
             dao.save(slot);
             int oldSize = dao.getAll().size();
             dao.delete(slot);
-            assertEquals(oldSize-1,dao.getAll().size());
+            assertEquals(oldSize - 1, dao.getAll().size());
         } catch (SQLException e) {
             throw new RuntimeException();
         }

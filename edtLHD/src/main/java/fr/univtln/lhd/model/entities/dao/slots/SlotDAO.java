@@ -90,7 +90,7 @@ public class SlotDAO implements DAO<Slot> {
              ResultSet rs = stmt.executeQuery()
         ) {
             while (rs.next()) {
-                slotList.add( get( rs.getLong("ID") ).get() );
+                slotList.add( get( rs.getLong("ID") ).orElseThrow(SQLException::new) );
             }
         } catch (SQLException e) {
             log.error(e.getMessage());
@@ -128,10 +128,7 @@ public class SlotDAO implements DAO<Slot> {
         ){
             stmt.setString(1, getTimeRangeOfInterval(slot.getTimeRange()) );
             stmt.setLong(2, slot.getClassroom().getId() );
-            if (slot.getMemo().isPresent())
-                stmt.setString(3, slot.getMemo().get() );
-            else
-                stmt.setNull(3, Types.VARCHAR);
+            stmt.setObject(3,slot.getMemo().orElse(null));
             stmt.setLong(4, slot.getSubject().getId() );
             stmt.setString(5, slot.getType().name() );
 
@@ -159,10 +156,7 @@ public class SlotDAO implements DAO<Slot> {
         ){
             stmt.setString(1, getTimeRangeOfInterval( slot.getTimeRange() ));
             stmt.setLong(2, slot.getClassroom().getId() );
-            if (slot.getMemo().isPresent())
-                stmt.setString(3, slot.getMemo().get() );
-            else
-                stmt.setNull(3, Types.VARCHAR);
+            stmt.setObject(3, slot.getMemo().orElse(null));
             stmt.setLong(4, slot.getSubject().getId() );
             stmt.setString(5, slot.getType().name() );
 
