@@ -12,7 +12,6 @@ import java.sql.SQLException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Slf4j
-@Disabled
 class AdminDAOTest {
     public static final AdminDAO dao = AdminDAO.of();
 
