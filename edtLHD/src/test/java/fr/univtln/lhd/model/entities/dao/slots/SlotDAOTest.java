@@ -62,7 +62,7 @@ class SlotDAOTest {
             assertEquals(oldSize + 1, dao.getAll().size());
             dao.delete(slot);
         } catch (SQLException e) {
-            throw new RuntimeException();
+            throw new AssertionError();
         }
     }
 
@@ -100,7 +100,7 @@ class SlotDAOTest {
 
             dao.delete(slot);
         } catch (SQLException | IdException e) {
-            throw new RuntimeException();
+            throw new AssertionError();
         }
     }
 
@@ -130,7 +130,7 @@ class SlotDAOTest {
             dao.delete(slot);
             assertEquals(oldSize - 1, dao.getAll().size());
         } catch (SQLException e) {
-            throw new RuntimeException();
+            throw new AssertionError();
         }
     }
 }
