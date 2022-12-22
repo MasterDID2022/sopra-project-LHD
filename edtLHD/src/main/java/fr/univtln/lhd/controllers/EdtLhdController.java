@@ -1,6 +1,10 @@
-package fr.univtln.lhd.controller;
+package fr.univtln.lhd.controllers;
 
+import fr.univtln.lhd.model.entities.slots.Group;
+import fr.univtln.lhd.model.entities.slots.Slot;
 import fr.univtln.lhd.view.edt.EdtGrid;
+import fr.univtln.lhd.view.edt.SlotUI;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -10,8 +14,11 @@ import javafx.scene.layout.FlowPane;
 import java.net.URL;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
+import javafx.scene.layout.Pane;
 import org.threeten.extra.Interval;
 
 public class EdtLhdController implements Initializable {
@@ -19,9 +26,13 @@ public class EdtLhdController implements Initializable {
     @FXML public BorderPane borderPane;
     @FXML public Label edtTopDateLabel;
     @FXML public Label edtTopSectionLabel;
+    @FXML public Pane addSlotPane;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+
+        addSlotPane.setVisible(false);
+
         EdtGrid edtGrid = EdtGrid.getInstance();
 
         edtTopSectionLabel.setText("Semaine");
@@ -47,27 +58,26 @@ public class EdtLhdController implements Initializable {
 
         //flowPane.setStyle("-fx-background-color: blue"); //java setting css line, always has the last word over css file
 
-
-
         edtGrid.add(flowPane, "MERCREDI", "09:00", "12:00");
         edtGrid.add(flowPane2, "VENDREDI", "14:00", "16:00");
         edtGrid.add(flowPane3, EdtGrid.Days.MARDI, "13:00", "19:00");
 
-        //Instant parse use UTC format, here it's UTC+1.. so 09:02am is actually 10:02am
-        //2022-12-17T09:02:00.00Z => Friday 17 December 2022, 10:02 am in timezone UTC+1
-        edtGrid.add(flowPane4, Interval.of(Instant.parse("2022-12-17T09:02:00.00Z"), Duration.ofHours(3)));
-
-
-
+        //2022-12-16T09:02:00.00+01:00 => Friday 16 December 2022, 09:02am in timezone UTC+1
+        //Interval timeRange = Interval.of(Instant.parse("2022-12-16T09:02:00.00+01:00"), Duration.ofHours(3));
 
         //List<Group> groups = new ArrayList<>();
         //groups.add( Group.getInstance("M1 Info") );
-        //Slot cours_test = Slot.getInstance(Slot.SlotType.CM, 0, 0, groups, "08:00"); //timerange wrong
+        //groups.add( Group.getInstance("M5 SVT") );
+        //Slot courTest = Slot.getInstance(Slot.SlotType.CM, 0, 0, groups, timeRange);
 
-        //SlotUI slotui_test = SlotUI.getInstance(cours_test);
-
-        //edtGrid.
+        //edtGrid.add(courTest);
 
         borderPane.setCenter(edtGrid);
     }
+
+    @FXML
+    protected void addBtnOnClick(ActionEvent actionEvent) { addSlotPane.setVisible(true); }
+
+    @FXML
+    protected void addCancelBtnOnClick(ActionEvent actionEvent) { addSlotPane.setVisible(false); }
 }

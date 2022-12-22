@@ -1,9 +1,11 @@
 package fr.univtln.lhd.view.edt;
 
+import fr.univtln.lhd.model.entities.slots.Slot;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -15,7 +17,7 @@ import org.threeten.extra.Interval;
 public class EdtGrid extends Grid {
 
     public enum Days { LUNDI, MARDI, MERCREDI, JEUDI, VENDREDI }
-    private final List<String> hours;
+    private List<String> hours;
 
     private EdtGrid(int rowNumber, int columnNumber){
         super( Grid.builder(rowNumber, columnNumber) );
@@ -45,9 +47,31 @@ public class EdtGrid extends Grid {
         }
 
         this.modifyColumnConstraints(0, 65);
+        setupEmptyGrid();
+        changeTodayStyleClass();
     }
 
     public static EdtGrid getInstance(){ return new EdtGrid(11, 6); }
+
+    private void setupEmptyGrid(){
+        for (int i = 1; i < getRowNumber(); i++){
+            for (int j = 1; j < getColumnNumber(); j++){
+                FlowPane f = new FlowPane( new Label("") );
+                f.getStyleClass().add("cell");
+                add(f, i, j);
+            }
+        }
+    }
+
+    private void changeTodayStyleClass(){
+        int dayIndex = LocalDate.now().getDayOfWeek().ordinal();
+        if (dayIndex >= Days.values().length) return;
+
+        for (int i = 0; i < getRowNumber(); i++)
+            get(i, dayIndex+1)
+                    .getStyleClass()
+                    .add(i == 0 ? "today" : "cell_today");
+    }
 
     private String convertIntToHourLabel(int hour){
         String hourStart = "";
@@ -75,17 +99,25 @@ public class EdtGrid extends Grid {
         LocalDateTime localDateTimeStart = LocalDateTime.ofInstant(interval.getStart(), ZoneId.systemDefault());
         LocalTime localTimeEnd = LocalTime.ofInstant(interval.getEnd(), ZoneId.systemDefault());
 
-        Days day = Days.values()[ localDateTimeStart.getDayOfWeek().ordinal()-1 ];
+        int dayIndex = localDateTimeStart.getDayOfWeek().ordinal();
+        if (dayIndex >= Days.values().length) dayIndex = Days.values().length-1;
+
+        Days day = Days.values()[ dayIndex ];
 
         String hourStart = convertIntToHourLabel( localDateTimeStart.getHour() );
         String hourEnd = convertIntToHourLabel( localTimeEnd.getHour() );
 
         add(node, day, hourStart, hourEnd);
     }
-    /*
+
     public void add(SlotUI slotUI){
         //get slot ui info, then call add (node, day, hourstart, hourend)
         //wip
+        add(slotUI, slotUI.getSlot().getTimeRange());
     }
-     */
+
+    public void add(Slot slot){
+        SlotUI slotUI = SlotUI.of(slot);
+        add( slotUI );
+    }
 }

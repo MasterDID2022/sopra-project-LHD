@@ -35,7 +35,7 @@ public class Grid extends GridPane {
         private double cellPrefWidth = 30;
         private double cellMaxWidth = 1000;
 
-        private boolean isGridLinesVisible = true;
+        private boolean isGridLinesVisible = false;
 
         private Builder(int rowNumber, int columnNumber){
             this.rowNumber = rowNumber;
@@ -86,6 +86,14 @@ public class Grid extends GridPane {
 
     @Override
     public void add(Node node, int rowIndex, int columnIndex, int rowSpan, int columnSpan) { super.add(node, columnIndex, rowIndex, columnSpan, rowSpan); }
+
+    public Node get(int rowIndex, int columnIndex){
+        for (Node node : this.getChildren()){
+            if(GridPane.getRowIndex(node) == rowIndex && GridPane.getColumnIndex(node) == columnIndex)
+                return node;
+        }
+        return null;
+    }
 
     public void addRow(){
         RowConstraints rowConstraints = new RowConstraints(cellMinHeight, cellPrefHeight, cellMaxHeight, Priority.ALWAYS, VPos.CENTER, true);

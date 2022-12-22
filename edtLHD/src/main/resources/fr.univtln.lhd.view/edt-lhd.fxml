@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="350.0" prefWidth="550.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.univtln.lhd.controller.EdtLhdController">
+<AnchorPane prefHeight="350.0" prefWidth="550.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.univtln.lhd.controllers.EdtLhdController">
    <children>
       <BorderPane fx:id="borderPane" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <padding>
@@ -28,11 +28,34 @@
                         </Label>
                      </children>
                   </VBox>
+                  <HBox prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+                  <Button mnemonicParsing="false" onAction="#addBtnOnClick" styleClass="addBtn" text="ADD" textAlignment="CENTER" />
                </children>
                <BorderPane.margin>
                   <Insets bottom="10.0" />
                </BorderPane.margin></HBox>
          </top>
       </BorderPane>
+      <Pane fx:id="addSlotPane" prefHeight="166.0" prefWidth="239.0" styleClass="addSlotPane" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="50.0">
+         <padding>
+            <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+         </padding>
+         <children>
+            <VBox prefHeight="166.0" prefWidth="239.0">
+               <children>
+                  <HBox prefHeight="46.0" prefWidth="239.0" VBox.vgrow="ALWAYS" />
+                  <HBox alignment="CENTER" layoutX="10.0" layoutY="10.0" prefHeight="38.0" prefWidth="239.0" spacing="25.0">
+                     <children>
+                        <Button mnemonicParsing="false" prefWidth="70.0" styleClass="addOkBtn" text="Ok" textAlignment="CENTER" HBox.hgrow="ALWAYS" />
+                        <Button layoutX="101.0" layoutY="17.0" mnemonicParsing="false" onAction="#addCancelBtnOnClick" prefWidth="70.0" styleClass="addCancelBtn" text="Annuler" />
+                     </children>
+                  </HBox>
+               </children>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </VBox>
+         </children>
+      </Pane>
    </children>
 </AnchorPane>
