@@ -34,12 +34,6 @@ public class StudentDAO implements DAO<Student> {
 
 
     /**
-     * Compile a string into a prepared statement
-     * @param statement
-     * @return the string into a PreparedStatement
-     */
-
-    /**
      * Getter for one Student
      * @param id numerical long identifier for getting the Student
      * @return May return one Student
