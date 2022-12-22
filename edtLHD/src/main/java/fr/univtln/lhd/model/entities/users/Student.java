@@ -80,7 +80,8 @@ public class Student extends User {
     public int hashCode() {
         return super.hashCode();
     }
-
-
-
+    @Override
+    public String toString() {
+        return super.toString()+"from "+this.getStudendGroup();
+    }
 }

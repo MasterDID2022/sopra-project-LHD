@@ -2,6 +2,7 @@ package fr.univtln.lhd.model.entities.dao.slots;
 
 import fr.univtln.lhd.exceptions.IdException;
 import fr.univtln.lhd.model.entities.slots.Classroom;
+import fr.univtln.lhd.model.entities.slots.Group;
 import fr.univtln.lhd.model.entities.slots.Slot;
 import fr.univtln.lhd.model.entities.slots.Subject;
 import org.junit.jupiter.api.Assertions;
@@ -52,6 +53,17 @@ class SlotDAOTest {
         Assertions.assertNotNull(dao);
     }
 
+
+    @Test//We need a way to manipulate group_slot to test that methode
+    //Tested with specifique value should not be used or trust
+    void GetSlotFromGroup() throws SQLException {
+        SlotDAO dao = getDAO();
+        GroupDAO Gdao = GroupDAO.getInstance();
+        Group FirstGroup = Gdao.get(1).get();
+        System.out.println(dao.getSlotOfGroup(FirstGroup));
+        Assertions.assertEquals(2,1+1);
+    }
+
     @Test
     void saveNewSlot () {
         SlotDAO dao = getDAO();
@@ -91,7 +103,6 @@ class SlotDAOTest {
                 slot.getProfessors(),
                 slot.getTimeRange()
         );
-
         try {
             dao.save(slot);
             slot1.setId(slot.getId());

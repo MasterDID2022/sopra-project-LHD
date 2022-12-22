@@ -4,21 +4,23 @@ import fr.univtln.lhd.exceptions.IdException;
 import fr.univtln.lhd.model.entities.dao.DAO;
 import fr.univtln.lhd.model.entities.dao.Datasource;
 import fr.univtln.lhd.model.entities.dao.users.ProfessorDAO;
+import fr.univtln.lhd.model.entities.dao.users.StudentDAO;
+import fr.univtln.lhd.model.entities.slots.Group;
 import fr.univtln.lhd.model.entities.slots.Slot;
+import fr.univtln.lhd.model.entities.users.Student;
 import lombok.extern.slf4j.Slf4j;
 import org.threeten.extra.Interval;
 
 import java.sql.*;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 @Slf4j
-/*
- */
 public class SlotDAO implements DAO<Slot> {
     private SlotDAO () {
     }
@@ -26,6 +28,8 @@ public class SlotDAO implements DAO<Slot> {
     private static final String GET_STMT = "SELECT * FROM SLOTS WHERE ID=?";
     private static final String SAVE_STMT = "INSERT INTO SLOTS VALUES (DEFAULT,?::tstzrange,?,?,?,?)";
     private static final String UPDATE_STMT = "UPDATE SLOTS SET TIMERANGE=?::tstzrange, CLASSROOM=?, MEMO=?, SUBJECT=?, TYPE=? WHERE ID=?";
+
+    private static final String GET_SLOT_FROM_GROUP_STMT = "SELECT ID_SLOT FROM GROUP_SLOT WHERE ID_GROUP= ?";
 
     private static final String GETALL_STMT = "SELECT * FROM SLOTS";
 
@@ -45,7 +49,6 @@ public class SlotDAO implements DAO<Slot> {
     @Override
     public Optional<Slot> get ( final long id ) throws SQLException {
         Optional<Slot> result = Optional.empty();
-
         try (Connection conn = Datasource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(GET_STMT)
         ) {
@@ -55,7 +58,6 @@ public class SlotDAO implements DAO<Slot> {
             if (!rs.next()) {
                 return Optional.empty();
             }
-
             result = Optional.of(
                     Slot.getInstance(
                             Slot.SlotType.valueOf(rs.getString("TYPE")),
@@ -105,11 +107,35 @@ public class SlotDAO implements DAO<Slot> {
         String upper = time.substring( time.indexOf("\",\"")+3, time.length()-2);
         upper = upper.substring( 0, upper.indexOf(':', 15)+3);
         String[] intervals = new String[] {lower, upper};
-
         return Interval.of(
                 Timestamp.valueOf(intervals[0]).toInstant().atZone(ZoneId.systemDefault()).toInstant(),
                 Timestamp.valueOf(intervals[1]).toInstant().atZone(ZoneId.systemDefault()).toInstant()
         );
+    }
+
+    /**
+     * Take a group and return a List of the slot with this group
+     * @param group
+     * @return List of slot
+     * @throws SQLException
+     */
+    public  List<Slot> getSlotOfGroup (Group group) throws SQLException {
+        List<Slot> slotList= new ArrayList<>();
+        try (Connection conn = Datasource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(GET_SLOT_FROM_GROUP_STMT)
+        ){
+            stmt.setLong(1,group.getId());
+            stmt.executeQuery();
+            ResultSet rs =stmt.getResultSet();
+            while (rs.next()) {
+                slotList.add(get(rs.getLong(1)).orElseThrow(SQLException::new) );
+            }
+        }
+        catch (SQLException e) {
+            log.error(e.getMessage());
+            throw e;
+        }
+        return Collections.unmodifiableList(slotList);
     }
 
     private String getTimeRangeOfInterval(Interval interval){
