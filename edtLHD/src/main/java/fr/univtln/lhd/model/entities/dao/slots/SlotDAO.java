@@ -3,20 +3,18 @@ package fr.univtln.lhd.model.entities.dao.slots;
 import fr.univtln.lhd.exceptions.IdException;
 import fr.univtln.lhd.model.entities.dao.DAO;
 import fr.univtln.lhd.model.entities.dao.Datasource;
-import fr.univtln.lhd.model.entities.slots.Classroom;
-import fr.univtln.lhd.model.entities.slots.Group;
+import fr.univtln.lhd.model.entities.dao.users.ProfessorDAO;
 import fr.univtln.lhd.model.entities.slots.Slot;
-import fr.univtln.lhd.model.entities.slots.Subject;
-import fr.univtln.lhd.model.entities.users.Professor;
 import lombok.extern.slf4j.Slf4j;
 import org.threeten.extra.Interval;
 
 import java.sql.*;
-import java.time.Instant;
+import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 @Slf4j
 /*
@@ -25,13 +23,11 @@ public class SlotDAO implements DAO<Slot> {
     private SlotDAO () {
     }
 
-    private static final String SELECT_STMT = """
-            select id,date_part('epoch',lower(timerange)) as begin_epoch,
-            date_part('epoch',upper(timerange)) as end_epoch,classroom,memo,subject,type
-            from slots WHERE id = (?)
-            """;
-    //private final String save = "INSERT INTO slots (DEFAULT,(?),(?),(?),(?),(?)";
-    //private final String  update;
+    private static final String GET_STMT = "SELECT * FROM SLOTS WHERE ID=?";
+    private static final String SAVE_STMT = "INSERT INTO SLOTS VALUES (DEFAULT,?::tstzrange,?,?,?,?)";
+    private static final String UPDATE_STMT = "UPDATE SLOTS SET TIMERANGE=?::tstzrange, CLASSROOM=?, MEMO=?, SUBJECT=?, TYPE=? WHERE ID=?";
+
+    private static final String GETALL_STMT = "SELECT * FROM SLOTS";
 
     private  static final String DELETE_STMT = "DELETE FROM slots WHERE id=(?)";
 
@@ -48,8 +44,10 @@ public class SlotDAO implements DAO<Slot> {
      */
     @Override
     public Optional<Slot> get ( final long id ) throws SQLException {
+        Optional<Slot> result = Optional.empty();
+
         try (Connection conn = Datasource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(SELECT_STMT)
+             PreparedStatement stmt = conn.prepareStatement(GET_STMT)
         ) {
             stmt.setLong(1, id);
             stmt.executeQuery();
@@ -57,20 +55,26 @@ public class SlotDAO implements DAO<Slot> {
             if (!rs.next()) {
                 return Optional.empty();
             }
-            long fetchedID = rs.getLong(1);
-            final Instant fetchedBegin = Instant.ofEpochSecond(rs.getLong(2));
-            final Instant fetchedEnd = Instant.ofEpochSecond(rs.getLong(3));
-            final Interval fetchedInterval = Interval.of(fetchedBegin, fetchedEnd);
-            final Classroom fetchedClassroom = ClassroomDAO.getInstance().get(rs.getLong(4)).orElseThrow(SQLException::new);
-            final String fetchedMemo = rs.getString(5);
-            final Subject fetchedSubject = SubjectDAO.getInstance().get(rs.getLong(6)).orElseThrow(SQLException::new);
-            final Slot.SlotType fetchedType = Slot.SlotType.valueOf(rs.getString(7));
-            final List<Group> fetchedGroup = new ArrayList<>(GroupDAO.getInstance().getGroupOfSlot(id)); //the returned list is unmodifiable, requiring a copy.
-            return Optional.of(Slot.getInstance(fetchedID, fetchedType, fetchedClassroom, fetchedSubject, fetchedGroup, List.of(Professor.of("test","test","test@lhd.org","test")),fetchedInterval, fetchedMemo));
+
+            result = Optional.of(
+                    Slot.getInstance(
+                            Slot.SlotType.valueOf(rs.getString("TYPE")),
+                            ClassroomDAO.getInstance().get(rs.getLong("CLASSROOM")).orElseThrow(SQLException::new),
+                            SubjectDAO.getInstance().get(rs.getLong("SUBJECT")).orElseThrow(SQLException::new),
+                            new ArrayList<>(GroupDAO.getInstance().getGroupOfSlot(id)), //the returned list is unmodifiable, requiring a copy.
+                            ProfessorDAO.of().getProfessorOfSlots(id),
+                            getIntervalOfTimeRange( rs.getString("TIMERANGE") ),
+                            rs.getString("MEMO")
+                    )
+            );
+            result.get().setId( rs.getLong("ID") );
         } catch (SQLException e) {
             log.error(e.getMessage());
             throw e;
+        } catch (IdException e){
+            log.error(e.getMessage());
         }
+        return result;
     }
 
     /**
@@ -79,9 +83,37 @@ public class SlotDAO implements DAO<Slot> {
      * @return List of all Slots
      */
     @Override
-    public List<Slot> getAll () {
-        //wip
-        return Collections.emptyList();
+    public List<Slot> getAll () throws SQLException {
+        List<Slot> slotList = new ArrayList<>();
+        try (Connection conn = Datasource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(GETALL_STMT);
+             ResultSet rs = stmt.executeQuery()
+        ) {
+            while (rs.next()) {
+                slotList.add( get( rs.getLong("ID") ).get() );
+            }
+        } catch (SQLException e) {
+            log.error(e.getMessage());
+            throw e;
+        }
+        return slotList;
+    }
+
+    private Interval getIntervalOfTimeRange(String timeRange){
+        String time = timeRange.substring(2);
+        String lower = time.substring(0, time.indexOf(':', 15)+3);
+        String upper = time.substring( time.indexOf("\",\"")+3, time.length()-2);
+        upper = upper.substring( 0, upper.indexOf(':', 15)+3);
+        String[] intervals = new String[] {lower, upper};
+
+        return Interval.of(
+                Timestamp.valueOf(intervals[0]).toInstant().atZone(ZoneId.systemDefault()).toInstant(),
+                Timestamp.valueOf(intervals[1]).toInstant().atZone(ZoneId.systemDefault()).toInstant()
+        );
+    }
+
+    private String getTimeRangeOfInterval(Interval interval){
+        return "[\"" + interval.getStart().toString() + "\",\"" + interval.getEnd().toString() + "\")";
     }
 
     /**
@@ -90,8 +122,29 @@ public class SlotDAO implements DAO<Slot> {
      * @param slot Slot object to save
      */
     @Override
-    public void save ( Slot slot ) {
-        //wip
+    public void save ( Slot slot ) throws SQLException {
+        try (Connection conn = Datasource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(SAVE_STMT, RETURN_GENERATED_KEYS)
+        ){
+            stmt.setString(1, getTimeRangeOfInterval(slot.getTimeRange()) );
+            stmt.setLong(2, slot.getClassroom().getId() );
+            if (slot.getMemo().isPresent())
+                stmt.setString(3, slot.getMemo().get() );
+            else
+                stmt.setNull(3, Types.VARCHAR);
+            stmt.setLong(4, slot.getSubject().getId() );
+            stmt.setString(5, slot.getType().name() );
+
+            stmt.executeUpdate();
+            ResultSet idSet = stmt.getGeneratedKeys();
+            idSet.next();
+            slot.setId( idSet.getLong(1) );
+        } catch (SQLException e){
+            log.error(e.getMessage());
+            throw e;
+        } catch (IdException e){
+            log.error(e.getMessage());
+        }
     }
 
     /**
@@ -100,8 +153,28 @@ public class SlotDAO implements DAO<Slot> {
      * @param slot Slot instance to update
      */
     @Override
-    public Slot update ( final Slot slot ) {
-        return null;
+    public Slot update ( final Slot slot ) throws SQLException {
+        try (Connection conn = Datasource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(UPDATE_STMT)
+        ){
+            stmt.setString(1, getTimeRangeOfInterval( slot.getTimeRange() ));
+            stmt.setLong(2, slot.getClassroom().getId() );
+            if (slot.getMemo().isPresent())
+                stmt.setString(3, slot.getMemo().get() );
+            else
+                stmt.setNull(3, Types.VARCHAR);
+            stmt.setLong(4, slot.getSubject().getId() );
+            stmt.setString(5, slot.getType().name() );
+
+            stmt.setLong(6, slot.getId() );
+            stmt.executeUpdate();
+        }
+        catch (SQLException e){
+            log.error(e.getMessage());
+            throw e;
+        }
+
+        return slot;
     }
 
     /**
@@ -110,21 +183,16 @@ public class SlotDAO implements DAO<Slot> {
      * @param slot Slot object to delete
      */
     @Override
-    public void delete (final  Slot slot ) {
+    public void delete (final  Slot slot ) throws SQLException {
         try (Connection conn = Datasource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(DELETE_STMT)){
-            final long id = slot.getId();
-            if (id<0) { throw new IdException();}
-            stmt.setLong(1,id);
-            if(stmt.executeUpdate() == 0) {
-                throw new IdException("ID" + id + "doesn't exist");
-            }
-        }
-
-        catch (SQLException | IdException e) {
+             PreparedStatement stmt = conn.prepareStatement(DELETE_STMT)
+        ){
+            stmt.setLong(1, slot.getId());
+            stmt.executeUpdate();
+        }catch (SQLException e) {
             log.error(e.getMessage());
+            throw e;
         }
-        //wip
     }
 }
 
