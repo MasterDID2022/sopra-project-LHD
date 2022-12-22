@@ -1,5 +1,6 @@
 package fr.univtln.lhd.model.entities.dao.slots;
 
+import fr.univtln.lhd.exceptions.IdException;
 import fr.univtln.lhd.model.entities.slots.Group;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -48,7 +49,7 @@ class GroupDAOTest {
             group1.setId(group.getId());
             dao.update(group1);
             assertEquals(dao.get(group.getId()).get(), group1);
-        } catch (SQLException e){
+        } catch (SQLException | IdException e){
             throw new RuntimeException();
         }
     }

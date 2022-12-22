@@ -1,5 +1,6 @@
 package fr.univtln.lhd.model.entities.dao.slots;
 
+import fr.univtln.lhd.exceptions.IdException;
 import fr.univtln.lhd.model.entities.slots.Classroom;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -53,7 +54,7 @@ class ClassroomDAOTest {
             classroom1.setId(classroom.getId());
             dao.update(classroom1);
             assertEquals(dao.get(classroom.getId()).get(), classroom1);
-        } catch (SQLException e){
+        } catch (SQLException | IdException e){
             throw new RuntimeException();
         }
     }

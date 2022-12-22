@@ -1,5 +1,6 @@
 package fr.univtln.lhd.model.entities.slots;
 
+import fr.univtln.lhd.exceptions.IdException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,21 +25,11 @@ public class Subject {
      * @return an instance of Subject
      */
     public static Subject getInstance(String name, float hourCountMax){
-        return getInstance(-1, name, hourCountMax);
+        return new Subject(-1, name, hourCountMax);
     }
 
-    /**
-     * Factory for a Subject
-     * @param id long identifier for a Classroom (default -1)
-     * @param name name of the subject
-     * @param hourCountMax max number of hours dedicated to this subject
-     * @return an instance of Subject
-     */
-    public static Subject getInstance(long id, String name, float hourCountMax) {
-        return new Subject(id, name, hourCountMax);
-    }
-
-    public void setId(long id){
+    public void setId(long id) throws IdException {
+        if (id<0) throw new IdException();
         this.id = id;
     }
 
