@@ -2,7 +2,6 @@ package fr.univtln.lhd.model.entities.users;
 
 import fr.univtln.lhd.model.entities.slots.Group;
 import lombok.Getter;
-import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,14 +12,14 @@ import java.util.List;
 @Getter
 public class Student extends User {
 
-    private List<Group> studendGroup;
+    private List<Group> studentGroup;
     /**
      * Private constructor use by the factory should not be used
      * ref <code>of</code> methode for parameter meaning
      */
-    private Student(String name, String fname, String email,List<Group> studendGroup) {
+    private Student(String name, String fname, String email,List<Group> studentGroup) {
         super(name, fname, email);
-        this.studendGroup=studendGroup;
+        this.studentGroup = studentGroup;
     }
 
     /**
@@ -40,12 +39,12 @@ public class Student extends User {
      * @param group a group to add to this student
      */
     public void add(Group group){
-        if (studendGroup != null){
-            this.studendGroup.add(group);
+        if (studentGroup != null){
+            this.studentGroup.add(group);
         }
         else{
-            this.studendGroup = new ArrayList<Group>();
-            this.studendGroup.add(group);
+            this.studentGroup = new ArrayList<>();
+            this.studentGroup.add(group);
         }
     }
 
@@ -80,7 +79,5 @@ public class Student extends User {
     public int hashCode() {
         return super.hashCode();
     }
-
-
 
 }
