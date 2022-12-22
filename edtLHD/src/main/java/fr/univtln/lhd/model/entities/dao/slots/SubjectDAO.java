@@ -1,5 +1,6 @@
 package fr.univtln.lhd.model.entities.dao.slots;
 
+import fr.univtln.lhd.exceptions.IdException;
 import fr.univtln.lhd.model.entities.dao.DAO;
 import fr.univtln.lhd.model.entities.dao.Datasource;
 import fr.univtln.lhd.model.entities.slots.Subject;
@@ -54,11 +55,14 @@ public class SubjectDAO implements DAO<Subject> {
 
             if (rs.next()) {
                 result = Subject.getInstance(
-                        rs.getLong("ID"),
                         rs.getString("NAME"),
                         rs.getFloat("HOUR_COUNT_MAX"));
+                result.setId( rs.getLong("ID") );
             }
         } catch (SQLException e) {
+            log.error(e.getMessage());
+            //throw e;
+        } catch (IdException e){
             log.error(e.getMessage());
         }
         return Optional.ofNullable(result);
@@ -77,12 +81,15 @@ public class SubjectDAO implements DAO<Subject> {
         ) {
             while (rs.next()) {
                 Subject s = Subject.getInstance(
-                        rs.getLong("ID"),
                         rs.getString("NAME"),
                         rs.getFloat("HOUR_COUNT_MAX"));
+                s.setId( rs.getLong("ID") );
                 subjectList.add(s);
             }
         } catch (SQLException e) {
+            log.error(e.getMessage());
+            //throw e;
+        } catch (IdException e){
             log.error(e.getMessage());
         }
         return subjectList;
@@ -104,6 +111,9 @@ public class SubjectDAO implements DAO<Subject> {
             idSet.next();
             subject.setId(idSet.getLong(1));
         } catch (SQLException e) {
+            log.error(e.getMessage());
+            //throw e;
+        } catch (IdException e){
             log.error(e.getMessage());
         }
     }
@@ -141,6 +151,7 @@ public class SubjectDAO implements DAO<Subject> {
             stmt.executeUpdate();
         } catch (SQLException e) {
             log.error(e.getMessage());
+            //throw e;
         }
     }
 }

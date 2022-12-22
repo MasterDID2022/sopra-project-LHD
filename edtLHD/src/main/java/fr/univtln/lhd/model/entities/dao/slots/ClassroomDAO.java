@@ -1,5 +1,6 @@
 package fr.univtln.lhd.model.entities.dao.slots;
 
+import fr.univtln.lhd.exceptions.IdException;
 import fr.univtln.lhd.model.entities.dao.DAO;
 import fr.univtln.lhd.model.entities.dao.Datasource;
 import fr.univtln.lhd.model.entities.slots.Classroom;
@@ -61,6 +62,8 @@ public class ClassroomDAO implements DAO<Classroom>
         }catch (SQLException e){
             log.error(e.getMessage());
             throw e;
+        } catch (IdException e){
+            log.error(e.getMessage());
         }
         return result;
     }
@@ -85,6 +88,8 @@ public class ClassroomDAO implements DAO<Classroom>
         } catch (SQLException e){
             log.error(e.getMessage());
             throw e;
+        } catch (IdException e){
+            log.error(e.getMessage());
         }
         return classroomList;
     }
@@ -106,6 +111,8 @@ public class ClassroomDAO implements DAO<Classroom>
         } catch (SQLException  e){
             log.error(e.getMessage());
             throw e;
+        } catch (IdException e){
+            log.error(e.getMessage());
         }
     }
 

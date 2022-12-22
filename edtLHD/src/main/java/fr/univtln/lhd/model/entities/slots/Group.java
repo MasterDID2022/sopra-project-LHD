@@ -1,5 +1,6 @@
 package fr.univtln.lhd.model.entities.slots;
 
+import fr.univtln.lhd.exceptions.IdException;
 import fr.univtln.lhd.model.entities.users.Student;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -24,17 +25,6 @@ public class Group {
 
     /**
      * Factory for a Group given a list of students
-     * @param id long identifier for a Group (default -1)
-     * @param name Group name
-     * @param students Group students list
-     * @return an instance of a Group
-     */
-    public static Group getInstance(long id, String name, List<Student> students) {
-        return new Group(id, name, students);
-    }
-
-    /**
-     * Factory for a Group given a list of students
      * @param name Group name
      * @param students Group students list
      * @return an instance of a Group
@@ -49,7 +39,7 @@ public class Group {
      * @return an instance of a Group
      */
     public static Group getInstance(String name){
-        return getInstance(-1, name, new ArrayList<>());
+        return getInstance(name, new ArrayList<>());
     }
 
     /**
@@ -61,5 +51,8 @@ public class Group {
         this.students.add(student);
     }
 
-    public void setId(long id){ this.id = id; }
+    public void setId(long id) throws IdException {
+        if (id<0) throw new IdException();
+        this.id = id;
+    }
 }

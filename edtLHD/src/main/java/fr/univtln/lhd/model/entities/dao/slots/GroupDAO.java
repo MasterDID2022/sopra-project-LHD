@@ -1,5 +1,6 @@
 package fr.univtln.lhd.model.entities.dao.slots;
 
+import fr.univtln.lhd.exceptions.IdException;
 import fr.univtln.lhd.model.entities.dao.DAO;
 import fr.univtln.lhd.model.entities.dao.Datasource;
 import fr.univtln.lhd.model.entities.dao.users.StudentDAO;
@@ -63,6 +64,8 @@ public class GroupDAO implements DAO<Group> {
         }catch (SQLException e){
             log.error(e.getMessage());
             throw e;
+        } catch (IdException e){
+            log.error(e.getMessage());
         }
         return result;
     }
@@ -88,6 +91,8 @@ public class GroupDAO implements DAO<Group> {
         } catch (SQLException e){
             log.error(e.getMessage());
             throw e;
+        } catch (IdException e){
+            log.error(e.getMessage());
         }
         return groupList;
     }
@@ -151,6 +156,8 @@ public class GroupDAO implements DAO<Group> {
         } catch (SQLException e){
             log.error(e.getMessage());
             throw e;
+        } catch (IdException e){
+            log.error(e.getMessage());
         }
     }
 
