@@ -18,26 +18,32 @@ import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 @Slf4j
 public class ProfessorDAO implements DAO<Professor> {
-    private final String GET="SELECT * FROM PROFESSORS WHERE ID=?";
+    private static final String GET = "SELECT * FROM PROFESSORS WHERE ID=?";
 
-    private final String GET_ALL="SELECT * FROM PROFESSORS";
-    private final String GET_PROFEESOR_OF_SLOT = "SELECT ID_PROFESSOR from PROFESSOR_SLOT where id_SLOT= ?";
-    private final String SAVE="INSERT INTO PROFESSORS VALUES (DEFAULT, ?, ?, ?, ?, ?)";
-    private final String UPDATE="UPDATE PROFESSORS SET name=?, fname=? ,email=?,title=? WHERE ID=?";
-    private final String DELETE="DELETE FROM PROFESSORS WHERE ID=?";
+    private static final String GET_ALL = "SELECT * FROM PROFESSORS";
+    private static final String GET_PROFESSOR_OF_SLOT = "SELECT ID_PROFESSOR from PROFESSOR_SLOT where id_SLOT= ?";
+    private static final String GET_ALL_PROFESSOR_SLOT_STMT = "SELECT * FROM PROFESSOR_SLOT";
+    private static final String SAVE = "INSERT INTO PROFESSORS VALUES (DEFAULT, ?, ?, ?, ?, ?)";
+    private static final String SAVE_SLOT_STMT = "INSERT INTO PROFESSOR_SLOT VALUES (?, ?)";
+    private static final String UPDATE = "UPDATE PROFESSORS SET name=?, fname=? ,email=?,title=? WHERE ID=?";
+    private static final String DELETE = "DELETE FROM PROFESSORS WHERE ID=?";
 
 
-    private ProfessorDAO(){}
+    private ProfessorDAO () {
+    }
 
-    public static ProfessorDAO of(){ return new ProfessorDAO(); }
+    public static ProfessorDAO of () {
+        return new ProfessorDAO();
+    }
 
     /**
      * Getter for one Professor
+     *
      * @param id numerical long identifier for getting the Professor
      * @return May return one Professor
      */
     @Override
-    public Optional<Professor> get(long id) {
+    public Optional<Professor> get ( long id ) {
         Optional<Professor> fetchedProfessor = Optional.empty();
         try (Connection conn = Datasource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(GET)
@@ -86,6 +92,26 @@ public class ProfessorDAO implements DAO<Professor> {
         return professorList;
     }
 
+    /**
+     * Get all professor associated to a Slot (via table professor_slot)
+     * @return List of Professor entity
+     * @throws SQLException
+     */
+    public List<Professor> getAllProfessorSlot() throws SQLException {
+        List<Professor> professorList = new ArrayList<>();
+        try (Connection conn = Datasource.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(GET_ALL_PROFESSOR_SLOT_STMT)
+        ){
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next())
+                professorList.add( get( rs.getLong("id_professor") ).get() );
+        } catch (SQLException e){
+            log.error(e.getMessage());
+            throw e;
+        }
+        return professorList;
+    }
+
 
     /**
      * Save Professor t to Database
@@ -118,7 +144,6 @@ public class ProfessorDAO implements DAO<Professor> {
      * @param password password to save inside the database
      */
     public void save(Professor professor, String password) {
-        ResultSet result;
         try(Connection conn = Datasource.getConnection();
             PreparedStatement stmt = conn.prepareStatement(SAVE, RETURN_GENERATED_KEYS)
         ){
@@ -126,12 +151,39 @@ public class ProfessorDAO implements DAO<Professor> {
             stmt.setString(2, professor.getFname());
             stmt.setString(3, professor.getEmail());
             stmt.setString(4, password);
-            stmt.setString(5, professor.getEmail());
+            stmt.setString(5, professor.getTitle());
             stmt.executeUpdate();
             ResultSet id_set = stmt.getGeneratedKeys(); id_set.next();
             professor.setId(id_set.getLong(1));
         } catch (SQLException | IdException e) {
             log.error(e.getMessage());
+        }
+    }
+
+    /**
+     * Save into join table professor_slot, considering both are already saved in their respective tables
+     *
+     * @param slotId           Slot entity id to save
+     * @param professorIdArray Professor entity id to save
+     * @throws SQLException thrown Exception in case of Errors, especially if one of the two ids doesn't exist in entity tables
+     */
+    public void save ( long slotId, long[] professorIdArray ) throws SQLException {
+        Connection conn = Datasource.getConnection();
+        try (conn;
+             PreparedStatement stmt = conn.prepareStatement(SAVE_SLOT_STMT)
+        ) {
+            conn.setAutoCommit(false); // we need to commit after the execute batch
+            for (final long professorId : professorIdArray) {
+                stmt.setLong(1, professorId);
+                stmt.setLong(2, slotId);
+                stmt.addBatch();
+                stmt.clearParameters();
+            }
+            stmt.executeBatch();
+            conn.commit();
+        } catch (SQLException e) {
+            log.error(e.getMessage());
+            throw e;
         }
     }
 
@@ -168,14 +220,14 @@ public class ProfessorDAO implements DAO<Professor> {
     public List<Professor> getProfessorOfSlots(long slotId){
         List<Professor> ProfessorsOfSlot = new ArrayList<>();
         try (Connection conn = Datasource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(GET_PROFEESOR_OF_SLOT)
+             PreparedStatement stmt = conn.prepareStatement(GET_PROFESSOR_OF_SLOT)
         ){
             stmt.setLong(1,slotId);
             stmt.executeQuery();
             ResultSet rs =stmt.getResultSet();
             while (rs.next()) {
                 ProfessorsOfSlot.add(get(rs.getLong(1)).get());
-        }
+            }
         } catch (SQLException e) {
             log.error(e.getMessage());
         }

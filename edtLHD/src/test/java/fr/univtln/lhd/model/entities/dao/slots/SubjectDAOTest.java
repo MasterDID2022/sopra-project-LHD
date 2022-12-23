@@ -43,7 +43,6 @@ class SubjectDAOTest {
 
 
     @Test
-    //@Disabled("WIP")
     void updateASubject() throws IdException {
         SubjectDAO dao = getDAO();
         Optional<Subject> subject = dao.get(1);
