@@ -16,15 +16,27 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
+DROP SCHEMA IF EXISTS lhd CASCADE;
 --
 -- Name: lhd; Type: SCHEMA; Schema: -; Owner: -
 --
-DROP SCHEMA IF EXISTS PUBLIC CASCADE;
-DROP SCHEMA IF EXISTS lhd CASCADE ;
+
 CREATE SCHEMA lhd;
-SET search_path to lhd;
-ALTER DATABASE lhd SET search_path to lhd;
+ALTER DATABASE lhd; SET search_path TO lhd;
+
+--
+-- Name: btree_gist; Type: EXTENSION; Schema: -; Owner: -
+--
+
 CREATE EXTENSION IF NOT EXISTS btree_gist WITH SCHEMA lhd;
+
+
+--
+-- Name: EXTENSION btree_gist; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION btree_gist IS 'support for indexing common datatypes in GiST';
+
 
 --
 -- Name: email; Type: DOMAIN; Schema: lhd; Owner: -
@@ -49,9 +61,8 @@ CREATE FUNCTION lhd.check_date_overlap_trigger_function_group_slot() RETURNS tri
                     join slots s2 on gs.id_slot=s2.id  
                     where gs.id_group = new.id_group 
                     and s2.id <> new.id_slot--- we don't wanna compare the slot specified in the query to itself
-                    and s.timerange && s2.timerange  for share--- we use for share to prevent any modification while the trigger is run. 
-                       ) 
-       for share) 
+                    and s.timerange && s2.timerange
+                       ))
 
        THEN
             RAISE unique_violation USING MESSAGE = 'Overlapping timeranges for group : ' || new.id_group;
@@ -76,9 +87,7 @@ CREATE FUNCTION lhd.check_date_overlap_trigger_function_professor_slot() RETURNS
                     join slots s2 on ls.id_slot=s2.id
                     where ls.id_professor = new.id_professor
                     and s2.id <> new.id_professor--- we don't wanna compare the slot specified in the query to itself
-                    and s.timerange && s2.timerange  for share--- we use for share to prevent any modification while the trigger is run.
-                       )
-       for share)
+                    and s.timerange && s2.timerange))
 
        THEN
             RAISE unique_violation USING MESSAGE = 'Overlapping timeranges for group : ' || new.id_professor;
@@ -96,7 +105,13 @@ CREATE FUNCTION lhd.check_date_overlap_trigger_hook() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
        begin
-       IF EXISTS(select from slots  s where id=new.id_slot and exists (select from group_slot gs2 join slots s2 on gs2.id_slot=s2.id  where gs2.id_group =new.id_group and s2.id <> new.id_slot and s.timerange && s2.timerange limit 1 for share) limit 1 for share) THEN
+       IF EXISTS(select from slots  s
+       where id=new.id_slot and exists (
+        select from group_slot gs2
+        join slots s2 on gs2.id_slot=s2.id
+        where gs2.id_group =new.id_group
+             and s2.id <> new.id_slot
+             and s.timerange && s2.timerange)) THEN
                    RAISE EXCEPTION 'Timerange is overlapping between two courses';
                END IF;
            RETURN NEW;
@@ -124,8 +139,7 @@ CREATE FUNCTION lhd.check_date_overlap_trigger_slot_update_group() RETURNS trigg
         on s2.id=gs2.id_slot 
         where gs2.id_group = gs.id_group 
             and s2.id <> new.id 
-            and s2.timerange && new.timerange)
-       for share)
+            and s2.timerange && new.timerange))
 
        THEN
             RAISE unique_violation USING MESSAGE = 'Unavailable group on slot : ' || new.id_slot;
@@ -147,16 +161,15 @@ CREATE FUNCTION lhd.check_date_overlap_trigger_slot_update_professor() RETURNS t
        RETURN NEW; 
        END IF; 
        
-       IF EXISTS (select from slots s join group_professor gl
-       on s.id=gs.id_slot 
+       IF EXISTS (select from slots s join professor_slot gp
+       on s.id=gp.id_slot
        where s.id=new.id 
      and exists (
-        select * from slots s2 join group_professor gl2 
-        on s2.id=gs2.id_slot 
-        where gl2.id_professor = gl.id_professor
+        select * from slots s2 join professor_slot gp2
+        on s2.id=gp2.id_slot
+        where gp2.id_professor = gp.id_professor
             and s2.id <> new.id 
-            and s2.timerange && new.timerange)
-       for share)
+            and s2.timerange && new.timerange))
 
        THEN
             RAISE unique_violation USING MESSAGE = 'Unavailable group on slot : ' || new.id_slot;
@@ -229,6 +242,8 @@ ALTER TABLE lhd.classrooms ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
     NO MAXVALUE
     CACHE 1
 );
+
+
 --
 -- Name: group_slot; Type: TABLE; Schema: lhd; Owner: -
 --
@@ -317,7 +332,9 @@ CREATE TABLE lhd.slots (
     classroom bigint,
     memo character varying,
     subject bigint NOT NULL,
-    type character varying
+    type character varying,
+    CONSTRAINT timerange_inc_exc CHECK ((lower_inc(timerange) AND (NOT upper_inc(timerange)))),
+    CONSTRAINT timerange_not_empty_check CHECK ((NOT isempty(timerange)))
 );
 
 
@@ -553,7 +570,7 @@ CREATE TRIGGER update_slot_check_professor BEFORE UPDATE ON lhd.slots FOR EACH R
 --
 
 ALTER TABLE ONLY lhd.group_slot
-    ADD CONSTRAINT fk_creneau FOREIGN KEY (id_slot) REFERENCES lhd.slots(id);
+    ADD CONSTRAINT fk_creneau FOREIGN KEY (id_slot) REFERENCES lhd.slots(id) ON DELETE CASCADE;
 
 
 --
@@ -561,7 +578,7 @@ ALTER TABLE ONLY lhd.group_slot
 --
 
 ALTER TABLE ONLY lhd.professor_slot
-    ADD CONSTRAINT fk_creneau FOREIGN KEY (id_slot) REFERENCES lhd.slots(id);
+    ADD CONSTRAINT fk_creneau FOREIGN KEY (id_slot) REFERENCES lhd.slots(id) ON DELETE CASCADE;
 
 
 --
@@ -569,7 +586,7 @@ ALTER TABLE ONLY lhd.professor_slot
 --
 
 ALTER TABLE ONLY lhd.group_user
-    ADD CONSTRAINT fk_promotions FOREIGN KEY (id_group) REFERENCES lhd.groups(id);
+    ADD CONSTRAINT fk_promotions FOREIGN KEY (id_group) REFERENCES lhd.groups(id) ON DELETE CASCADE;
 
 
 --
@@ -577,7 +594,7 @@ ALTER TABLE ONLY lhd.group_user
 --
 
 ALTER TABLE ONLY lhd.group_slot
-    ADD CONSTRAINT fk_promotions FOREIGN KEY (id_group) REFERENCES lhd.groups(id);
+    ADD CONSTRAINT fk_promotions FOREIGN KEY (id_group) REFERENCES lhd.groups(id) ON DELETE CASCADE;
 
 
 --
@@ -585,7 +602,7 @@ ALTER TABLE ONLY lhd.group_slot
 --
 
 ALTER TABLE ONLY lhd.professor_slot
-    ADD CONSTRAINT fk_promotions FOREIGN KEY (id_professor) REFERENCES lhd.professors(id);
+    ADD CONSTRAINT fk_promotions FOREIGN KEY (id_professor) REFERENCES lhd.professors(id) ON DELETE CASCADE;
 
 
 --
@@ -593,7 +610,7 @@ ALTER TABLE ONLY lhd.professor_slot
 --
 
 ALTER TABLE ONLY lhd.group_user
-    ADD CONSTRAINT fk_user FOREIGN KEY (id_user) REFERENCES lhd.users(id);
+    ADD CONSTRAINT fk_user FOREIGN KEY (id_user) REFERENCES lhd.users(id) ON DELETE CASCADE;
 
 
 --
@@ -601,7 +618,7 @@ ALTER TABLE ONLY lhd.group_user
 --
 
 ALTER TABLE ONLY lhd.slots
-    ADD CONSTRAINT salle_fkey FOREIGN KEY (classroom) REFERENCES lhd.classrooms(id);
+    ADD CONSTRAINT salle_fkey FOREIGN KEY (classroom) REFERENCES lhd.classrooms(id) ON DELETE CASCADE;
 
 
 --
@@ -609,7 +626,7 @@ ALTER TABLE ONLY lhd.slots
 --
 
 ALTER TABLE ONLY lhd.slots
-    ADD CONSTRAINT subject_fkey FOREIGN KEY (subject) REFERENCES lhd.subjects(id);
+    ADD CONSTRAINT subject_fkey FOREIGN KEY (subject) REFERENCES lhd.subjects(id) ON DELETE CASCADE;
 
 
 --
