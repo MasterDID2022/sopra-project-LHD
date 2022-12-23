@@ -48,7 +48,7 @@ class GroupDAOTest {
             dao.save(group);
             group1.setId(group.getId());
             dao.update(group1);
-            assertEquals(dao.get(group.getId()).get(), group1);
+            assertEquals(dao.get(group.getId()).orElseThrow(SQLException::new), group1);
         } catch (SQLException | IdException e){
             throw new RuntimeException();
         }

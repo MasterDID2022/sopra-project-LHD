@@ -53,7 +53,7 @@ class ClassroomDAOTest {
             dao.save(classroom);
             classroom1.setId(classroom.getId());
             dao.update(classroom1);
-            assertEquals(dao.get(classroom.getId()).get(), classroom1);
+            assertEquals(dao.get(classroom.getId()).orElseThrow(SQLException::new), classroom1);
         } catch (SQLException | IdException e){
             throw new RuntimeException();
         }

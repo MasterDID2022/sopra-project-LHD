@@ -4,10 +4,9 @@ import fr.univtln.lhd.exceptions.IdException;
 import fr.univtln.lhd.model.entities.dao.DAO;
 import fr.univtln.lhd.model.entities.dao.Datasource;
 import fr.univtln.lhd.model.entities.dao.users.ProfessorDAO;
-import fr.univtln.lhd.model.entities.dao.users.StudentDAO;
 import fr.univtln.lhd.model.entities.slots.Group;
 import fr.univtln.lhd.model.entities.slots.Slot;
-import fr.univtln.lhd.model.entities.users.Student;
+import fr.univtln.lhd.model.entities.users.Professor;
 import lombok.extern.slf4j.Slf4j;
 import org.threeten.extra.Interval;
 
@@ -164,7 +163,15 @@ public class SlotDAO implements DAO<Slot> {
             stmt.executeUpdate();
             ResultSet idSet = stmt.getGeneratedKeys();
             idSet.next();
-            slot.setId(idSet.getLong(1));
+            long newSlotId = idSet.getLong(1);
+            slot.setId(newSlotId);
+
+            GroupDAO groupDAO = GroupDAO.getInstance();
+            groupDAO.save(newSlotId, slot.getGroup().stream().mapToLong(Group::getId).toArray());
+
+            ProfessorDAO professorDAO = ProfessorDAO.of();
+            professorDAO.save(newSlotId, slot.getProfessors().stream().mapToLong(Professor::getId).toArray());
+
         } catch (SQLException e) {
             log.error(e.getMessage());
             throw e;

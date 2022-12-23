@@ -12,7 +12,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
@@ -26,7 +29,9 @@ public class GroupDAO implements DAO<Group> {
     private static final String GET_ALL_STMT = "SELECT * FROM GROUPS";
     private static final String GET_STUDENT_GROUP_STMT = "SELECT id_user from group_user where id_group= ?";
     private static final String GET_SLOT_GROUP_STMT = "SELECT id_group from group_slot where id_slot= ?";
+    private static final String GET_ALL_GROUP_SLOT_STMT = "SELECT * from group_slot";
     private static final String SAVE_STMT = "INSERT INTO GROUPS VALUES (DEFAULT, ?)";
+    private static final String SAVE_SLOT_STMT = "INSERT INTO GROUP_SLOT VALUES (?, ?)";
     private static final String UPDATE_STMT = "UPDATE GROUPS SET NAME=? WHERE ID=?";
     private static final String DELETE_STMT = "DELETE FROM GROUPS WHERE ID=?";
 
@@ -137,6 +142,27 @@ public class GroupDAO implements DAO<Group> {
 
        return Collections.unmodifiableList(groupList);
     }
+
+    /**
+     * Get all group associated to a Slot (via table group_slot)
+     * @return List of Group entity
+     * @throws SQLException
+     */
+    public List<Group> getAllGroupSlot() throws SQLException {
+        List<Group> groupList = new ArrayList<>();
+        try (Connection conn = Datasource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(GET_ALL_GROUP_SLOT_STMT)
+        ){
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next())
+                groupList.add( get( rs.getLong("id_group") ).get() );
+        } catch (SQLException e){
+            log.error(e.getMessage());
+            throw e;
+        }
+        return groupList;
+    }
+
     /**
      * Save Group to Database
      * @param group Group object to save
@@ -156,6 +182,32 @@ public class GroupDAO implements DAO<Group> {
             throw e;
         } catch (IdException e){
             log.error(e.getMessage());
+        }
+    }
+
+    /**
+     * Save into join table group_slot, considering both are already saved in their respective tables
+     *
+     * @param slotId  Slot entity id to save
+     * @param groupId Group entity id to save
+     * @throws SQLException thrown Exception in case of Errors, especially if one of the two ids doesn't exist in entity tables
+     */
+    public void save ( final long slotId, final long[] groupId ) throws SQLException {
+        try (Connection conn = Datasource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(SAVE_SLOT_STMT)
+        ) {
+            conn.setAutoCommit(false); // we need to commit after the execute batch
+            for (final long id : groupId) {
+                stmt.setLong(1, id);
+                stmt.setLong(2, slotId);
+                stmt.addBatch();
+                stmt.clearParameters();
+            }
+            var results = stmt.executeBatch();
+            conn.commit();
+        } catch (SQLException e) {
+            log.error(e.getMessage());
+            throw e;
         }
     }
 
