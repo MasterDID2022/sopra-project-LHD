@@ -48,7 +48,6 @@ public class EdtLhdController implements Initializable {
 
         FlowPane flowPane2 = new FlowPane(cours_2);
         flowPane2.getStyleClass().add("slot");
-        flowPane2.setStyle("-fx-background-color: #13635e");
 
         FlowPane flowPane3 = new FlowPane(cours_3);
         flowPane3.getStyleClass().add("slot");
@@ -71,6 +70,8 @@ public class EdtLhdController implements Initializable {
         //Slot courTest = Slot.getInstance(Slot.SlotType.CM, 0, 0, groups, timeRange);
 
         //edtGrid.add(courTest);
+
+        //edtGrid.clearFullGrid();
 
         borderPane.setCenter(edtGrid);
     }

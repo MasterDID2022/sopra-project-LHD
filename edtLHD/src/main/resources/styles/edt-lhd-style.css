@@ -47,6 +47,8 @@ EdtGrid FlowPane {
 .cell {
     -fx-border-style: solid;
     -fx-border-width: 0.3;
+    -fx-border-color: _darker-turquoise;
+    -fx-opacity: 0.5;
 }
 
 .cell_today {
