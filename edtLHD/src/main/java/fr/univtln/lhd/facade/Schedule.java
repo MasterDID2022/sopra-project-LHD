@@ -19,6 +19,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * facade of the entities/dao and the ihm
@@ -116,7 +117,7 @@ public class Schedule {
      * @param password password of the student
      * @return Student entity if exist in database, otherwise return null.
      */
-    public static Student getStudentFromAuth(String email, String password){
+    public static Optional<Student> getStudentFromAuth(String email, String password){
         StudentDAO dao = StudentDAO.getInstance();
         Student student = null;
 
@@ -125,7 +126,7 @@ public class Schedule {
         } catch (SQLException e){
             log.error(e.getMessage());
         }
-        return student;
+        return Optional.ofNullable(student);
     }
 
     /**
@@ -134,7 +135,7 @@ public class Schedule {
      * @param password password of the professor
      * @return Professor entity if exist in database, otherwise return null.
      */
-    public static Professor getProfessorFromAuth(String email, String password){
+    public static Optional<Professor> getProfessorFromAuth(String email, String password){
         ProfessorDAO dao = ProfessorDAO.of();
         Professor professor = null;
 
@@ -143,7 +144,7 @@ public class Schedule {
         } catch (SQLException e){
             log.error(e.getMessage());
         }
-        return professor;
+        return Optional.ofNullable(professor);
     }
 
     /**
@@ -152,7 +153,7 @@ public class Schedule {
      * @param password password of the admin
      * @return Admin entity if exist in database, otherwise return null.
      */
-    public static Admin getAdminFromAuth(String email, String password){
+    public static Optional<Admin> getAdminFromAuth(String email, String password){
         AdminDAO dao = AdminDAO.of();
         Admin admin = null;
 
@@ -161,7 +162,7 @@ public class Schedule {
         } catch (SQLException e){
             log.error(e.getMessage());
         }
-        return admin;
+        return Optional.ofNullable(admin);
     }
 
 
