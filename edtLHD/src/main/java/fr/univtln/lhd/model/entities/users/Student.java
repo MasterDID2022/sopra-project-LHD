@@ -30,8 +30,8 @@ public class Student extends User {
      * @return an instance of Student
      */
     public static Student of(String name, String fname, String email) {
-        List<Group> studendGroup = null;
-        return new Student(name, fname, email,studendGroup);
+        List<Group> studentGroup = null;
+        return new Student(name, fname, email,studentGroup);
     }
 
     /**
@@ -53,11 +53,11 @@ public class Student extends User {
      * @param name name of a student
      * @param fname first name of a student
      * @param email email of a student
-     * @param studendGroup Groupe attached to a student
+     * @param studentGroup Groupe attached to a student
      * @return an instance of Student
      */
-    public static Student of(String name, String fname, String email, List<Group> studendGroup) {
-        return new Student(name, fname, email,studendGroup);
+    public static Student of(String name, String fname, String email, List<Group> studentGroup) {
+        return new Student(name, fname, email,studentGroup);
     }
 
     /**

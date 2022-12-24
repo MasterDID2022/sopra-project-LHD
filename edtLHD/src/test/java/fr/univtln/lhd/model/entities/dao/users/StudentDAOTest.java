@@ -43,6 +43,19 @@ class StudentDAOTest {
     }
 
     @Test
+    void getStudentFromAuthTest(){
+        Student student = getTheTestStudent();
+
+        try {
+            Student authGetterStudent = dao.get(student.getEmail(), "1234").orElseThrow(SQLException::new);
+            assertEquals(student, authGetterStudent);
+        }catch (SQLException e){
+            log.error(e.getMessage());
+            throw new AssertionError();
+        }
+    }
+
+    @Test
     void addNewStudent() throws SQLException {
         Student student = getRandomNewStudent();
         int oldsize = dao.getAll().size();

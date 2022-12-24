@@ -1,7 +1,12 @@
 package fr.univtln.lhd.facade;
 
 import fr.univtln.lhd.model.entities.dao.slots.SlotDAO;
+import fr.univtln.lhd.model.entities.dao.users.AdminDAO;
+import fr.univtln.lhd.model.entities.dao.users.ProfessorDAO;
+import fr.univtln.lhd.model.entities.dao.users.StudentDAO;
 import fr.univtln.lhd.model.entities.slots.Group;
+import fr.univtln.lhd.model.entities.users.Admin;
+import fr.univtln.lhd.model.entities.users.Professor;
 import fr.univtln.lhd.model.entities.users.Student;
 import fr.univtln.lhd.model.entities.slots.Slot;
 import lombok.extern.slf4j.Slf4j;
@@ -103,6 +108,60 @@ public class Schedule {
             log.error(e.getMessage());
         }
         return schedule.filterEverySlotOutsideTimerange(allSlotOfGroup, timerange);
+    }
+
+    /**
+     * Get Student of Database via email & password
+     * @param email Email of the student
+     * @param password password of the student
+     * @return Student entity if exist in database, otherwise return null.
+     */
+    public static Student getStudentFromAuth(String email, String password){
+        StudentDAO dao = StudentDAO.getInstance();
+        Student student = null;
+
+        try {
+            student = dao.get(email, password).orElseThrow(SQLException::new);
+        } catch (SQLException e){
+            log.error(e.getMessage());
+        }
+        return student;
+    }
+
+    /**
+     * Get Professor of Database via email & password
+     * @param email Email of the professor
+     * @param password password of the professor
+     * @return Professor entity if exist in database, otherwise return null.
+     */
+    public static Professor getProfessorFromAuth(String email, String password){
+        ProfessorDAO dao = ProfessorDAO.of();
+        Professor professor = null;
+
+        try {
+            professor = dao.get(email, password).orElseThrow(SQLException::new);
+        } catch (SQLException e){
+            log.error(e.getMessage());
+        }
+        return professor;
+    }
+
+    /**
+     * Get Admin of Database via email & password
+     * @param email Email of the admin
+     * @param password password of the admin
+     * @return Admin entity if exist in database, otherwise return null.
+     */
+    public static Admin getAdminFromAuth(String email, String password){
+        AdminDAO dao = AdminDAO.of();
+        Admin admin = null;
+
+        try {
+            admin = dao.get(email, password).orElseThrow(SQLException::new);
+        } catch (SQLException e){
+            log.error(e.getMessage());
+        }
+        return admin;
     }
 
 

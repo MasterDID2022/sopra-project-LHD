@@ -28,6 +28,8 @@ public class ProfessorDAO implements DAO<Professor> {
     private static final String UPDATE = "UPDATE PROFESSORS SET name=?, fname=? ,email=?,title=? WHERE ID=?";
     private static final String DELETE = "DELETE FROM PROFESSORS WHERE ID=?";
 
+    private static final String GET_PROFESSOR_AUTH = "SELECT * FROM PROFESSORS WHERE EMAIL=? AND PASSWORD=?";
+
 
     private ProfessorDAO () {
     }
@@ -64,6 +66,39 @@ public class ProfessorDAO implements DAO<Professor> {
             log.error(e.getMessage());
         }
         return fetchedProfessor;
+    }
+
+    /**
+     * Getter for one professor, using email and password
+     * @param email Unique email of the corresponding professor
+     * @param password Password of the Professor account
+     * @return Professor Entity, or null if not found
+     * @throws SQLException
+     */
+    public Optional<Professor> get(String email, String password) throws SQLException {
+        Professor result = null;
+
+        try (Connection conn = Datasource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(GET_PROFESSOR_AUTH)
+        ){
+            stmt.setString(1, email);
+            stmt.setString(2, password);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()){
+                result = Professor.of(
+                        rs.getString("NAME"),
+                        rs.getString("FNAME"),
+                        rs.getString("EMAIL"),
+                        rs.getString("TITLE")
+                );
+                result.setId(rs.getLong("ID"));
+            }
+        } catch (SQLException | IdException e){
+            log.error(e.getMessage());
+        }
+
+        return Optional.ofNullable(result);
     }
 
     /**

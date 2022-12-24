@@ -28,6 +28,8 @@ public class StudentDAO implements DAO<Student> {
     private static final String GET_ALL_GROUP="SELECT * FROM GROUP_USER WHERE ID_USER=?";
     private static final String SAVE_GROUP="INSERT INTO GROUP_USER VALUES (?, ?)";
 
+    private static final String GET_STUDENT_AUTH = "SELECT * FROM USERS WHERE EMAIL=? AND PASSWORD=?";
+
     private StudentDAO (){ }
 
     public static StudentDAO getInstance (){ return new StudentDAO(); }
@@ -58,6 +60,39 @@ public class StudentDAO implements DAO<Student> {
         }catch (SQLException | IdException e){
             log.error(e.getMessage());
         }
+        return Optional.ofNullable(result);
+    }
+
+    /**
+     * Getter for one student, using email and password
+     * @param email Unique email of the corresponding student
+     * @param password Password of the Student account
+     * @return Student Entity, or null if not found
+     * @throws SQLException
+     */
+    public Optional<Student> get(String email, String password) throws SQLException {
+        Student result = null;
+
+        try (Connection conn = Datasource.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(GET_STUDENT_AUTH)
+        ){
+            stmt.setString(1, email);
+            stmt.setString(2, password);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()){
+                result = Student.of(
+                        rs.getString("NAME"),
+                        rs.getString("FNAME"),
+                        rs.getString("EMAIL")
+                );
+                result.setId(rs.getLong("ID"));
+                updateStudentGroup(result);
+            }
+        } catch (SQLException | IdException e){
+            log.error(e.getMessage());
+        }
+
         return Optional.ofNullable(result);
     }
 
