@@ -42,6 +42,19 @@ class ProfessorDAOTest {
     }
 
     @Test
+    void getProfessorFromAuthTest(){
+        Professor professor = getTheTestProfessor();
+
+        try {
+            Professor authGetterProfessor = dao.get(professor.getEmail(), "1234").orElseThrow(SQLException::new);
+            assertEquals(professor, authGetterProfessor);
+        }catch (SQLException e){
+            log.error(e.getMessage());
+            throw new AssertionError();
+        }
+    }
+
+    @Test
     void updateAprofessor() throws IdException {
         Professor professor = getRandomNewProfessor();
         Professor professor1 = Professor.of(professor.getName()+"1",professor.getFname()+"1",professor.getEmail()+"1", professor.getTitle());
