@@ -51,7 +51,7 @@ class StudentDAOTest {
         dao.delete(student);
     }
 
-    //@Test Need to fix circular import
+    @Test
     void addNewStudentWithGroup() throws SQLException {
         Student student = getRandomNewStudentWithGroup();
         int oldsize = dao.getAll().size();

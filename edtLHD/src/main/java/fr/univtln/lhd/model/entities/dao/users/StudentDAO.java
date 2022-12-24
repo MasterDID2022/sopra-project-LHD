@@ -161,18 +161,23 @@ public class StudentDAO implements DAO<Student> {
 
     /**
      * save the group of the student with the Id inside group User
-     * @param student
+     * @param student the Student object of which to save each of his groups
      * @throws SQLException
      */
     private void saveStudentGroup(Student student) throws SQLException {
-        if (student.getStudendGroup() != null) {
-            GroupDAO dao = GroupDAO.getInstance();
-            dao.save((Group) student.getStudendGroup());
-            try (Connection conn = Datasource.getConnection();
-                 PreparedStatement stmt = conn.prepareStatement(SAVE_GROUP)
-            ) {
+        List<Group> groups = student.getStudentGroup();
 
-                stmt.setLong(1, ((Group) student.getStudendGroup()).getId());
+        if (groups == null) return;
+
+        GroupDAO groupDAO = GroupDAO.getInstance();
+
+        try (Connection conn = Datasource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(SAVE_GROUP)
+        ) {
+            for (Group group : groups){
+                groupDAO.save(group);
+
+                stmt.setLong(1, group.getId());
                 stmt.setLong(2, student.getId());
                 stmt.executeUpdate();
             }
@@ -181,7 +186,6 @@ public class StudentDAO implements DAO<Student> {
 
     /**
      * Update the data of Student in the database, without modifying the object student,
-     * to get the new student use <code>updateAndGet</code>
      * @param student a Student
      */
     @Override

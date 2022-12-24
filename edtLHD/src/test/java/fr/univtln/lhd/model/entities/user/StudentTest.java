@@ -25,7 +25,7 @@ class StudentTest {
     void addToEmptyGroup(){
         Student student = Student.of("Name","FirstName","Name.Firstname@emal.com");
         student.add(Group.getInstance("groupe"));
-        assertEquals(1,student.getStudendGroup().size());
+        assertEquals(1,student.getStudentGroup().size());
     }
 
     @Test
@@ -33,7 +33,7 @@ class StudentTest {
         Student student = Student.of("Name","FirstName","Name.Firstname@emal.com");
         student.add(Group.getInstance("groupe2"));
         student.add(Group.getInstance("groupe"));
-        assertEquals(2,student.getStudendGroup().size());
+        assertEquals(2,student.getStudentGroup().size());
     }
 
 

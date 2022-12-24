@@ -54,7 +54,7 @@ public class Schedule {
         }//Might be an edge case
         SlotDAO dao = SlotDAO.getInstance();
         for (Group group :
-                student.getStudendGroup()) {
+                student.getStudentGroup()) {
             try {
                 List<Slot> allSlotOfGroup = dao.getSlotOfGroup(group);
                 slotList.addAll(allSlotOfGroup);
@@ -131,7 +131,7 @@ public class Schedule {
      * Take two LocalDate and return an Interval between the two time
      * to be noted LocalDate doesn't have a time therefor each instant
      * start at the beginning of the day 00h00
-     * If the two time are on the same day, the all day is return
+     * If the two time are on the same day, the whole day is return
      *
      * @param timeStart the starting LocalDate
      * @param timeEnd   the ending LocalDate
