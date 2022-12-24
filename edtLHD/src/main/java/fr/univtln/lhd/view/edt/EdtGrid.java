@@ -1,6 +1,7 @@
 package fr.univtln.lhd.view.edt;
 
 import fr.univtln.lhd.model.entities.slots.Slot;
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
@@ -60,6 +61,20 @@ public class EdtGrid extends Grid {
                 f.getStyleClass().add("cell");
                 add(f, i, j);
             }
+        }
+    }
+
+    public void clearFullGrid(){
+        ObservableList<Node> childs = getChildren();
+
+        for (int i = 0; i < childs.size(); i++) {
+            if (!childs.get(i).getStyleClass().contains("slot")) continue;
+
+            getChildren().get(i).getStyleClass().remove("slot");
+            getChildren().get(i).getStyleClass().add("cell");
+            setColumnSpan(childs.get(i), 1);
+            setRowSpan(childs.get(i), 1);
+            ((Label) ((FlowPane) getChildren().get(i)).getChildren().get(0)).setText("");
         }
     }
 
