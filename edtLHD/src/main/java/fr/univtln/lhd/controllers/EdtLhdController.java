@@ -33,7 +33,7 @@ public class EdtLhdController implements Initializable {
 
         addSlotPane.setVisible(false);
 
-        EdtGrid edtGrid = EdtGrid.getInstance();
+        EdtGrid edtGrid = EdtGrid.getInstance(20);
 
         edtTopSectionLabel.setText("Semaine");
         edtTopDateLabel.setText(LocalDateTime.now().toLocalDate().format(DateTimeFormatter.ofPattern("dd MMMM yyyy")).toUpperCase());
