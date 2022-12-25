@@ -15,16 +15,14 @@ class ProfessorDAOTest {
     public static final ProfessorDAO dao = ProfessorDAO.of();
 
     private Professor getRandomNewProfessor(){
-        Professor professor = Professor.of("UnitTest","UnitTestFirstName",
-                "UnitTestName.Firstname"+Math.random()+"@email.com","REseracher");//A professor is a new one if is email is new
-        return professor;
+        return Professor.of("UnitTest","UnitTestFirstName",
+                "UnitTestName.Firstname"+Math.random()+"@email.com","REseracher");
     }
 
     
     private Professor getTheTestProfessor(){
-        Professor professor = Professor.of("TheTestProfessor","UnitTestFirstName",
+        return Professor.of("TheTestProfessor","UnitTestFirstName",
                 "UnitTestName.Firstname@email.com","Researcher");
-        return professor;
     }
 
     @Test
@@ -46,7 +44,7 @@ class ProfessorDAOTest {
         Professor professor = getTheTestProfessor();
 
         try {
-            Professor authGetterProfessor = dao.get(professor.getEmail(), "1234").orElseThrow(SQLException::new);
+            Professor authGetterProfessor = dao.get(professor.getEmail(), "1234").orElse(null);
             assertEquals(professor, authGetterProfessor);
         }catch (SQLException e){
             log.error(e.getMessage());
@@ -61,7 +59,7 @@ class ProfessorDAOTest {
         dao.save(professor,"1234");
         professor1.setId(professor.getId());
         dao.update(professor1);
-        assertEquals(dao.get(professor.getId()).get(),professor1);
+        assertEquals(dao.get(professor.getId()).orElseThrow(AssertionError::new),professor1);
     }
 
     @Test//Not realy a test must be change when slot is implemented TODO
