@@ -20,7 +20,7 @@ public class EdtGrid extends Grid {
     public enum Days { LUNDI, MARDI, MERCREDI, JEUDI, VENDREDI }
     private List<String> hours;
 
-    private EdtGrid(int rowNumber, int columnNumber){
+    private EdtGrid(int rowNumber, int columnNumber, int startOfWeekDay){
         super( Grid.builder(rowNumber, columnNumber) );
 
         hours = new ArrayList<>();
@@ -31,10 +31,12 @@ public class EdtGrid extends Grid {
                 hours.add(i + ":00");
         }
 
+        int currentWeekDay = startOfWeekDay;
         for (int i = 0; i < Days.values().length; i++){
-            FlowPane f = new FlowPane(new Label( Days.values()[i].name() ));
+            FlowPane f = new FlowPane(new Label( Days.values()[i].name() + " " + currentWeekDay ));
             f.getStyleClass().add("day");
             add(f, 0, i+1);
+            currentWeekDay++;
         }
 
         FlowPane empty = new FlowPane();
@@ -52,7 +54,7 @@ public class EdtGrid extends Grid {
         changeTodayStyleClass();
     }
 
-    public static EdtGrid getInstance(){ return new EdtGrid(11, 6); }
+    public static EdtGrid getInstance(int startOfWeekDay){ return new EdtGrid(11, 6, startOfWeekDay); }
 
     private void setupEmptyGrid(){
         for (int i = 1; i < getRowNumber(); i++){
