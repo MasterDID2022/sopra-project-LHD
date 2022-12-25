@@ -15,16 +15,14 @@ class AdminDAOTest {
     public static final AdminDAO dao = AdminDAO.of();
 
     private Admin getRandomNewAdmin(){
-        Admin admin = Admin.of("UnitTest","UnitTestFirstName",
-                "UnitTestName.Firstname"+Math.random()+"@email.com","ScienceUnique");//A admin is a new one if is email is new
-        return admin;
+        return Admin.of("UnitTest","UnitTestFirstName",
+                "UnitTestName.Firstname"+Math.random()+"@email.com","ScienceUnique");
     }
 
     
     private Admin getTheTestAdmin(){
-        Admin admin = Admin.of("TheTestAdmin","UnitTestFirstName",
+        return Admin.of("TheTestAdmin","UnitTestFirstName",
                 "UnitTestName.Firstname@email.com","RandomSciences");
-        return admin;
     }
 
     @Test
@@ -35,9 +33,9 @@ class AdminDAOTest {
     @Test
     void addNewAdmin(){
         Admin admin = getRandomNewAdmin();
-        int oldsize = dao.getAll().size();
+        int oldSize = dao.getAll().size();
         dao.save(admin,"1234");
-        assertEquals(oldsize+1,dao.getAll().size());
+        assertEquals(oldSize+1,dao.getAll().size());
         dao.delete(admin);
     }
 
@@ -55,22 +53,22 @@ class AdminDAOTest {
     }
 
     @Test
-    void updateAadmin() throws IdException {
+    void updateAnAdmin() throws IdException {
         Admin admin = getRandomNewAdmin();
         Admin admin1 = Admin.of(admin.getName()+"1",admin.getFname()+"1",admin.getEmail()+"1", admin.getFaculty());
         dao.save(admin,"1234");
         admin1.setId(admin.getId());
         dao.update(admin1);
-        assertEquals(dao.get(admin.getId()).get(),admin1);
+        assertEquals(dao.get(admin.getId()).orElseThrow(AssertionError::new),admin1);
     }
 
     @Test
     void addSameAdmin(){
         Admin admin = getTheTestAdmin();
         dao.save(admin,"1234");
-        int oldsize = dao.getAll().size();
+        int oldSize = dao.getAll().size();
         dao.save(admin,"1234");
-        assertEquals(oldsize,dao.getAll().size());
+        assertEquals(oldSize,dao.getAll().size());
     }
 
 
@@ -78,9 +76,9 @@ class AdminDAOTest {
     void deleteTheAdmin(){
         Admin admin = getRandomNewAdmin();
         dao.save(admin,"1234");
-        int oldsize = dao.getAll().size();
+        int oldSize = dao.getAll().size();
         dao.delete(admin);
-        assertEquals(oldsize-1,dao.getAll().size());
+        assertEquals(oldSize-1,dao.getAll().size());
     }
 
 }

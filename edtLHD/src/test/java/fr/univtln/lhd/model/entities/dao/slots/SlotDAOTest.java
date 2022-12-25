@@ -86,7 +86,7 @@ class SlotDAOTest {
     void GetSlotFromGroup() throws SQLException {
         SlotDAO dao = getDAO();
         GroupDAO Gdao = GroupDAO.getInstance();
-        Group FirstGroup = Gdao.get(1).get();
+        Group FirstGroup = Gdao.get(1).orElseThrow(SQLException::new);
         System.out.println(dao.getSlotOfGroup(FirstGroup));
         Assertions.assertEquals(2,1+1);
     }

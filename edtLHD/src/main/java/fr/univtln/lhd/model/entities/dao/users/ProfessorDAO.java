@@ -3,6 +3,7 @@ package fr.univtln.lhd.model.entities.dao.users;
 import fr.univtln.lhd.exceptions.IdException;
 import fr.univtln.lhd.model.entities.dao.DAO;
 import fr.univtln.lhd.model.entities.dao.Datasource;
+import fr.univtln.lhd.model.entities.dao.slots.GroupDAO;
 import fr.univtln.lhd.model.entities.users.Professor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -207,15 +208,7 @@ public class ProfessorDAO implements DAO<Professor> {
         try (conn;
              PreparedStatement stmt = conn.prepareStatement(SAVE_SLOT_STMT)
         ) {
-            conn.setAutoCommit(false); // we need to commit after the execute batch
-            for (final long professorId : professorIdArray) {
-                stmt.setLong(1, professorId);
-                stmt.setLong(2, slotId);
-                stmt.addBatch();
-                stmt.clearParameters();
-            }
-            stmt.executeBatch();
-            conn.commit();
+            GroupDAO.batchUpdate(slotId, professorIdArray, conn, stmt);
         } catch (SQLException e) {
             log.error(e.getMessage());
             throw e;

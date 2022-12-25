@@ -18,17 +18,11 @@ import java.util.Optional;
  */
 public class SubjectDAO implements DAO<Subject> {
 
-    private static final String GETALL_STMT = "SELECT * FROM SUBJECTS";
+    private static final String GET_ALL_STMT = "SELECT * FROM SUBJECTS";
     private static final String GET_STMT = "SELECT * FROM SUBJECTS WHERE ID=?";
     private static final String SAVE_STMT = "INSERT INTO SUBJECTS VALUES (DEFAULT, ?, ?)";
     private static final String UPDATE_STMT = "UPDATE SUBJECTS SET NAME=?, HOUR_COUNT_MAX=? WHERE ID=?";
     private static final String DELETE_STMT = "DELETE FROM SUBJECTS WHERE ID=?";
-
-    /**
-     * Constructor of SubjectDao, initiate connection and prepared statement
-     * @throws SQLException throw a SQLException if there is a problem with the connection or database prepared statement
-     */
-
 
     /**
      * Factory for SubjectDao
@@ -59,10 +53,7 @@ public class SubjectDAO implements DAO<Subject> {
                         rs.getFloat("HOUR_COUNT_MAX"));
                 result.setId( rs.getLong("ID") );
             }
-        } catch (SQLException e) {
-            log.error(e.getMessage());
-            //throw e;
-        } catch (IdException e){
+        } catch (SQLException | IdException e) {
             log.error(e.getMessage());
         }
         return Optional.ofNullable(result);
@@ -76,7 +67,7 @@ public class SubjectDAO implements DAO<Subject> {
     public List<Subject> getAll () {
         List<Subject> subjectList = new ArrayList<>();
         try (Connection conn = Datasource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(GETALL_STMT);
+             PreparedStatement stmt = conn.prepareStatement(GET_ALL_STMT);
              ResultSet rs = stmt.executeQuery()
         ) {
             while (rs.next()) {
@@ -86,12 +77,9 @@ public class SubjectDAO implements DAO<Subject> {
                 s.setId( rs.getLong("ID") );
                 subjectList.add(s);
             }
-        } catch (SQLException e) {
+        } catch (SQLException | IdException e) {
             log.error(e.getMessage());
-            //throw e;
-        } catch (IdException e){
-            log.error(e.getMessage());
-        }
+       }
         return subjectList;
     }
 
@@ -110,10 +98,7 @@ public class SubjectDAO implements DAO<Subject> {
             ResultSet idSet = stmt.getGeneratedKeys();
             idSet.next();
             subject.setId(idSet.getLong(1));
-        } catch (SQLException e) {
-            log.error(e.getMessage());
-            //throw e;
-        } catch (IdException e){
+        } catch (SQLException | IdException e) {
             log.error(e.getMessage());
         }
     }
@@ -151,7 +136,6 @@ public class SubjectDAO implements DAO<Subject> {
             stmt.executeUpdate();
         } catch (SQLException e) {
             log.error(e.getMessage());
-            //throw e;
         }
     }
 }
