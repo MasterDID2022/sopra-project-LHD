@@ -4,6 +4,9 @@
 
 -- Dumped from database version 14.6
 -- Dumped by pg_dump version 14.6
+--##Essential command because postgres is a very bad DBMS
+ALTER DATABASE lhd SET search_path to lhd;
+--##
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
