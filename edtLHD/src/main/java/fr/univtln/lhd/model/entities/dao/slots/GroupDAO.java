@@ -3,9 +3,7 @@ package fr.univtln.lhd.model.entities.dao.slots;
 import fr.univtln.lhd.exceptions.IdException;
 import fr.univtln.lhd.model.entities.dao.DAO;
 import fr.univtln.lhd.model.entities.dao.Datasource;
-import fr.univtln.lhd.model.entities.dao.users.StudentDAO;
 import fr.univtln.lhd.model.entities.slots.Group;
-import fr.univtln.lhd.model.entities.users.Student;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
@@ -27,7 +25,6 @@ public class GroupDAO implements DAO<Group> {
 
     private static final String GET_STMT = "SELECT * FROM GROUPS WHERE ID=?";
     private static final String GET_ALL_STMT = "SELECT * FROM GROUPS";
-    private static final String GET_STUDENT_GROUP_STMT = "SELECT id_user from group_user where id_group= ?";
     private static final String GET_SLOT_GROUP_STMT = "SELECT id_group from group_slot where id_slot= ?";
     private static final String GET_ALL_GROUP_SLOT_STMT = "SELECT * from group_slot";
     private static final String SAVE_STMT = "INSERT INTO GROUPS VALUES (DEFAULT, ?)";
@@ -99,28 +96,8 @@ public class GroupDAO implements DAO<Group> {
         }
         return groupList;
     }
-    public  List<Student> getStudentsOfGroup ( final Group group) throws SQLException {
-        List<Student> studentList= new ArrayList<>();
 
-        try (Connection conn = Datasource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(GET_STUDENT_GROUP_STMT)
-        ){
-            stmt.setLong(1,group.getId());
-            stmt.executeQuery();
-            ResultSet rs =stmt.getResultSet();
-            while (rs.next()) {
-                studentList.add(
-                        StudentDAO.getInstance().get(rs.getLong(1)).orElseThrow(SQLException::new)
-                );
-            }
-        }
-        catch (SQLException e) {
-            log.error(e.getMessage());
-            throw e;
-        }
 
-        return Collections.unmodifiableList(studentList);
-    }
     public List<Group> getGroupOfSlot(final long slotID) throws SQLException {
         List<Group> groupList = new ArrayList<>();
 
@@ -146,7 +123,7 @@ public class GroupDAO implements DAO<Group> {
     /**
      * Get all group associated to a Slot (via table group_slot)
      * @return List of Group entity
-     * @throws SQLException
+     * @throws SQLException if an error occurs during the query
      */
     public List<Group> getAllGroupSlot() throws SQLException {
         List<Group> groupList = new ArrayList<>();
@@ -155,7 +132,7 @@ public class GroupDAO implements DAO<Group> {
         ){
             ResultSet rs = stmt.executeQuery();
             while (rs.next())
-                groupList.add( get( rs.getLong("id_group") ).get() );
+                groupList.add( get( rs.getLong("id_group") ).orElseThrow(SQLException::new) );
         } catch (SQLException e){
             log.error(e.getMessage());
             throw e;
@@ -196,19 +173,23 @@ public class GroupDAO implements DAO<Group> {
         try (Connection conn = Datasource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SAVE_SLOT_STMT)
         ) {
-            conn.setAutoCommit(false); // we need to commit after the execute batch
-            for (final long id : groupId) {
-                stmt.setLong(1, id);
-                stmt.setLong(2, slotId);
-                stmt.addBatch();
-                stmt.clearParameters();
-            }
-            var results = stmt.executeBatch();
-            conn.commit();
+            batchUpdate(slotId, groupId, conn, stmt);
         } catch (SQLException e) {
             log.error(e.getMessage());
             throw e;
         }
+    }
+
+    public static void batchUpdate ( long slotId, long[] groupId, Connection conn, PreparedStatement stmt ) throws SQLException {
+        conn.setAutoCommit(false); // we need to commit after the execute batch
+        for (final long id : groupId) {
+            stmt.setLong(1, id);
+            stmt.setLong(2, slotId);
+            stmt.addBatch();
+            stmt.clearParameters();
+        }
+        stmt.executeBatch();
+        conn.commit();
     }
 
     /**

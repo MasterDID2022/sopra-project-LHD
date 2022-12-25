@@ -1,9 +1,5 @@
-package fr.univtln.lhd.entities.slots;
+package fr.univtln.lhd.model.entities.slots;
 
-import fr.univtln.lhd.model.entities.slots.Classroom;
-import fr.univtln.lhd.model.entities.slots.Group;
-import fr.univtln.lhd.model.entities.slots.Slot;
-import fr.univtln.lhd.model.entities.slots.Subject;
 import fr.univtln.lhd.model.entities.users.Professor;
 import org.junit.jupiter.api.Test;
 import org.threeten.extra.Interval;
