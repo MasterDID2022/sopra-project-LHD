@@ -12,9 +12,6 @@ import lombok.Getter;
 @Getter
 public class SlotUI extends FlowPane {
 
-    /*
-     CM = white
-     */
     private static final String[] colorArray = new String[] {"red", "yellow", "blue", "violet", "white"};
 
     private Slot slot;
@@ -23,14 +20,10 @@ public class SlotUI extends FlowPane {
 
     private SlotUI(Slot slot){
         super( new Label() );
-
         this.slot = slot;
-
         /* Classroom classroom = EdtLhdController.getClassroom( slot.getClassroomId() ); */
         ((Label) this.getChildren().get(0) ).setText( formatSlotLabel(slot) );
-
         this.getStyleClass().add("slot");
-
         this.setStyle("-fx-background-color:" + getAssociatedColor(slot) );
     }
 
@@ -52,9 +45,13 @@ public class SlotUI extends FlowPane {
         return tmpLabel.toString();
     }
 
+    /**
+     * Take a slot and return the color associate with his type
+     * @param slot
+     * @return a string representing a color
+     */
     private String getAssociatedColor(Slot slot){
         //get color from classroom name, hash it, modulo color array, get color
-        int nameIndex = slot.getType().name().hashCode();
-        return colorArray[ nameIndex % colorArray.length ];
+        return colorArray[ slot.getType().ordinal() % colorArray.length ];
     }
 }
