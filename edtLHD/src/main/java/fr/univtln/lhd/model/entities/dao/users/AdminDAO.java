@@ -142,7 +142,7 @@ public class AdminDAO implements DAO<Admin> {
         } catch (SQLException e){
             log.error(e.getMessage());
         }
-        log.error("Not supposed to be used");
+        log.error("Not supposed to be used,Saving without password");
     }
 
     /**

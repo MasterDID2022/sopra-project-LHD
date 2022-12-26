@@ -1,6 +1,10 @@
 package fr.univtln.lhd.facade;
 
+import fr.univtln.lhd.exceptions.IdException;
+import fr.univtln.lhd.model.entities.dao.slots.ClassroomDAO;
+import fr.univtln.lhd.model.entities.dao.slots.GroupDAO;
 import fr.univtln.lhd.model.entities.dao.slots.SlotDAO;
+import fr.univtln.lhd.model.entities.dao.slots.SubjectDAO;
 import fr.univtln.lhd.model.entities.dao.users.AdminDAO;
 import fr.univtln.lhd.model.entities.dao.users.ProfessorDAO;
 import fr.univtln.lhd.model.entities.dao.users.StudentDAO;
@@ -30,6 +34,42 @@ public class Schedule {
     private static final Schedule schedule = new Schedule();
 
     /**
+     * Get Professor of Database via email & password
+     *
+     * @param email    Email of the professor
+     * @param password password of the professor
+     * @return Professor entity if exist in database, otherwise return null.
+     */
+    public static Optional<Professor> getProfessorFromAuth(String email, String password) {
+        ProfessorDAO dao = ProfessorDAO.of();
+        Professor professor = null;
+        try {
+            professor = dao.get(email, password).orElseThrow(SQLException::new);
+        } catch (SQLException e) {
+            log.error(e.getMessage());
+        }
+        return Optional.ofNullable(professor);
+    }
+
+    /**
+     * Get Admin of Database via email & password
+     *
+     * @param email    Email of the admin
+     * @param password password of the admin
+     * @return Admin entity if exist in database, otherwise return null.
+     */
+    public static Optional<Admin> getAdminFromAuth(String email, String password) {
+        AdminDAO dao = AdminDAO.of();
+        Admin admin = null;
+        try {
+            admin = dao.get(email, password).orElseThrow(SQLException::new);
+        } catch (SQLException e) {
+            log.error(e.getMessage());
+        }
+        return Optional.ofNullable(admin);
+    }
+
+    /**
      * Take a student and two LocalDate(start/end) and return every slot that the student is
      * in in the timerange of the two LocalDate
      * The student must be persisted or will return an empty array
@@ -44,6 +84,21 @@ public class Schedule {
         return Schedule.getSchedule(student, timerange);
     }
 
+
+    /**
+     * Take a Group and two LocalDate(start/end) and return every slot that the group is
+     * in, in the timerange of the two LocalDate
+     * The group must be persisted or will return an empty array
+     *
+     * @param group     a persisted group
+     * @param timeStart the start of the timerange
+     * @param timeEnd   the end of the timerange
+     * @return a List of slot that is in the timerange with this group
+     */
+    public static List<Slot> getSchedule(Group group, LocalDate timeStart, LocalDate timeEnd) {
+        Interval timerange = schedule.getIntervalOf(timeStart, timeEnd);
+        return Schedule.getSchedule(group, timerange);
+    }
 
     /**
      * Take a student and an Interval timerange and return every slot within the timerange
@@ -74,21 +129,6 @@ public class Schedule {
 
 
     /**
-     * Take a Group and two LocalDate(start/end) and return every slot that the group is
-     * in, in the timerange of the two LocalDate
-     * The group must be persisted or will return an empty array
-     *
-     * @param group     a persisted group
-     * @param timeStart the start of the timerange
-     * @param timeEnd   the end of the timerange
-     * @return a List of slot that is in the timerange with this group
-     */
-    public static List<Slot> getSchedule(Group group, LocalDate timeStart, LocalDate timeEnd) {
-        Interval timerange = schedule.getIntervalOf(timeStart, timeEnd);
-        return Schedule.getSchedule(group, timerange);
-    }
-
-    /**
      * Take a Group and an Interval and return a List of the slot with this group
      * inside the interval
      * The group must be persisted or will return an empty array
@@ -113,61 +153,126 @@ public class Schedule {
 
     /**
      * Get Student of Database via email & password
-     * @param email Email of the student
+     *
+     * @param email    Email of the student
      * @param password password of the student
      * @return Student entity if exist in database, otherwise return null.
      */
-    public static Optional<Student> getStudentFromAuth(String email, String password){
+    public static Optional<Student> getStudentFromAuth(String email, String password) {
         StudentDAO dao = StudentDAO.getInstance();
         Student student = null;
-
         try {
             student = dao.get(email, password).orElseThrow(SQLException::new);
-        } catch (SQLException e){
+        } catch (SQLException e) {
             log.error(e.getMessage());
         }
         return Optional.ofNullable(student);
     }
 
     /**
-     * Get Professor of Database via email & password
-     * @param email Email of the professor
-     * @param password password of the professor
-     * @return Professor entity if exist in database, otherwise return null.
+     * Take a slot and persisted it inside the database
+     * if any necessary attribute is not persisted
+     * the methode will fail
+     *
+     * @return True if failure False else
      */
-    public static Optional<Professor> getProfessorFromAuth(String email, String password){
-        ProfessorDAO dao = ProfessorDAO.of();
-        Professor professor = null;
-
-        try {
-            professor = dao.get(email, password).orElseThrow(SQLException::new);
-        } catch (SQLException e){
-            log.error(e.getMessage());
+    public static boolean addToSchedule(Slot slot) {
+        SlotDAO dao = SlotDAO.getInstance();
+        if (!schedule.verifyIfPersisted(slot).isEmpty()) {
+            log.error("This attribute of slot are not persisted",
+                    schedule.verifyIfPersisted(slot));
+            return true;
         }
-        return Optional.ofNullable(professor);
+        try {
+            dao.save(slot);
+        } catch (SQLException e) {
+            log.error(e.getMessage());
+            return true;
+        }
+        return false;
     }
 
     /**
-     * Get Admin of Database via email & password
-     * @param email Email of the admin
-     * @param password password of the admin
-     * @return Admin entity if exist in database, otherwise return null.
+     * Take a Slot and delete it in the database
+     *
+     * @param slot
+     * @return false if failure true if it's a success
      */
-    public static Optional<Admin> getAdminFromAuth(String email, String password){
-        AdminDAO dao = AdminDAO.of();
-        Admin admin = null;
-
-        try {
-            admin = dao.get(email, password).orElseThrow(SQLException::new);
-        } catch (SQLException e){
-            log.error(e.getMessage());
+    public static boolean deleteInSchedule(Slot slot) {
+        if (slot.getId() < 0) {
+            log.error("slot is not in the database");//Might be better to replace an exception
+            return true;
         }
-        return Optional.ofNullable(admin);
+        SlotDAO dao = SlotDAO.getInstance();
+        try {
+            dao.delete(slot);
+        } catch (SQLException e) {
+            log.error("no match for slot of ID:" + slot.getId());
+            log.error(e.getMessage());
+            return true;
+        }
+        return false;
     }
 
+    /**
+     * Take two slot and update the first by the second
+     * if the first one is not in the database, the methode
+     * will fail
+     *
+     * @param oldSlot the old slot, persisted
+     * @param newSlot the new one, not yet persisted
+     * @return false if failure true if it's a success
+     */
+    public static boolean updateInSchedule(Slot oldSlot, Slot newSlot) {
+        SlotDAO slotDAO = SlotDAO.getInstance();
+        if (oldSlot.getId() < 0) {
+            log.error("slot [" + oldSlot.toString() +
+                    "]\nis not in database, furthermore cannot update" +
+                    " this slot");
+            return true;
+        }
+        try {
+            newSlot.setId(oldSlot.getId());
+            slotDAO.update(newSlot);
+        } catch (IdException | SQLException e) {
+            log.error(e.getMessage());
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Go through every attribute of slot and verify if it is persisted
+     * if not it add it to a list and return every
+     * state
+     *
+     * @param slot of potentially not persisted parameter
+     */
+    private List<String> verifyIfPersisted(Slot slot) {
+        List<String> listOfNotpersistedAttribute = new ArrayList<>();
+        for (Professor professor :
+                slot.getProfessors()) {
+            if (professor.getId() < 0) {
+                listOfNotpersistedAttribute.add(professor.toString());
+            }
+        }
+        for (Group group :
+                slot.getGroup())
+            if (group.getId() < 0) {
+                listOfNotpersistedAttribute.add(group.toString());
+            }
+        if (slot.getClassroom().getId() < 0) {
+            listOfNotpersistedAttribute.add(slot.getClassroom().toString());
+        }
+        if (slot.getSubject().getId() < 0) {
+            listOfNotpersistedAttribute.add(slot.getSubject().toString());
+        }
+        return listOfNotpersistedAttribute;
+    }
 
     /**
      * Take a list of Slot and return another List of slot inside the timerange
+     * each slot begin or end in the time range which mean that it can overflow
      *
      * @param slotList  list of all the slot
      * @param timerange an Intervalle of the slot to keep
@@ -180,7 +285,7 @@ public class Schedule {
         }
         for (Slot slot :
                 slotList) {
-            if (timerange.encloses(slot.getTimeRange())) {
+            if (timerange.overlaps(slot.getTimeRange())) {
                 slotIntimerange.add(slot);
             }
         }
