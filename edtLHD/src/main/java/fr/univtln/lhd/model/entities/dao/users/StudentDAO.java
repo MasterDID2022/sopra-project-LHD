@@ -166,7 +166,7 @@ public class StudentDAO implements DAO<Student> {
         } catch (SQLException e){
             log.error(e.getMessage());
         }
-        log.error("Not supposed to be used");
+        log.error("Not supposed to be used,Saving without password");
     }
 
     /**
@@ -201,17 +201,13 @@ public class StudentDAO implements DAO<Student> {
      */
     private void saveStudentGroup(Student student) throws SQLException {
         List<Group> groups = student.getStudentGroup();
-
         if (groups == null) return;
-
         GroupDAO groupDAO = GroupDAO.getInstance();
-
         try (Connection conn = Datasource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SAVE_GROUP)
         ) {
             for (Group group : groups){
-                groupDAO.save(group);
-
+                if (group.getId()<0) groupDAO.save(group);
                 stmt.setLong(1, group.getId());
                 stmt.setLong(2, student.getId());
                 stmt.executeUpdate();

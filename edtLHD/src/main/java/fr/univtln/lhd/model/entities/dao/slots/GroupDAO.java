@@ -164,6 +164,7 @@ public class GroupDAO implements DAO<Group> {
 
     /**
      * Save into join table group_slot, considering both are already saved in their respective tables
+     * Should only be used by SlotDAO
      *
      * @param slotId  Slot entity id to save
      * @param groupId Group entity id to save
