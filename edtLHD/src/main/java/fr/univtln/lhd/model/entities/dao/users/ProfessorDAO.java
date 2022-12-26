@@ -32,10 +32,10 @@ public class ProfessorDAO implements DAO<Professor> {
     private static final String GET_PROFESSOR_AUTH = "SELECT * FROM PROFESSORS WHERE EMAIL=? AND PASSWORD=?";
 
 
-    private ProfessorDAO () {
+    private ProfessorDAO() {
     }
 
-    public static ProfessorDAO of () {
+    public static ProfessorDAO of() {
         return new ProfessorDAO();
     }
 
@@ -46,11 +46,11 @@ public class ProfessorDAO implements DAO<Professor> {
      * @return May return one Professor
      */
     @Override
-    public Optional<Professor> get ( long id ) {
+    public Optional<Professor> get(long id) {
         Optional<Professor> fetchedProfessor = Optional.empty();
         try (Connection conn = Datasource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(GET)
-        ){
+        ) {
             stmt.setLong(1, id);
             ResultSet resultSet = stmt.executeQuery();
             if (resultSet.next()) {
@@ -63,7 +63,7 @@ public class ProfessorDAO implements DAO<Professor> {
                 );
                 fetchedProfessor.get().setId(resultSet.getLong("ID"));
             }
-        }catch (SQLException | IdException e){
+        } catch (SQLException | IdException e) {
             log.error(e.getMessage());
         }
         return fetchedProfessor;
@@ -71,7 +71,8 @@ public class ProfessorDAO implements DAO<Professor> {
 
     /**
      * Getter for one professor, using email and password
-     * @param email Unique email of the corresponding professor
+     *
+     * @param email    Unique email of the corresponding professor
      * @param password Password of the Professor account
      * @return Professor Entity, or null if not found
      * @throws SQLException
@@ -81,12 +82,12 @@ public class ProfessorDAO implements DAO<Professor> {
 
         try (Connection conn = Datasource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(GET_PROFESSOR_AUTH)
-        ){
+        ) {
             stmt.setString(1, email);
             stmt.setString(2, password);
             ResultSet rs = stmt.executeQuery();
 
-            if (rs.next()){
+            if (rs.next()) {
                 result = Professor.of(
                         rs.getString("NAME"),
                         rs.getString("FNAME"),
@@ -95,7 +96,7 @@ public class ProfessorDAO implements DAO<Professor> {
                 );
                 result.setId(rs.getLong("ID"));
             }
-        } catch (SQLException | IdException e){
+        } catch (SQLException | IdException e) {
             log.error(e.getMessage());
         }
 
@@ -104,6 +105,7 @@ public class ProfessorDAO implements DAO<Professor> {
 
     /**
      * Getter for all Professor
+     *
      * @return List of all Professor
      */
     @Override
@@ -111,18 +113,18 @@ public class ProfessorDAO implements DAO<Professor> {
         List<Professor> professorList = new ArrayList<>();
         try (Connection conn = Datasource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(GET_ALL)
-        ){
+        ) {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 Professor fetchedProfessor = Professor.of(
-                                rs.getString("NAME"),
-                                rs.getString("FNAME"),
-                                rs.getString("EMAIL"),
-                                rs.getString("TITLE"));
+                        rs.getString("NAME"),
+                        rs.getString("FNAME"),
+                        rs.getString("EMAIL"),
+                        rs.getString("TITLE"));
                 fetchedProfessor.setId(rs.getLong("ID"));
                 professorList.add(fetchedProfessor);
             }
-        } catch (SQLException | IdException e){
+        } catch (SQLException | IdException e) {
             log.error(e.getMessage());
         }
         return professorList;
@@ -130,18 +132,19 @@ public class ProfessorDAO implements DAO<Professor> {
 
     /**
      * Get all professor associated to a Slot (via table professor_slot)
+     *
      * @return List of Professor entity
      * @throws SQLException
      */
     public List<Professor> getAllProfessorSlot() throws SQLException {
         List<Professor> professorList = new ArrayList<>();
         try (Connection conn = Datasource.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(GET_ALL_PROFESSOR_SLOT_STMT)
-        ){
+             PreparedStatement stmt = conn.prepareStatement(GET_ALL_PROFESSOR_SLOT_STMT)
+        ) {
             ResultSet rs = stmt.executeQuery();
             while (rs.next())
-                professorList.add( get( rs.getLong("id_professor") ).get() );
-        } catch (SQLException e){
+                professorList.add(get(rs.getLong("id_professor")).get());
+        } catch (SQLException e) {
             log.error(e.getMessage());
             throw e;
         }
@@ -154,42 +157,45 @@ public class ProfessorDAO implements DAO<Professor> {
      * <!>SHOULD ONLY BE USED FOR TEST</!>
      * this methode save a User without a password
      * please use save(Professor s,String password)
+     *
      * @param professor Professor object to save
      */
     @Override
     public void save(Professor professor) {
-        try(Connection conn = Datasource.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(SAVE)
-        ){
+        try (Connection conn = Datasource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(SAVE)
+        ) {
             stmt.setString(1, professor.getName());
             stmt.setString(2, professor.getFname());
             stmt.setString(3, professor.getEmail());
             stmt.setString(4, "NO_PASSWORD");
             stmt.setString(5, professor.getTitle());
             stmt.executeUpdate();
-        } catch (SQLException e){
+        } catch (SQLException e) {
             log.error(e.getMessage());
         }
-        log.error("Not supposed to be used");
+        log.error("Not supposed to be used,Saving without password");
     }
 
     /**
      * Save Professor t to Database and add the ID generate by the database
      * to professor, if the professor exist it will only update the ID
+     *
      * @param professor Professor object to save
-     * @param password password to save inside the database
+     * @param password  password to save inside the database
      */
     public void save(Professor professor, String password) {
-        try(Connection conn = Datasource.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(SAVE, RETURN_GENERATED_KEYS)
-        ){
+        try (Connection conn = Datasource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(SAVE, RETURN_GENERATED_KEYS)
+        ) {
             stmt.setString(1, professor.getName());
             stmt.setString(2, professor.getFname());
             stmt.setString(3, professor.getEmail());
             stmt.setString(4, password);
             stmt.setString(5, professor.getTitle());
             stmt.executeUpdate();
-            ResultSet id_set = stmt.getGeneratedKeys(); id_set.next();
+            ResultSet id_set = stmt.getGeneratedKeys();
+            id_set.next();
             professor.setId(id_set.getLong(1));
         } catch (SQLException | IdException e) {
             log.error(e.getMessage());
@@ -198,12 +204,13 @@ public class ProfessorDAO implements DAO<Professor> {
 
     /**
      * Save into join table professor_slot, considering both are already saved in their respective tables
+     * Should only be used by SlotDAO
      *
      * @param slotId           Slot entity id to save
      * @param professorIdArray Professor entity id to save
      * @throws SQLException thrown Exception in case of Errors, especially if one of the two ids doesn't exist in entity tables
      */
-    public void save ( long slotId, long[] professorIdArray ) throws SQLException {
+    public void save(long slotId, long[] professorIdArray) throws SQLException {
         Connection conn = Datasource.getConnection();
         try (conn;
              PreparedStatement stmt = conn.prepareStatement(SAVE_SLOT_STMT)
@@ -218,21 +225,21 @@ public class ProfessorDAO implements DAO<Professor> {
     /**
      * Update the data of Professor in the database, without modifying the object professor,
      * to get the new professor use <code>updateAndGet</code>
+     *
      * @param professor a Professor
      */
     @Override
     public Professor update(Professor professor) throws IdException {
         try (Connection conn = Datasource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(UPDATE)
-        ){
-            stmt.setString(1,professor.getName());
+        ) {
+            stmt.setString(1, professor.getName());
             stmt.setString(2, professor.getFname());
-            stmt.setString(3,professor.getEmail());
-            stmt.setString(4,professor.getTitle());
-            stmt.setLong(5,professor.getId());
+            stmt.setString(3, professor.getEmail());
+            stmt.setString(4, professor.getTitle());
+            stmt.setLong(5, professor.getId());
             stmt.executeUpdate();
-        }
-        catch (SQLException e){
+        } catch (SQLException e) {
             log.error(e.getMessage());
         }
         return professor;
@@ -240,19 +247,20 @@ public class ProfessorDAO implements DAO<Professor> {
 
 
     /**
-     *Take the Id of a Slot and return every professors related from this slot
+     * Take the Id of a Slot and return every professors related from this slot
      * by using the professor_slot table in the database
+     *
      * @param slotId an Id of a sot
      * @return List of Professor
      */
-    public List<Professor> getProfessorOfSlots(long slotId){
+    public List<Professor> getProfessorOfSlots(long slotId) {
         List<Professor> ProfessorsOfSlot = new ArrayList<>();
         try (Connection conn = Datasource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(GET_PROFESSOR_OF_SLOT)
-        ){
-            stmt.setLong(1,slotId);
+        ) {
+            stmt.setLong(1, slotId);
             stmt.executeQuery();
-            ResultSet rs =stmt.getResultSet();
+            ResultSet rs = stmt.getResultSet();
             while (rs.next()) {
                 ProfessorsOfSlot.add(get(rs.getLong(1)).get());
             }
@@ -265,17 +273,17 @@ public class ProfessorDAO implements DAO<Professor> {
 
     /**
      * Delete Professor from Database
+     *
      * @param professor Professor to be deleted from the database
      */
     @Override
     public void delete(Professor professor) {
         try (Connection conn = Datasource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(DELETE)
-        ){
+        ) {
             stmt.setLong(1, professor.getId());
             stmt.executeUpdate();
-        }
-        catch (SQLException e){
+        } catch (SQLException e) {
             log.error(e.getMessage());
         }
     }
