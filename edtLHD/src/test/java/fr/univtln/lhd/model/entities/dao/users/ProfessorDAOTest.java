@@ -106,7 +106,7 @@ class ProfessorDAOTest {
         assertEquals( updatedProfessor, professor3);
     }
 
-    @Test//Not realy a test must be change when slot is implemented TODO
+    @Test
     void getProfessorOfASlot(){
         SlotDAO slotDAO = SlotDAO.getInstance();
 
@@ -135,8 +135,6 @@ class ProfessorDAOTest {
 
     @Test
     void addSameProfessor(){
-        final String defaultMsg = "Done Save Without Error";
-
         int oldSize = dao.getAll().size();
         dao.save(professor1, "testingOnly");
         int newSize = dao.getAll().size();
