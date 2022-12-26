@@ -7,8 +7,7 @@ import fr.univtln.lhd.model.entities.slots.Group;
 import fr.univtln.lhd.model.entities.slots.Slot;
 import fr.univtln.lhd.model.entities.slots.Subject;
 import fr.univtln.lhd.model.entities.users.Professor;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.threeten.extra.Interval;
 
 import java.sql.SQLException;
@@ -20,55 +19,101 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SlotDAOTest {
 
+    private Classroom classroom;
+    private Subject subject;
+
+    private Professor professor1, professor2;
+    private Group group1, group2;
+
     public SlotDAO getDAO () {
         return SlotDAO.getInstance();
     }
 
-    private Slot getRandomNewSlot () {
+    @BeforeEach
+    public void initializeTestEnvironment(){
+        ClassroomDAO classroomDAO = ClassroomDAO.getInstance();
+        SubjectDAO subjectDAO = SubjectDAO.getInstance();
+
         try {
-            Classroom classroom = ClassroomDAO.getInstance().get(3).orElseThrow(SQLException::new);
-            Subject subject = SubjectDAO.getInstance().get(1).orElseThrow(SQLException::new);
+            classroom = Classroom.getInstance("ClassroomTestOnly");
+            classroomDAO.save(classroom);
 
-            return Slot.getInstance(
-                    Slot.SlotType.CM,
-                    classroom,
-                    subject,
-                    new ArrayList<>(),
-                    new ArrayList<>(),
-                    Interval.of(Instant.ofEpochSecond((long) (1 + Math.random())), Instant.ofEpochSecond((long) (100 + Math.random())))
-            );
-        } catch (SQLException e) {
-            throw new AssertionError();
-        }
-    }
-
-    private Slot getRandomFullNewSlot() {
-        try {
-            Classroom classroom = ClassroomDAO.getInstance().get(3).orElseThrow(SQLException::new);
-            Subject subject = SubjectDAO.getInstance().get(1).orElseThrow(SQLException::new);
-
-            Professor p1 = Professor.of("nameP1", "fnameP2", "mail@mail.com", "titleP1");
-            Professor p2 = Professor.of("nameP2", "fnameP2", "mail2@mail.com", "titleP2");
-
-            Group g1 = Group.getInstance("Name1");
-            Group g2 = Group.getInstance("Name2");
-
-            return Slot.getInstance(
-                    Slot.SlotType.TP,
-                    classroom,
-                    subject,
-                    List.of(g1, g2),
-                    List.of(p1, p2),
-                    Interval.of(Instant.ofEpochSecond((long) (10000 + Math.random())), Instant.ofEpochSecond((long) (1000000 + Math.random())))
-            );
+            subject = Subject.getInstance("SubjectTestOnly", 100);
+            subjectDAO.save(subject);
         } catch (SQLException e){
             throw new AssertionError();
         }
     }
 
+    private void initializeFullTestEnvironment(){
+        ProfessorDAO professorDAO = ProfessorDAO.of();
+        GroupDAO groupDAO = GroupDAO.getInstance();
+        try{
+            professor1 = Professor.of("nameP1", "fnameP2", "mail@mail.com", "titleP1");
+            professor2 = Professor.of("nameP2", "fnameP2", "mail2@mail.com", "titleP2");
+            professorDAO.save(professor1, "PasswordTestOnly");
+            professorDAO.save(professor2, "PasswordTestOnly");
+
+            group1 = Group.getInstance("Name1");
+            group2 = Group.getInstance("Name2");
+            groupDAO.save(group1);
+            groupDAO.save(group2);
+        } catch (SQLException e){
+            throw new AssertionError();
+        }
+    }
+
+    @AfterEach
+    public void deleteTestEnvironment() {
+        try {
+            ClassroomDAO.getInstance().delete(classroom);
+            SubjectDAO.getInstance().delete(subject);
+        } catch (SQLException e) {
+            throw new AssertionError();
+        }
+    }
+
+    private void deleteFullTestEnvironment(){
+        ProfessorDAO professorDAO = ProfessorDAO.of();
+        GroupDAO groupDAO = GroupDAO.getInstance();
+        try{
+            professorDAO.delete(professor1);
+            professorDAO.delete(professor2);
+
+            groupDAO.delete(group1);
+            groupDAO.delete(group2);
+        } catch (SQLException e){
+            throw new AssertionError();
+        }
+    }
+
+    private Slot getRandomNewSlot () {
+        return Slot.getInstance(
+                Slot.SlotType.CM,
+                classroom,
+                subject,
+                new ArrayList<>(),
+                new ArrayList<>(),
+                Interval.of(Instant.ofEpochSecond((long) (1 + Math.random())), Instant.ofEpochSecond((long) (100 + Math.random())))
+        );
+    }
+
+    private Slot getRandomFullNewSlot() {
+        return Slot.getInstance(
+                Slot.SlotType.TP,
+                classroom,
+                subject,
+                List.of(group1, group2),
+                List.of(professor1, professor2),
+                Interval.of(Instant.ofEpochSecond((long) (10000 + Math.random())), Instant.ofEpochSecond((long) (1000000 + Math.random())))
+        );
+    }
+
     private Slot getTestSlot () {
         try {
-            return getDAO().get(3).orElseThrow(SQLException::new);
+            Slot slot = getRandomNewSlot();
+            getDAO().save(slot);
+            return getDAO().get(slot.getId()).orElseThrow(SQLException::new);
         } catch (SQLException e) {
             throw new AssertionError();
         }
@@ -81,14 +126,23 @@ class SlotDAOTest {
     }
 
 
-    @Test//We need a way to manipulate group_slot to test that methode
-    //Tested with specifique value should not be used or trust
-    void GetSlotFromGroup() throws SQLException {
-        SlotDAO dao = getDAO();
-        GroupDAO Gdao = GroupDAO.getInstance();
-        Group FirstGroup = Gdao.get(1).orElseThrow(SQLException::new);
-        System.out.println(dao.getSlotOfGroup(FirstGroup));
-        Assertions.assertEquals(2,1+1);
+    @Test
+    void GetSlotFromGroup() {
+        initializeFullTestEnvironment();
+        SlotDAO slotDAO = getDAO();
+        GroupDAO groupDAO = GroupDAO.getInstance();
+        Slot slot = getRandomFullNewSlot();
+        try{
+            slotDAO.save(slot);
+
+            Group firstGroup = groupDAO.get( slot.getGroup().get(0).getId() ).orElseThrow(SQLException::new);
+            List<Slot> groupSlots = slotDAO.getSlotOfGroup(firstGroup);
+            assertEquals(groupSlots.get(0), slot);
+        } catch (SQLException e){
+            throw new AssertionError();
+        }
+
+        deleteFullTestEnvironment();
     }
 
     @Test
@@ -107,17 +161,14 @@ class SlotDAOTest {
 
     @Test
     void testJoinTablesCoherenceAfterSaving() {
+        initializeFullTestEnvironment();
+
         SlotDAO slotDAO = SlotDAO.getInstance();
         GroupDAO groupDAO = GroupDAO.getInstance();
         ProfessorDAO professorDAO = ProfessorDAO.of();
         Slot slot = getRandomFullNewSlot();
 
         try {
-            for (Group group : slot.getGroup())
-                groupDAO.save(group);
-            for (Professor professor : slot.getProfessors())
-                professorDAO.save(professor, "testingJoinTables");
-
             int oldGroupSlotJTSize = groupDAO.getAllGroupSlot().size();
             int oldProfessorSlotJTSize = professorDAO.getAllProfessorSlot().size();
 
@@ -129,19 +180,21 @@ class SlotDAOTest {
             assertEquals(oldGroupSlotJTSize + slot.getGroup().size(), newGroupSlotJTSize);
             assertEquals(oldProfessorSlotJTSize + slot.getProfessors().size(), newProfessorSlotJTSize);
 
-            for (Group group : slot.getGroup())
-                groupDAO.delete(group);
-            for (Professor professor : slot.getProfessors())
-                professorDAO.delete(professor);
-
             slotDAO.delete(slot);
         } catch (SQLException e){
             throw new AssertionError();
         }
+
+        deleteFullTestEnvironment();
     }
 
     @Test
     void testJoinTablesErrorWithoutSaving() {
+        professor1 = Professor.of("nameP1", "fnameP2", "noSaveMail@mail.com", "titleP1");
+        professor2 = Professor.of("nameP2", "fnameP2", "noSaveMail2@mail.com", "titleP2");
+        group1 = Group.getInstance("NoSaveName1");
+        group2 = Group.getInstance("NoSaveName2");
+
         SlotDAO dao = SlotDAO.getInstance();
         Slot slot = getRandomFullNewSlot();
         final String defaultMsg = "Done Save Without Error";
@@ -164,14 +217,8 @@ class SlotDAOTest {
 
     @Test
     void GetSlotTest () {
-        SlotDAO dao = getDAO();
-
-        try {
-            Slot s = dao.get(3).orElseThrow(SQLException::new);
-            Assertions.assertNotNull(s);
-        } catch (SQLException e) {
-            throw new AssertionError();
-        }
+        Slot s = getTestSlot();
+        assertNotNull(s);
     }
 
     @Test

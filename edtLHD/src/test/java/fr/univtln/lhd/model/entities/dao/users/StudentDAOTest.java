@@ -4,7 +4,9 @@ import fr.univtln.lhd.exceptions.IdException;
 import fr.univtln.lhd.model.entities.slots.Group;
 import fr.univtln.lhd.model.entities.users.Student;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
@@ -14,6 +16,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @Slf4j
 class StudentDAOTest {
     public static final StudentDAO dao = StudentDAOTest.getDAO();
+
+    private Student student;
 
     public static StudentDAO getDAO() {
         return StudentDAO.getInstance();
@@ -32,9 +36,23 @@ class StudentDAOTest {
         return student;
     }
 
-    private Student getTheTestStudent(){
-        return Student.of("TheTestStudent","UnitTestFirstName",
-                "UnitTestName.Firstname@email.com");
+    @BeforeEach
+    public void initializeTestEnvironment() {
+        student = Student.of("TestName", "TestFName", "StudentTest@Test.com");
+        try {
+            StudentDAO.getInstance().save(student, "testingOnly");
+        } catch (SQLException e){
+            throw new AssertionError();
+        }
+    }
+
+    @AfterEach
+    public void deleteTestEnvironment() {
+        try {
+            StudentDAO.getInstance().delete(student);
+        } catch (SQLException e){
+            throw new AssertionError();
+        }
     }
 
     @Test
@@ -44,10 +62,8 @@ class StudentDAOTest {
 
     @Test
     void getStudentFromAuthTest(){
-        Student student = getTheTestStudent();
-
         try {
-            Student authGetterStudent = dao.get(student.getEmail(), "1234").orElseThrow(SQLException::new);
+            Student authGetterStudent = dao.get(student.getEmail(), "testingOnly").orElseThrow(SQLException::new);
             assertEquals(student, authGetterStudent);
         }catch (SQLException e){
             log.error(e.getMessage());
@@ -75,9 +91,7 @@ class StudentDAOTest {
 
     @Test
     void updateAstudent() throws IdException, SQLException {
-        Student student = getRandomNewStudent();
         Student student1 = Student.of(student.getName()+"1",student.getFname()+"1",student.getEmail()+"1");
-        dao.save(student,"1234");
         student1.setId(student.getId());
         dao.update(student1);
         assertEquals(dao.get(student.getId()).orElseThrow(AssertionError::new),student1);
@@ -85,10 +99,8 @@ class StudentDAOTest {
 
     @Test
     void addSameStudent() throws SQLException {
-        Student student = getTheTestStudent();
-        dao.save(student,"1234");
         int oldsize = dao.getAll().size();
-        dao.save(student,"1234");
+        dao.save(student,"testingOnly");
         assertEquals(oldsize,dao.getAll().size());
     }
 
@@ -101,5 +113,4 @@ class StudentDAOTest {
         dao.delete(student);
         assertEquals(oldsize-1,dao.getAll().size());
     }
-
 }
