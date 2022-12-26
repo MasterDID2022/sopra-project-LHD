@@ -4,6 +4,8 @@ import fr.univtln.lhd.exceptions.IdException;
 import fr.univtln.lhd.model.entities.slots.Subject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import java.sql.SQLException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,12 +41,16 @@ class SubjectDAOTest {
     @Test
     void updateASubject() throws IdException {
         SubjectDAO dao = getDAO();
-        Optional<Subject> subject = dao.get(1);
-        System.out.println("tt="+subject.orElseThrow(AssertionError::new));
-        Subject subject1 = Subject.getInstance(subject.get().getName()+"1",subject.get().getHourCountMax()+1);
-        subject1.setId(1);
-        System.out.println(subject1);
+        Subject subject = getSubject();
+
+        dao.save(subject);
+        Subject subject1 = Subject.getInstance(subject.getName()+"1",subject.getHourCountMax()+1);
+        subject1.setId(subject.getId());
         dao.update(subject1);
-        assertEquals(subject1,dao.get(subject.get().getId()).orElseThrow(AssertionError::new));
+
+        Subject newUpdatedSubject = dao.get(subject.getId()).orElseThrow(AssertionError::new);
+        assertEquals(subject1, newUpdatedSubject);
+
+        dao.delete(subject);
     }
 }
