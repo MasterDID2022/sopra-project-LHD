@@ -21,7 +21,7 @@ public class HelloController implements Initializable {
         choiceBox.getItems().addAll("ITEM 1", "ITEM 2", "ITEM 3");
         choiceBox.getSelectionModel().selectFirst();
 
-        EdtGrid edtGrid = EdtGrid.getInstance(10);
+        EdtGrid edtGrid = EdtGrid.getInstance();
 
         Label cours_1 = new Label("INFO U001\nprof");
         Label cours_2 = new Label("MATH U008\nprof 2\nGroupe 1");

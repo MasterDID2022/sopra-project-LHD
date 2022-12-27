@@ -10,11 +10,13 @@
 }
 
 * {
-    _dark-grey: #0B0C10;
-    _grey: #1F2833;
-    _light-grey: #C5C6C7;
-    _turquoise: #66FCF1;
-    _darker-turquoise: #45A29E;
+    _night0: #2E3440;
+    _night3: #4C566A;
+
+    _light0: #D8DEE9;
+    _light2: #ECEFF4;
+
+    _dark-blue: #5E81AC;
 }
 
 
@@ -22,40 +24,45 @@
 
 /* BASE */
 AnchorPane {
-    -fx-background-color: _dark-grey;
+    -fx-background-color: _night0;
 }
 
 Label {
-    -fx-text-fill: _turquoise;
+    -fx-text-fill: _light2;
 }
 
 EdtGrid {
-    -fx-border-color: _turquoise;
     -fx-border-radius: 5;
+
+    -fx-border-color: _dark-blue;
 }
 
 EdtGrid FlowPane {
-    -fx-alignment: center;
-    -fx-border-color: _darker-turquoise;
-    -fx-text-fill: _light-grey;
+    -fx-alignment: BASELINE_CENTER;
     -fx-font-size: 15;
     -fx-font-family: "Product Sans";
     -fx-font-weight: normal;
+
+    -fx-border-color: _night3;
+    -fx-text-fill: _light2;
 }
 
 /* CELL */
 .cell {
     -fx-border-style: solid;
     -fx-border-width: 0.3;
-    -fx-border-color: _darker-turquoise;
     -fx-opacity: 0.5;
+
+    -fx-background-color: _night0;
+    -fx-border-color: _light0;
 }
 
 .cell_today {
-    -fx-background-color: _turquoise;
     -fx-opacity: 0.2;
     -fx-border-width: 0.3;
-    -fx-border-color: _dark-grey;
+
+    -fx-background-color: _dark-blue;
+    -fx-border-color: _light0;
 }
 
 
@@ -63,15 +70,21 @@ EdtGrid FlowPane {
 /* SLOT */
 
 .slot {
-    -fx-background-color: _darker-turquoise;
-    -fx-alignment: center;
-    -fx-font-family: "Product Sans Bold";
-    -fx-font-size: 14;
+    -fx-alignment: TOP_LEFT;
+    -fx-padding: 5 10 5 10;
+    -fx-font-family: "Product Sans";
+    -fx-font-size: 12;
     -fx-border-width: 0;
+
+    -fx-background-color: _night3;
 }
 
 .slot Label{
-    -fx-text-fill: _dark-grey;
+    -fx-text-fill: _night3;
+}
+
+.reduced_slot {
+    -fx-font-size: 10;
 }
 
 
@@ -83,15 +96,17 @@ EdtGrid FlowPane {
 
 }
 .day Label {
-    -fx-text-fill: _darker-turquoise;
+    -fx-text-fill: _light0;
 }
 .today {
-    -fx-background-color: _darker-turquoise;
-    -fx-border-radius: 5;
+    -fx-border-radius: 0;
+
+    -fx-background-color: _night3;
 }
 .today Label {
     -fx-font-family: "Product Sans Bold";
-    -fx-text-fill: _dark-grey;
+
+    -fx-text-fill: _light0;
 }
 
 
@@ -102,8 +117,9 @@ EdtGrid FlowPane {
     -fx-alignment: TOP_CENTER;
 }
 .hour Label {
-    -fx-text-fill: _darker-turquoise;
     -fx-font-size: 12;
+
+    -fx-text-fill: _light0;
 }
 
 
@@ -111,61 +127,95 @@ EdtGrid FlowPane {
 /* TOP LABEL */
 
 .edtSection {
-    -fx-text-fill: _darker-turquoise;
     -fx-font-size: 14;
+
+    -fx-text-fill: _light0;
 }
 
 .edtDate {
     -fx-font-family: "Product Sans Bold";
-    -fx-text-fill: _turquoise;
     -fx-font-size: 19;
+
+    -fx-text-fill: _light2;
 }
 
 
 
 
 /* BUTTONS */
+.resetWeekBtn {
+    -fx-font-family: "Product Sans Bold";
+    -fx-font-size: 20;
+
+    -fx-background-color: _night0;
+    -fx-text-fill: _light0;
+}
+.resetWeekBtn:hover {
+    -fx-cursor: pointer;
+}
+
 
 .addBtn {
     -fx-font-family: "Product Sans Bold";
-    -fx-text-fill: _turquoise;
-    -fx-background-color: _dark-grey;
     -fx-border-width: 1;
     -fx-border-radius: 5;
-    -fx-border-color: _turquoise;
+
+    -fx-text-fill: _light0;
+    -fx-background-color: _night0;
+    -fx-border-color: _light0;
 }
 .addBtn:hover {
-    -fx-background-color: _turquoise;
-    -fx-text-fill: _dark-grey;
+    -fx-background-color: _light0;
+    -fx-text-fill: _night0;
+}
+
+.weekBtn {
+    -fx-font-family: "Product Sans Bold";
+    -fx-border-width: 1;
+    -fx-border-radius: 5;
+
+    -fx-text-fill: _light0;
+    -fx-background-color: _night0;
+    -fx-border-color: _light0;
+}
+.weekBtn:hover {
+    -fx-background-color: _light0;
+    -fx-text-fill: _night0;
+}
+.weekBtn:pressed {
+    -fx-background-color: _light2;
 }
 
 
 .addSlotPane {
-    -fx-background-color: _grey;
     -fx-border-width: 2;
     -fx-border-radius: 5;
-    -fx-border-color: _turquoise;
+
+    -fx-background-color: _night3;
+    -fx-border-color: _light2;
 }
 
 
 .addOkBtn {
     -fx-font-family: "Product Sans Bold";
-    -fx-text-fill: _dark-grey;
-    -fx-background-color: _turquoise;
+
+    -fx-text-fill: _night3;
+    -fx-background-color: _light2;
 }
 .addOkBtn:hover {
-    -fx-background-color: _dark-grey;
-    -fx-text-fill: _turquoise;
+    -fx-background-color: _night0;
+    -fx-text-fill: _light2;
 }
 
 .addCancelBtn {
     -fx-border-width: 1;
-    -fx-background-color: _grey;
     -fx-font-family: "Product Sans";
-    -fx-text-fill: _darker-turquoise;
-    -fx-border-color: _darker-turquoise;
+
+    -fx-background-color: _night3;
+    -fx-text-fill: _light2;
+    -fx-border-color: _light2;
 }
 .addCancelBtn:hover {
-    -fx-background-color: _darker-turquoise;
-    -fx-text-fill: _grey;
+    -fx-background-color: _night0;
+    -fx-text-fill: _light0;
 }
