@@ -14,21 +14,41 @@
          <top>
             <HBox alignment="BOTTOM_LEFT" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                <children>
-                  <VBox alignment="BOTTOM_LEFT" fillWidth="false" prefHeight="97.0" prefWidth="200.0">
+                  <VBox alignment="BOTTOM_LEFT" fillWidth="false" HBox.hgrow="ALWAYS">
                      <children>
-                        <Label fx:id="edtTopSectionLabel" styleClass="edtSection" text="EDT Section" VBox.vgrow="ALWAYS">
-                           <font>
-                              <Font size="20.0" />
-                           </font>
-                        </Label>
-                        <Label fx:id="edtTopDateLabel" layoutX="10.0" layoutY="80.0" styleClass="edtDate" text="EDT Date" VBox.vgrow="ALWAYS">
-                           <font>
-                              <Font size="20.0" />
-                           </font>
-                        </Label>
+                        <HBox alignment="BOTTOM_LEFT" prefHeight="100.0" spacing="17.0" VBox.vgrow="ALWAYS">
+                           <children>
+                              <VBox alignment="BOTTOM_LEFT" prefHeight="200.0">
+                                 <children>
+                                    <Label fx:id="edtTopSectionLabel" styleClass="edtSection" text="EDT Section">
+                                       <font>
+                                          <Font size="20.0" />
+                                       </font>
+                                    </Label>
+                                    <Button fx:id="edtTopDateLabelBtn" graphicTextGap="0.0" mnemonicParsing="false" onAction="#edtTopDateLabelBtnOnClick" styleClass="resetWeekBtn" text="EDT DATE" VBox.vgrow="ALWAYS">
+                                       <font>
+                                          <Font size="20.0" />
+                                       </font>
+                                       <padding>
+                                          <Insets bottom="0.1" left="0.1" right="0.1" top="0.1" />
+                                       </padding>
+                                       <VBox.margin>
+                                          <Insets />
+                                       </VBox.margin>
+                                    </Button>
+                                 </children>
+                              </VBox>
+                              <HBox alignment="BOTTOM_RIGHT" prefHeight="100.0" spacing="10.0">
+                                 <children>
+                                    <Button fx:id="previousWeekBtn" mnemonicParsing="false" onAction="#previousWeekBtnOnClick" styleClass="weekBtn" text="&lt;" textAlignment="CENTER" HBox.hgrow="ALWAYS" />
+                                    <Button fx:id="nextWeekBtn" mnemonicParsing="false" onAction="#nextWeekBtnOnClick" styleClass="weekBtn" text="&gt;" textAlignment="CENTER" HBox.hgrow="ALWAYS" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </HBox>
                      </children>
                   </VBox>
-                  <HBox prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+                  <HBox prefHeight="100.0" prefWidth="140.0" HBox.hgrow="ALWAYS" />
                   <Button mnemonicParsing="false" onAction="#addBtnOnClick" styleClass="addBtn" text="ADD" textAlignment="CENTER" />
                </children>
                <BorderPane.margin>

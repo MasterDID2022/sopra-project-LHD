@@ -20,6 +20,7 @@ public class EdtApp extends Application {
         stage.setTitle("EDT LHD");
         scene.getStylesheets().add("/styles/edt-lhd-style.css");
         stage.setScene(scene);
+        //stage.setResizable(false); //need to be discussed
         stage.show();
     }
 
