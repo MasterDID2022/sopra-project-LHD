@@ -1,13 +1,19 @@
-package fr.univtln.lhd.model.entities.dao.users;
+package fr.univtln.lhd.model.entities.dao;
 
-import fr.univtln.lhd.model.entities.dao.Datasource;
 import fr.univtln.lhd.model.entities.users.Student;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
-import java.sql.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
+import static fr.univtln.lhd.model.entities.dao.Datasource.getConnection;
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 @Slf4j
@@ -21,11 +27,28 @@ class DatasourceTest {
     String selectSQLStmt = "select id from users where email=(?)";
 
     @Test
-    void insertGetTest() {
+    @Order(1)
+    void shouldNotBeDefaultConstructable () {
+        Assertions.assertThrows(InvocationTargetException.class, () -> {
+            Constructor<Datasource> m = Datasource.class.getDeclaredConstructor(); // constructor without args
+            m.setAccessible(true);
+            m.newInstance();
+        });
+    }
+
+    @Test
+    @Order(2)
+    void shouldOpenAndCloseConnection () {
+        Assertions.assertDoesNotThrow(() -> getConnection().close());
+    }
+
+    @Test
+    @Order(3)
+    void insertGetTest () {
         long userId = -1;
         long fetchedUserid;
         try (
-                Connection conn = Datasource.getConnection();
+                Connection conn = getConnection();
                 PreparedStatement stmt = conn.prepareStatement(insertSQLStmt, RETURN_GENERATED_KEYS)) {
             stmt.setString(1, E1.getName());
             stmt.setString(2, E1.getFname());
@@ -42,7 +65,7 @@ class DatasourceTest {
         }
 
         try (
-                Connection conn = Datasource.getConnection();
+                Connection conn = getConnection();
                 PreparedStatement stmt = conn.prepareStatement(selectSQLStmt)
         ) {
             stmt.setString(1, E1.getEmail());
