@@ -11,9 +11,11 @@ public class Datasource {
         final HikariConfig config = new HikariConfig("src/main/resources/hikari.properties");
         ds = new HikariDataSource(config);
     }
-    private Datasource() {
+    private Datasource () {
         throw new IllegalStateException("Utility class");
     }
-    public static HikariDataSource getInstance() { return ds; }
+
+
+    
     public static Connection getConnection() throws SQLException {return ds.getConnection();}
 }
