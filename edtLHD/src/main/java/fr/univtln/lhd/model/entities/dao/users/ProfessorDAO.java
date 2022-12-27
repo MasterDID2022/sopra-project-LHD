@@ -143,8 +143,8 @@ public class ProfessorDAO implements DAO<Professor> {
         ) {
             ResultSet rs = stmt.executeQuery();
             while (rs.next())
-                professorList.add(get(rs.getLong("id_professor")).get());
-        } catch (SQLException e) {
+                professorList.add( get( rs.getLong("id_professor") ).orElseThrow(SQLException::new) );
+        } catch (SQLException e){
             log.error(e.getMessage());
             throw e;
         }
@@ -262,7 +262,7 @@ public class ProfessorDAO implements DAO<Professor> {
             stmt.executeQuery();
             ResultSet rs = stmt.getResultSet();
             while (rs.next()) {
-                ProfessorsOfSlot.add(get(rs.getLong(1)).get());
+                ProfessorsOfSlot.add(get(rs.getLong(1)).orElseThrow(SQLException::new));
             }
         } catch (SQLException e) {
             log.error(e.getMessage());
