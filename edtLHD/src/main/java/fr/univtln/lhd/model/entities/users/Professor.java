@@ -51,4 +51,6 @@ public class Professor extends User {
         return super.hashCode();
     }
 
+    public String getDisplayName() { return getFname().toUpperCase() + ' ' + getName().charAt(0) + '.'; }
+
 }

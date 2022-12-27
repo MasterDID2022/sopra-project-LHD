@@ -6,32 +6,31 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
 import org.threeten.extra.Interval;
 
+@Slf4j
 public class EdtGrid extends Grid {
 
     public enum Days { LUNDI, MARDI, MERCREDI, JEUDI, VENDREDI }
-    private List<String> hours;
+    private final List<String> hours;
 
-    private EdtGrid(int rowNumber, int columnNumber, int startOfWeekDay){
+    private LocalDate currentWeekStart;
+
+    private EdtGrid(int rowNumber, int columnNumber){
         super( Grid.builder(rowNumber, columnNumber) );
 
         hours = new ArrayList<>();
-        for (int i = 8; i < 18; i++) {
-            if (i < 10)
-                hours.add("0" + i + ":00");
-            else
-                hours.add(i + ":00");
-        }
+        for (int i = 8; i < 18; i++)
+            hours.add(convertIntToHourLabel(i));
 
-        int currentWeekDay = startOfWeekDay;
+        setCurrentWeekStart();
+
+        int currentWeekDay = currentWeekStart.getDayOfMonth();
         for (int i = 0; i < Days.values().length; i++){
             FlowPane f = new FlowPane(new Label( Days.values()[i].name() + " " + currentWeekDay ));
             f.getStyleClass().add("day");
@@ -39,8 +38,8 @@ public class EdtGrid extends Grid {
             currentWeekDay++;
         }
 
-        FlowPane empty = new FlowPane();
-        empty.getStyleClass().add("hour");
+        FlowPane empty = new FlowPane( new Label( currentWeekStart.getMonth().name().toUpperCase().substring(0, 3) + "." ) );
+        empty.getStyleClass().add("day");
         add(empty, 0, 0);
 
         for (int i = 0; i < hours.size(); i++){
@@ -54,7 +53,7 @@ public class EdtGrid extends Grid {
         changeTodayStyleClass();
     }
 
-    public static EdtGrid getInstance(int startOfWeekDay){ return new EdtGrid(11, 6, startOfWeekDay); }
+    public static EdtGrid getInstance(){ return new EdtGrid(11, 6); }
 
     private void setupEmptyGrid(){
         for (int i = 1; i < getRowNumber(); i++){
@@ -66,32 +65,75 @@ public class EdtGrid extends Grid {
         }
     }
 
+    public void updateDaysLabel() {
+        LocalDate week = currentWeekStart;
+        int currentWeekDay;
+
+        for (int i = 0; i < Days.values().length; i++){
+            if (i == 0) {
+                ((Label)((FlowPane) get(0, i)).getChildren().get(0)).setText( week.getMonth().name().toUpperCase().substring(0, 3) + "." );
+            }
+
+            currentWeekDay = week.getDayOfMonth();
+            ((Label)((FlowPane) get(0, i+1)).getChildren().get(0)).setText( Days.values()[i].name() + " " + currentWeekDay );
+            week = week.plusDays(1);
+        }
+    }
+
     public void clearFullGrid(){
         ObservableList<Node> childs = getChildren();
 
         for (int i = 0; i < childs.size(); i++) {
+            getChildren().get(i).getStyleClass().removeAll("today", "cell_today");
+
             if (!childs.get(i).getStyleClass().contains("slot")) continue;
 
-            getChildren().get(i).getStyleClass().remove("slot");
-            getChildren().get(i).getStyleClass().add("cell");
+            getChildren().get(i).getStyleClass().removeAll("slot", "reduced_slot");
+            getChildren().get(i).setStyle("");
             setColumnSpan(childs.get(i), 1);
             setRowSpan(childs.get(i), 1);
             ((Label) ((FlowPane) getChildren().get(i)).getChildren().get(0)).setText("");
         }
+        changeTodayStyleClass();
     }
 
+    public LocalDate getCurrentWeekStart() { return currentWeekStart; }
+
+    public void setCurrentWeekStart() {
+        int currentDayOfTheWeekIndex = LocalDateTime.now().getDayOfWeek().ordinal();
+        this.currentWeekStart = LocalDateTime.now().minusDays(currentDayOfTheWeekIndex).toLocalDate();
+    }
+
+    public void nextWeek(int weeksToAdd) {
+        this.currentWeekStart = currentWeekStart.plusWeeks(weeksToAdd);
+        updateDaysLabel();
+    }
+    public void nextWeek() { nextWeek(1); }
+
+    public void previousWeek(int weeksToSubtract) {
+        this.currentWeekStart = currentWeekStart.minusWeeks(weeksToSubtract);
+        updateDaysLabel();
+    }
+    public void previousWeek() { previousWeek(1); }
+
     private void changeTodayStyleClass(){
-        int dayIndex = LocalDate.now().getDayOfWeek().ordinal();
+        LocalDate nowDate = LocalDate.now();
+        int dayIndex = nowDate.getDayOfWeek().ordinal();
         if (dayIndex >= Days.values().length) return;
+
+        Interval currentWeekInterval = Interval.of(currentWeekStart.atStartOfDay().toInstant(ZoneOffset.UTC), currentWeekStart.plusWeeks(1).atStartOfDay().toInstant(ZoneOffset.UTC));
+        Interval nowInterval = Interval.of(Instant.now(), Instant.now().plusSeconds(60));
+        if(!currentWeekInterval.overlaps(nowInterval)) return;
 
         for (int i = 0; i < getRowNumber(); i++)
             get(i, dayIndex+1)
                     .getStyleClass()
                     .add(i == 0 ? "today" : "cell_today");
+
     }
 
     private String convertIntToHourLabel(int hour){
-        String hourStart = "";
+        String hourStart;
         if (hour < 10) hourStart = "0" + hour + ":00";
         else hourStart = hour + ":00";
         return hourStart;
@@ -99,10 +141,16 @@ public class EdtGrid extends Grid {
 
     public void add(Node node, String day, String hourStart, String hourEnd){
         int rowIndex = hours.indexOf(hourStart);
-        if (rowIndex == -1) rowIndex = 0;
+        if (rowIndex == -1) {
+            log.error("Slot starting hour out of range");
+            return;
+        }
 
         int rowIndexEnd = hours.indexOf(hourEnd);
-        if (rowIndexEnd == -1) rowIndexEnd = hours.size()-1;
+        if (rowIndexEnd == -1) {
+            log.error("Slot ending hour out of range");
+            return;
+        }
 
         int columnIndex = Days.valueOf(day).ordinal()+1;
         super.add(node, rowIndex+1, columnIndex, (rowIndexEnd+1) - (rowIndex+1), 1);
@@ -128,13 +176,20 @@ public class EdtGrid extends Grid {
     }
 
     public void add(SlotUI slotUI){
-        //get slot ui info, then call add (node, day, hourstart, hourend)
-        //wip
         add(slotUI, slotUI.getSlot().getTimeRange());
     }
 
     public void add(Slot slot){
         SlotUI slotUI = SlotUI.of(slot);
         add( slotUI );
+    }
+
+    public void add(Slot ... slots){
+        for(Slot slot : slots)
+            add(slot);
+    }
+    public void add(List<Slot> slots){
+        for(Slot slot : slots)
+            add(slot);
     }
 }

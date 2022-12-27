@@ -22,16 +22,27 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.Map;
 
 /**
  * facade of the entities/dao and the ihm
  */
 @Slf4j
-public class Schedule {
+public class Schedule implements Observable{
+    private static Map<String, List<Observer>> observerMap = new HashMap<>();
+
     private static final ZoneId TIME_ZONE = ZoneOffset.systemDefault();
     private static final Schedule schedule = new Schedule();
+
+    private static Schedule instance;
+
+    public static Schedule getInstance(){
+        if (instance == null) instance = new Schedule();
+        return instance;
+    }
 
     /**
      * Get Professor of Database via email & password
@@ -311,4 +322,34 @@ public class Schedule {
         return Interval.of(start, end);
     }
 
+    @Override
+    public void subscribe(String eventName, Observer observer) {
+        if (!observerMap.containsKey(eventName))
+            observerMap.put(eventName, new ArrayList<>());
+        observerMap.get(eventName).add(observer);
+    }
+
+    public static void Subscribe(String eventName, Observer observer){
+        if (instance == null) getInstance();
+        instance.subscribe(eventName, observer);
+    }
+
+    @Override
+    public void unsubscribe(String eventName, Observer observer) {
+        if (!observerMap.containsKey(eventName)) return;
+        observerMap.get(eventName).remove(observer);
+    }
+
+    public static void Unsubscribe(String eventName, Observer observer){
+        if (instance == null) getInstance();
+        instance.unsubscribe(eventName, observer);
+    }
+
+    @Override
+    public void notifyChanges(String eventName, List<EventChange<?>> changes) {
+        if (!observerMap.containsKey(eventName)) return;
+
+        for (Observer observer : observerMap.get(eventName))
+            observer.udpate(changes);
+    }
 }

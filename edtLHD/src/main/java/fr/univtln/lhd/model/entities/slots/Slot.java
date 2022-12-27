@@ -5,6 +5,8 @@ import fr.univtln.lhd.model.entities.users.Professor;
 import lombok.*;
 import org.threeten.extra.Interval;
 
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
@@ -63,5 +65,20 @@ public class Slot {
     public void setId(long id) throws IdException {
         if (id<0) throw new IdException();
         this.id = id;
+    }
+
+    private String formatLocalTimeToString(LocalTime time){
+        String result = "";
+        if (time.getHour() < 10) result += "0";
+        result += time.getHour() + ":";
+        if (time.getMinute() < 10) result += "0";
+        result += time.getMinute();
+        return result;
+    }
+
+    public String getDisplayTimeInterval() {
+        String startTime = formatLocalTimeToString( LocalTime.ofInstant(timeRange.getStart(), ZoneId.systemDefault()) );
+        String endTime = formatLocalTimeToString( LocalTime.ofInstant(timeRange.getEnd(), ZoneId.systemDefault()) );
+        return startTime + " - " + endTime;
     }
 }
