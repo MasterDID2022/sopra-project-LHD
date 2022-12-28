@@ -19,6 +19,10 @@ import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 @Slf4j
 public class ProfessorDAO implements DAO<Professor> {
+    private static final String ATT_FIRST_NAME="FNAME";
+    private static final String ATT_NAME="NAME";
+    private static final String ATT_EMAIL="EMAIL";
+    private static final String ATT_TITLE="TITLE";
     private static final String GET = "SELECT * FROM PROFESSORS WHERE ID=?";
 
     private static final String GET_ALL = "SELECT * FROM PROFESSORS";
@@ -56,10 +60,10 @@ public class ProfessorDAO implements DAO<Professor> {
             if (resultSet.next()) {
                 fetchedProfessor = Optional.of(
                         Professor.of(
-                                resultSet.getString("NAME"),
-                                resultSet.getString("FNAME"),
-                                resultSet.getString("EMAIL"),
-                                resultSet.getString("TITLE"))
+                                resultSet.getString(ATT_NAME),
+                                resultSet.getString(ATT_FIRST_NAME),
+                                resultSet.getString(ATT_EMAIL),
+                                resultSet.getString(ATT_TITLE))
                 );
                 fetchedProfessor.get().setId(resultSet.getLong("ID"));
             }
@@ -89,10 +93,10 @@ public class ProfessorDAO implements DAO<Professor> {
 
             if (rs.next()) {
                 result = Professor.of(
-                        rs.getString("NAME"),
-                        rs.getString("FNAME"),
-                        rs.getString("EMAIL"),
-                        rs.getString("TITLE")
+                        rs.getString(ATT_NAME),
+                        rs.getString(ATT_FIRST_NAME),
+                        rs.getString(ATT_EMAIL),
+                        rs.getString(ATT_TITLE)
                 );
                 result.setId(rs.getLong("ID"));
             }
@@ -117,10 +121,10 @@ public class ProfessorDAO implements DAO<Professor> {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 Professor fetchedProfessor = Professor.of(
-                        rs.getString("NAME"),
-                        rs.getString("FNAME"),
-                        rs.getString("EMAIL"),
-                        rs.getString("TITLE"));
+                        rs.getString(ATT_NAME),
+                        rs.getString(ATT_FIRST_NAME),
+                        rs.getString(ATT_EMAIL),
+                        rs.getString(ATT_TITLE));
                 fetchedProfessor.setId(rs.getLong("ID"));
                 professorList.add(fetchedProfessor);
             }
@@ -194,9 +198,9 @@ public class ProfessorDAO implements DAO<Professor> {
             stmt.setString(4, password);
             stmt.setString(5, professor.getTitle());
             stmt.executeUpdate();
-            ResultSet id_set = stmt.getGeneratedKeys();
-            id_set.next();
-            professor.setId(id_set.getLong(1));
+            ResultSet resultSetID = stmt.getGeneratedKeys();
+            resultSetID.next();
+            professor.setId(resultSetID.getLong(1));
         } catch (SQLException | IdException e) {
             log.error(e.getMessage());
         }
@@ -254,7 +258,7 @@ public class ProfessorDAO implements DAO<Professor> {
      * @return List of Professor
      */
     public List<Professor> getProfessorOfSlots(long slotId) {
-        List<Professor> ProfessorsOfSlot = new ArrayList<>();
+        List<Professor> professorsOfSlot = new ArrayList<>();
         try (Connection conn = Datasource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(GET_PROFESSOR_OF_SLOT)
         ) {
@@ -262,12 +266,12 @@ public class ProfessorDAO implements DAO<Professor> {
             stmt.executeQuery();
             ResultSet rs = stmt.getResultSet();
             while (rs.next()) {
-                ProfessorsOfSlot.add(get(rs.getLong(1)).orElseThrow(SQLException::new));
+                professorsOfSlot.add(get(rs.getLong(1)).orElseThrow(SQLException::new));
             }
         } catch (SQLException e) {
             log.error(e.getMessage());
         }
-        return ProfessorsOfSlot;
+        return professorsOfSlot;
     }
 
 

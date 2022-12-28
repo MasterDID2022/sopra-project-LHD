@@ -67,6 +67,14 @@ public class Slot {
         this.id = id;
     }
 
+    /**
+     * Take a LocalTime and return a String representing this LocalTime
+     * the precision is discarded at the profit of consistency with the omission
+     * of second and the concatenation of "0" for a more pleasing result
+     * ex: 7h58m23 -> 07H58
+     * @param time a LocalTime
+     * @return Formated String
+     */
     private String formatLocalTimeToString(LocalTime time){
         String result = "";
         if (time.getHour() < 10) result += "0";
@@ -76,6 +84,11 @@ public class Slot {
         return result;
     }
 
+    /**
+     * Return a formatted String of an interval using
+     * the function <code>formatLocalTimeToString</code>
+     * @return FormattedS tring of an Interval
+     */
     public String getDisplayTimeInterval() {
         String startTime = formatLocalTimeToString( LocalTime.ofInstant(timeRange.getStart(), ZoneId.systemDefault()) );
         String endTime = formatLocalTimeToString( LocalTime.ofInstant(timeRange.getEnd(), ZoneId.systemDefault()) );

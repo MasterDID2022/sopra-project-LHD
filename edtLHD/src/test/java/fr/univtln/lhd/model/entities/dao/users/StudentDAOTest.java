@@ -72,6 +72,15 @@ class StudentDAOTest {
     }
 
     @Test
+    void addNewStudentWithoutPassword() throws SQLException {
+        Student student = getRandomNewStudent();
+        int oldsize = dao.getAll().size();
+        dao.save(student);
+        assertEquals(oldsize+1,dao.getAll().size());
+        dao.delete(student);
+    }
+
+    @Test
     void addNewStudent() throws SQLException {
         Student student = getRandomNewStudent();
         int oldsize = dao.getAll().size();

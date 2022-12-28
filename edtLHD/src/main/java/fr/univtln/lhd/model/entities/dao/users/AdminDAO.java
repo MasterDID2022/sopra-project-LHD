@@ -18,6 +18,10 @@ import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 @Slf4j
 public class AdminDAO implements DAO<Admin> {
+    private static final String ATT_FIRST_NAME="FNAME";
+    private static final String ATT_NAME="NAME";
+    private static final String ATT_EMAIL="EMAIL";
+    private static final String ATT_DEPARTEMENT="DPT";
     private static final String GET="SELECT * FROM ADMINS WHERE ID=?";
 
     private static final String GET_ALL="SELECT * FROM ADMINS";
@@ -27,7 +31,6 @@ public class AdminDAO implements DAO<Admin> {
 
     private static final String GET_ADMIN_AUTH = "SELECT * FROM ADMINS WHERE EMAIL=? AND PASSWORD=?";
 
-    private AdminDAO(){ };
 
     public static AdminDAO of (){ return new AdminDAO(); }
 
@@ -48,10 +51,10 @@ public class AdminDAO implements DAO<Admin> {
             if (rs.next()) {
                 result = Optional.of(
                         Admin.of(
-                                rs.getString("NAME"),
-                                rs.getString("FNAME"),
-                                rs.getString("EMAIL"),
-                                rs.getString("DPT"))
+                                rs.getString(ATT_NAME),
+                                rs.getString(ATT_FIRST_NAME),
+                                rs.getString(ATT_EMAIL),
+                                rs.getString(ATT_DEPARTEMENT))
                 );
                 result.get().setId(rs.getLong("ID"));
             }
@@ -80,10 +83,10 @@ public class AdminDAO implements DAO<Admin> {
 
             if (rs.next()){
                 result = Admin.of(
-                        rs.getString("NAME"),
-                        rs.getString("FNAME"),
-                        rs.getString("EMAIL"),
-                        rs.getString("DPT")
+                        rs.getString(ATT_NAME),
+                        rs.getString(ATT_FIRST_NAME),
+                        rs.getString(ATT_EMAIL),
+                        rs.getString(ATT_DEPARTEMENT)
                 );
                 result.setId(rs.getLong("ID"));
             }
@@ -107,10 +110,10 @@ public class AdminDAO implements DAO<Admin> {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 Admin admin = Admin.of(
-                                rs.getString("NAME"),
-                                rs.getString("FNAME"),
-                                rs.getString("EMAIL"),
-                                rs.getString("DPT"));
+                                rs.getString(ATT_NAME),
+                                rs.getString(ATT_FIRST_NAME),
+                                rs.getString(ATT_EMAIL),
+                                rs.getString(ATT_DEPARTEMENT));
                 admin.setId(rs.getLong("ID"));
                 adminList.add(admin);
             }
@@ -152,7 +155,6 @@ public class AdminDAO implements DAO<Admin> {
      * @param password password to save inside the database
      */
     public void save(Admin admin, String password) {
-        ResultSet result;
         try (Connection conn = Datasource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SAVE, RETURN_GENERATED_KEYS)
         ){
@@ -162,9 +164,9 @@ public class AdminDAO implements DAO<Admin> {
             stmt.setString(4, password);
             stmt.setString(5, admin.getEmail());
             stmt.executeUpdate();
-            ResultSet id_set = stmt.getGeneratedKeys();
-            id_set.next();
-            admin.setId(id_set.getLong(1));
+            ResultSet resultSetID = stmt.getGeneratedKeys();
+            resultSetID.next();
+            admin.setId(resultSetID.getLong(1));
         } catch (SQLException | IdException e) {
             log.error(e.getMessage());
         }

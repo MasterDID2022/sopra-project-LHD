@@ -286,5 +286,17 @@ class ScheduleTest {
         studentDAO.delete(adminTestAuth);
     }
 
+    @Test
+    void subribeTest(){
+        Observer observer = new Observer() {
+            @Override
+            public void udpate(List<EventChange<?>> changes) {
+                Assertions.assertEquals(0,changes.size());
+            }
+        };
+        Schedule.subscribe("event",observer);
+        Schedule instance = new Schedule();
+        instance.notifyChanges("event",new ArrayList<>());
+    }
 
 }

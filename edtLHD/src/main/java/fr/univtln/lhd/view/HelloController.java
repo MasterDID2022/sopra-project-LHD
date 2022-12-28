@@ -12,7 +12,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public class HelloController implements Initializable {
-    @FXML public Tab first_tab;
+    @FXML public Tab firstTab;
     @FXML private ChoiceBox<String> choiceBox;
     @FXML private Label label;
 
@@ -23,24 +23,22 @@ public class HelloController implements Initializable {
 
         EdtGrid edtGrid = EdtGrid.getInstance();
 
-        Label cours_1 = new Label("INFO U001\nprof");
-        Label cours_2 = new Label("MATH U008\nprof 2\nGroupe 1");
+        Label cours1 = new Label("INFO U001\nprof");
+        Label cours2 = new Label("MATH U008\nprof 2\nGroupe 1");
 
-        FlowPane flowPane = new FlowPane(cours_1);
+        FlowPane flowPane = new FlowPane(cours1);
         //flowPane.setStyle("-fx-background-color: blue"); //java setting css line, always has the last word over css file
         flowPane.setId("slot");
-        FlowPane flowPane2 = new FlowPane(cours_2);
+        FlowPane flowPane2 = new FlowPane(cours2);
         flowPane2.setId("slot");
         flowPane2.setStyle("-fx-background-color: red");
-        //edtGrid.add(flowPane, 2, 2, 3, 1);
-        //edtGrid.add(flowPane2, 4, 3, 2, 1);
 
         edtGrid.add(flowPane, "MERCREDI", "08:00", "12:00");
         edtGrid.add(flowPane2, "VENDREDI", "14:00", "16:00");
 
 
 
-        first_tab.setContent(edtGrid);
+        firstTab.setContent(edtGrid);
     }
 
     @FXML

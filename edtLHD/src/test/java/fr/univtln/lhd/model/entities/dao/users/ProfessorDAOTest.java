@@ -1,6 +1,9 @@
 package fr.univtln.lhd.model.entities.dao.users;
 
 import fr.univtln.lhd.exceptions.IdException;
+import fr.univtln.lhd.facade.EventChange;
+import fr.univtln.lhd.facade.Observer;
+import fr.univtln.lhd.facade.Schedule;
 import fr.univtln.lhd.model.entities.dao.slots.ClassroomDAO;
 import fr.univtln.lhd.model.entities.dao.slots.SlotDAO;
 import fr.univtln.lhd.model.entities.dao.slots.SubjectDAO;
@@ -87,6 +90,15 @@ class ProfessorDAOTest {
     }
 
     @Test
+    void addNewProfessorWithoutPassword(){
+        Professor professor = getRandomNewProfessor();
+        int oldsize = dao.getAll().size();
+        dao.save(professor);
+        assertEquals(oldsize+1,dao.getAll().size());
+        dao.delete(professor);
+    }
+
+    @Test
     void getProfessorFromAuthTest(){
         try {
             Professor authGetterProfessor = dao.get(professor1.getEmail(), "testingOnly").orElse(null);
@@ -151,4 +163,6 @@ class ProfessorDAOTest {
         dao.delete(professor);
         assertEquals(oldsize-1,dao.getAll().size());
     }
+
+
 }
