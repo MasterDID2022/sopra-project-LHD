@@ -12,6 +12,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
+@SuppressWarnings("java:S110")//Using an IHM imply a lot inheritance
 public class Grid extends GridPane {
 
     private final int rowNumber;

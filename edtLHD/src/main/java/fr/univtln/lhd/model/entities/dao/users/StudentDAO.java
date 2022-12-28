@@ -20,8 +20,11 @@ import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 @Slf4j
 public class StudentDAO implements DAO<Student> {
+    private static final String ATT_FIRST_NAME="FNAME";
+    private static final String ATT_NAME="NAME";
+    private static final String ATT_EMAIL="EMAIL";
     private static final String GET="SELECT * FROM USERS WHERE ID=?";
-    private static final String GET_ALl="SELECT * FROM USERS";
+    private static final String GET_ALL ="SELECT * FROM USERS";
     private static final String SAVE="INSERT INTO USERS VALUES (DEFAULT,?, ?,?,?)";
     private static final String UPDATE="UPDATE USERS SET name=?, fname=? ,email=? WHERE ID=?";
     private static final String DELETE="DELETE FROM USERS WHERE ID=?";
@@ -51,9 +54,9 @@ public class StudentDAO implements DAO<Student> {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 result = Student.of(
-                                rs.getString("NAME"),
-                                rs.getString("FNAME"),
-                                rs.getString("EMAIL"));
+                                rs.getString(ATT_NAME),
+                                rs.getString(ATT_FIRST_NAME),
+                                rs.getString(ATT_EMAIL));
                 result.setId(rs.getLong("ID"));
                 updateStudentGroup(result);
             }
@@ -82,9 +85,9 @@ public class StudentDAO implements DAO<Student> {
 
             if (rs.next()){
                 result = Student.of(
-                        rs.getString("NAME"),
-                        rs.getString("FNAME"),
-                        rs.getString("EMAIL")
+                        rs.getString(ATT_NAME),
+                        rs.getString(ATT_FIRST_NAME),
+                        rs.getString(ATT_EMAIL)
                 );
                 result.setId(rs.getLong("ID"));
                 updateStudentGroup(result);
@@ -123,15 +126,15 @@ public class StudentDAO implements DAO<Student> {
     public List<Student> getAll() throws SQLException {
         List<Student> studentList = new ArrayList<>();
         try (Connection conn = Datasource.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(GET_ALl);
+             PreparedStatement stmt = conn.prepareStatement(GET_ALL);
              )
         {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 Student student = Student.of(
-                                rs.getString("NAME"),
-                                rs.getString("FNAME"),
-                                rs.getString("EMAIL"));
+                                rs.getString(ATT_NAME),
+                                rs.getString(ATT_FIRST_NAME),
+                                rs.getString(ATT_EMAIL));
                 student.setId(rs.getLong("ID"));
                 updateStudentGroup(student);
                 studentList.add(student);

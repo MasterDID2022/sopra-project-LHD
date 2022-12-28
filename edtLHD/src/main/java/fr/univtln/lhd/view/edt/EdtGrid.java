@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.threeten.extra.Interval;
 
 @Slf4j
+@SuppressWarnings("java:S110")//Using an IHM imply a lot inheritance
 public class EdtGrid extends Grid {
 
     public enum Days { LUNDI, MARDI, MERCREDI, JEUDI, VENDREDI }
