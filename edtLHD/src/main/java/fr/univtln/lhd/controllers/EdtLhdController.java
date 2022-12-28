@@ -36,7 +36,7 @@ public class EdtLhdController implements Initializable, Observer {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
-        Schedule.Subscribe("slot", this);
+        Schedule.subscribe("slot", this);
 
         addSlotPane.setVisible(false);
 
@@ -70,17 +70,17 @@ public class EdtLhdController implements Initializable, Observer {
         edtGrid.add(weekStudentSlots);
     }
 
-    public void previousWeekBtnOnClick(ActionEvent actionEvent) {
+    public void previousWeekBtnOnClick() {
         edtGrid.previousWeek();
         updateEdtForCurrentStudent();
     }
 
-    public void nextWeekBtnOnClick(ActionEvent actionEvent) {
+    public void nextWeekBtnOnClick() {
         edtGrid.nextWeek();
         updateEdtForCurrentStudent();
     }
 
-    public void edtTopDateLabelBtnOnClick(ActionEvent actionEvent) {
+    public void edtTopDateLabelBtnOnClick() {
         edtGrid.setCurrentWeekStart();
         edtGrid.updateDaysLabel();
         updateEdtForCurrentStudent();
