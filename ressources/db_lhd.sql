@@ -68,7 +68,7 @@ CREATE FUNCTION lhd.check_date_overlap_trigger_function_group_slot() RETURNS tri
                        ))
 
        THEN
-            RAISE unique_violation USING MESSAGE = 'Overlapping timeranges for group : ' || new.id_group;
+            RAISE integrity_constraint_violation USING MESSAGE = 'Overlapping timeranges for group : ' || new.id_group;
        END IF;
    RETURN NEW;
        end
@@ -93,7 +93,7 @@ CREATE FUNCTION lhd.check_date_overlap_trigger_function_professor_slot() RETURNS
                     and s.timerange && s2.timerange))
 
        THEN
-            RAISE unique_violation USING MESSAGE = 'Overlapping timeranges for group : ' || new.id_professor;
+            RAISE integrity_constraint_violation USING MESSAGE = 'Overlapping timeranges for group : ' || new.id_professor;
        END IF;
    RETURN NEW;
        end
@@ -130,9 +130,6 @@ CREATE FUNCTION lhd.check_date_overlap_trigger_slot_update_group() RETURNS trigg
     LANGUAGE plpgsql
     AS $$
        begin
-       IF OLD.TIMERANGE @> NEW.TIMERANGE THEN
-       RETURN NEW;
-       END IF;
 
        IF EXISTS (select from slots s join group_slot gs
        on s.id=gs.id_slot
@@ -160,9 +157,6 @@ CREATE FUNCTION lhd.check_date_overlap_trigger_slot_update_professor() RETURNS t
     LANGUAGE plpgsql
     AS $$
        begin
-       IF OLD.TIMERANGE @> NEW.TIMERANGE THEN
-       RETURN NEW;
-       END IF;
 
        IF EXISTS (select from slots s join professor_slot gp
        on s.id=gp.id_slot
@@ -175,7 +169,7 @@ CREATE FUNCTION lhd.check_date_overlap_trigger_slot_update_professor() RETURNS t
             and s2.timerange && new.timerange))
 
        THEN
-            RAISE unique_violation USING MESSAGE = 'Unavailable group on slot : ' || new.id_slot;
+            RAISE integrity_constraint_violation USING MESSAGE = 'Unavailable group on slot : ' || new.id_slot;
        END IF;
    RETURN NEW;
        end
@@ -207,20 +201,6 @@ CREATE TABLE lhd.admins (
     dpt character varying
 )
 INHERITS (lhd.users);
-
-
---
--- Name: admins_id_seq; Type: SEQUENCE; Schema: lhd; Owner: -
---
-
-ALTER TABLE lhd.admins ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
-    SEQUENCE NAME lhd.admins_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1
-);
 
 
 --
@@ -312,20 +292,6 @@ INHERITS (lhd.users);
 
 
 --
--- Name: professors_id_seq; Type: SEQUENCE; Schema: lhd; Owner: -
---
-
-ALTER TABLE lhd.professors ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
-    SEQUENCE NAME lhd.professors_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1
-);
-
-
---
 -- Name: slots; Type: TABLE; Schema: lhd; Owner: -
 --
 
@@ -395,6 +361,28 @@ ALTER TABLE lhd.users ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
 
 
 --
+-- Name: admins id; Type: DEFAULT; Schema: lhd; Owner: -
+--
+
+ALTER TABLE ONLY lhd.admins ALTER COLUMN id SET DEFAULT nextval('lhd.users_id_seq'::regclass);
+
+
+--
+-- Name: professors id; Type: DEFAULT; Schema: lhd; Owner: -
+--
+
+ALTER TABLE ONLY lhd.professors ALTER COLUMN id SET DEFAULT nextval('lhd.users_id_seq'::regclass);
+
+
+--
+-- Name: admins admins_pkey; Type: CONSTRAINT; Schema: lhd; Owner: -
+--
+
+ALTER TABLE ONLY lhd.admins
+    ADD CONSTRAINT admins_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: classrooms classroom_unique; Type: CONSTRAINT; Schema: lhd; Owner: -
 --
 
@@ -419,11 +407,11 @@ ALTER TABLE ONLY lhd.groups
 
 
 --
--- Name: professors lect_pkey; Type: CONSTRAINT; Schema: lhd; Owner: -
+-- Name: professors prof_pkey; Type: CONSTRAINT; Schema: lhd; Owner: -
 --
 
 ALTER TABLE ONLY lhd.professors
-    ADD CONSTRAINT lect_pkey PRIMARY KEY (id);
+    ADD CONSTRAINT prof_pkey PRIMARY KEY (id);
 
 
 --
@@ -558,14 +546,14 @@ CREATE TRIGGER ls_check_trigger BEFORE INSERT OR UPDATE ON lhd.professor_slot FO
 -- Name: slots update_slot_check_group; Type: TRIGGER; Schema: lhd; Owner: -
 --
 
-CREATE TRIGGER update_slot_check_group BEFORE UPDATE ON lhd.slots FOR EACH ROW EXECUTE FUNCTION lhd.check_date_overlap_trigger_slot_update_group();
+CREATE TRIGGER update_slot_check_group BEFORE UPDATE ON lhd.slots FOR EACH ROW WHEN ((NOT (old.timerange @> new.timerange))) EXECUTE FUNCTION lhd.check_date_overlap_trigger_slot_update_group();
 
 
 --
 -- Name: slots update_slot_check_professor; Type: TRIGGER; Schema: lhd; Owner: -
 --
 
-CREATE TRIGGER update_slot_check_professor BEFORE UPDATE ON lhd.slots FOR EACH ROW EXECUTE FUNCTION lhd.check_date_overlap_trigger_slot_update_professor();
+CREATE TRIGGER update_slot_check_professor BEFORE UPDATE ON lhd.slots FOR EACH ROW WHEN ((NOT (old.timerange @> new.timerange))) EXECUTE FUNCTION lhd.check_date_overlap_trigger_slot_update_professor();
 
 
 --
@@ -635,7 +623,6 @@ ALTER TABLE ONLY lhd.slots
 --
 -- PostgreSQL database dump complete
 --
-
 SET session_replication_role = replica;
         INSERT INTO lhd.users (id, name, fname, email, password) OVERRIDING SYSTEM VALUE VALUES (1, 'Theo', 'Hafsaoui', 'Theo.hafsaoui@superEmail.com', 'LeNomDeMonChien') on conflict do nothing;
 
@@ -688,10 +675,8 @@ SET session_replication_role = replica;
         --
         -- met à jour les séquence d'ID.
         --
-        SELECT pg_catalog.setval('lhd.admins_id_seq', 100, false);
         SELECT pg_catalog.setval('lhd.classrooms_id_seq', 100, true);
         SELECT pg_catalog.setval('lhd.groups_id_seq', 100, true);
-        SELECT pg_catalog.setval('lhd.professors_id_seq', 100, true);
         SELECT pg_catalog.setval('lhd.slots_id_seq', 100, true);
         SELECT pg_catalog.setval('lhd.subject_id_seq', 100, true);
         SELECT pg_catalog.setval('lhd.users_id_seq', 100, true);
