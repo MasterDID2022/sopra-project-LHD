@@ -59,12 +59,12 @@ public class EdtLhdController implements Initializable, Observer {
         edtTopSectionLabel.setText("Semaine");
         edtTopDateLabelBtn.setText(LocalDateTime.now().toLocalDate().format(DateTimeFormatter.ofPattern("dd MMMM yyyy")).toUpperCase());
 
-        currentAuthStudent = Schedule.getAdminFromAuth("adminTest@test.com", "adminPasswordTest").orElseThrow(RuntimeException::new);
-        //currentAuthStudent = Schedule.getStudentFromAuth("Theo.hafsaoui@superEmail.com", "LeNomDeMonChien").orElseThrow(RuntimeException::new);
+        //currentAuthStudent = Schedule.getAdminFromAuth("adminTest@test.com", "adminPasswordTest").orElseThrow(RuntimeException::new);
+        currentAuthStudent = Schedule.getStudentFromAuth("Theo.hafsaoui@superEmail.com", "LeNomDeMonChien").orElseThrow(RuntimeException::new);
         //currentAuthStudent = Schedule.getProfessorFromAuth("pierre-Mahe@univ-tln.fr", "LeNomDuChien").orElseThrow(RuntimeException::new);
 
         setupAuthenticatedView();
-        //updateEdtForCurrentStudent();
+        updateEdtForCurrentStudent();
 
         borderPane.setCenter(edtGrid);
     }
