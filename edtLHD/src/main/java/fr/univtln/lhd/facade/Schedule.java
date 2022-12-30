@@ -37,6 +37,8 @@ public class Schedule implements Observable {
 
     private static final Schedule schedule = new Schedule();
 
+    public static final String SLOT_EVENT = "slotEvent";
+
 
     /**
      * Get Professor of Database via email & password
@@ -292,7 +294,7 @@ public class Schedule implements Observable {
             return true;
         }
 
-        schedule.notifyChanges("slotEvent", EventChange.of(EventChange.ChangeType.ADD, slot));
+        schedule.notifyChanges(SLOT_EVENT, EventChange.of(EventChange.ChangeType.ADD, slot));
         return false;
     }
 
@@ -315,7 +317,7 @@ public class Schedule implements Observable {
             log.error(e.getMessage());
             return true;
         }
-        schedule.notifyChanges("slotEvent", EventChange.of(EventChange.ChangeType.REMOVE, slot));
+        schedule.notifyChanges(SLOT_EVENT, EventChange.of(EventChange.ChangeType.REMOVE, slot));
         return false;
     }
 
@@ -343,7 +345,7 @@ public class Schedule implements Observable {
             log.error(e.getMessage());
             return true;
         }
-        schedule.notifyChanges("slotEvent", EventChange.of(EventChange.ChangeType.MODIFY, newSlot));
+        schedule.notifyChanges(SLOT_EVENT, EventChange.of(EventChange.ChangeType.MODIFY, newSlot));
         return false;
     }
 
