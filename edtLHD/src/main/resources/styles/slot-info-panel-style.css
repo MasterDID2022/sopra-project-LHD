@@ -1,0 +1,66 @@
+.slotInfoPanel {
+    -fx-border-radius: 3;
+    -fx-border-width: 4;
+
+    -fx-background-color: _night0;
+    -fx-border-color: _light0;
+}
+
+.slotInfoPanel ComboBox, .slotInfoPanel Label {
+    -fx-text-fill: _light0;
+}
+
+.slotInfoPanel TextField {
+    -fx-opacity: 1;
+
+    -fx-background-color: _night3;
+    -fx-text-fill: _light0;
+}
+
+.slotInfoPanel ComboBox {
+    -fx-opacity: 1;
+
+    -fx-background-color: _night3;
+}
+.slotInfoPanel ComboBox .cell {
+    -fx-opacity: 1;
+    -fx-border-width: 0;
+    -fx-border-radius: 3;
+
+    -fx-background-color: _night3;
+    -fx-text-fill: _light0;
+}
+
+.slotInfoPanel .progress-indicator {
+    -fx-background-color: _night0;
+    -fx-progress-color: _light0;
+    /*-fx-text-fill: red; BUG PERCENTAGE TEXT NOT CHANGING COLOR */
+}
+.slotInfoPanel .progress-indicator StackPane{
+    -fx-background-color: _night3;
+}
+
+
+.addOkBtn {
+    -fx-font-family: "Product Sans Bold";
+
+    -fx-text-fill: _night3;
+    -fx-background-color: _light2;
+}
+.addOkBtn:hover {
+    -fx-background-color: _night3;
+    -fx-text-fill: _light2;
+}
+
+.addCancelBtn {
+    -fx-border-width: 1;
+    -fx-font-family: "Product Sans";
+
+    -fx-background-color: _night3;
+    -fx-text-fill: _light2;
+    -fx-border-color: _light2;
+}
+.addCancelBtn:hover {
+    -fx-background-color: _night0;
+    -fx-text-fill: _light0;
+}
