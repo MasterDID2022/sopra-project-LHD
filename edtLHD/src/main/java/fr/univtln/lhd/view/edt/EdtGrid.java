@@ -1,6 +1,7 @@
 package fr.univtln.lhd.view.edt;
 
 import fr.univtln.lhd.model.entities.slots.Slot;
+import fr.univtln.lhd.view.slots.SlotUI;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -57,13 +58,15 @@ public class EdtGrid extends Grid {
     public static EdtGrid getInstance(){ return new EdtGrid(11, 6); }
 
     private void setupEmptyGrid(){
-        for (int i = 1; i < getRowNumber(); i++){
-            for (int j = 1; j < getColumnNumber(); j++){
-                FlowPane f = new FlowPane( new Label("") );
-                f.getStyleClass().add("cell");
-                add(f, i, j);
-            }
-        }
+        for (int i = 1; i < getRowNumber(); i++)
+            for (int j = 1; j < getColumnNumber(); j++)
+                add( getEmptyCell(), i, j);
+    }
+
+    private FlowPane getEmptyCell(){
+        FlowPane f = new FlowPane( new Label("") );
+        f.getStyleClass().add("cell");
+        return f;
     }
 
     public void updateDaysLabel() {
@@ -87,6 +90,8 @@ public class EdtGrid extends Grid {
         for (int i = 0; i < childs.size(); i++) {
             getChildren().get(i).getStyleClass().removeAll("today", "cell_today");
 
+            if (getChildren().get(i) instanceof SlotUI slotUI)
+                slotUI.setIsActive(false);
             if (!childs.get(i).getStyleClass().contains("slot")) continue;
 
             getChildren().get(i).getStyleClass().removeAll("slot", "reduced_slot");
@@ -192,5 +197,14 @@ public class EdtGrid extends Grid {
     public void add(List<Slot> slots){
         for(Slot slot : slots)
             add(slot);
+    }
+
+    public void delete(SlotUI slotUI){
+        getChildren().remove( slotUI );
+    }
+
+    public void replace(SlotUI slotUI, Slot slot){
+        delete(slotUI);
+        add(slot);
     }
 }

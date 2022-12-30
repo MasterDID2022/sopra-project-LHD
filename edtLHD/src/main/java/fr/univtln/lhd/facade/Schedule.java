@@ -291,6 +291,8 @@ public class Schedule implements Observable {
             log.error(e.getMessage());
             return true;
         }
+
+        schedule.notifyChanges("slotEvent", EventChange.of(EventChange.ChangeType.ADD, slot));
         return false;
     }
 
@@ -313,6 +315,7 @@ public class Schedule implements Observable {
             log.error(e.getMessage());
             return true;
         }
+        schedule.notifyChanges("slotEvent", EventChange.of(EventChange.ChangeType.REMOVE, slot));
         return false;
     }
 
@@ -340,6 +343,7 @@ public class Schedule implements Observable {
             log.error(e.getMessage());
             return true;
         }
+        schedule.notifyChanges("slotEvent", EventChange.of(EventChange.ChangeType.MODIFY, newSlot));
         return false;
     }
 
@@ -732,9 +736,8 @@ public class Schedule implements Observable {
     }
 
     @Override
-    public void notifyChanges(String eventName, List<EventChange<?>> changes) {
+    public void notifyChanges(String eventName, EventChange<?> changes) {
         if (!observerMap.containsKey(eventName)) return;
-        for (Observer observer : observerMap.get(eventName))
-            observer.udpate(changes);
+        ((Observer) observerMap.get(eventName)).update(changes);
     }
 }
