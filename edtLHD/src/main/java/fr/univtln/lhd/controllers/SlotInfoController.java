@@ -3,6 +3,7 @@ package fr.univtln.lhd.controllers;
 import fr.univtln.lhd.model.entities.slots.Slot;
 import fr.univtln.lhd.model.entities.users.Admin;
 import fr.univtln.lhd.model.entities.users.User;
+import fr.univtln.lhd.view.authentification.Auth;
 import fr.univtln.lhd.view.slots.SlotUI;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -31,7 +32,7 @@ public class SlotInfoController {
     @FXML private Button sipOkBtn;
     @FXML private Button sipCancelBtn;
 
-    private User currentAuthUser;
+    private Auth currentAuth;
 
     private enum SlotManagementType { ADD, MODIFY, READ }
     private SlotManagementType managementType;
@@ -40,7 +41,7 @@ public class SlotInfoController {
 
     public void setParentController(EdtLhdController controller){
         this.controller = controller;
-        this.currentAuthUser = controller.getCurrentAuthStudent();
+        this.currentAuth = controller.getCurrentAuth();
 
         slotInfoPanel.getStyleClass().add("slotInfoPanel");
 
@@ -83,7 +84,7 @@ public class SlotInfoController {
         for (Slot.SlotType type : Slot.SlotType.values())
             sipSType.getItems().add(type);
 
-        boolean isAdmin = currentAuthUser instanceof Admin;
+        boolean isAdmin = currentAuth.isAdmin();
 
         if(!isAdmin){
             managementType = SlotManagementType.READ;
@@ -124,7 +125,7 @@ public class SlotInfoController {
 
         slotInfoPanel.setStyle("-fx-border-color: " + slotUI.getAssociatedColor());
 
-        if (currentAuthUser instanceof Admin){
+        if (currentAuth.isAdmin()){
             managementType = SlotManagementType.MODIFY;
             sipTitle.setText( managementType.name() );
         }
