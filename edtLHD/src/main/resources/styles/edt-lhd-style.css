@@ -47,6 +47,10 @@ EdtGrid FlowPane {
     -fx-text-fill: _light2;
 }
 
+Pane {
+    -fx-alignment: center;
+}
+
 /* CELL */
 .cell {
     -fx-border-style: solid;
@@ -139,6 +143,13 @@ EdtGrid FlowPane {
     -fx-text-fill: _light2;
 }
 
+.accountLabel {
+    -fx-font-family: "Product Sans";
+    -fx-font-size: 12;
+
+    -fx-text-fill: _light0;
+}
+
 
 
 
@@ -195,27 +206,8 @@ EdtGrid FlowPane {
     -fx-border-color: _light2;
 }
 
-
-.addOkBtn {
-    -fx-font-family: "Product Sans Bold";
-
-    -fx-text-fill: _night3;
-    -fx-background-color: _light2;
-}
-.addOkBtn:hover {
-    -fx-background-color: _night0;
-    -fx-text-fill: _light2;
-}
-
-.addCancelBtn {
-    -fx-border-width: 1;
-    -fx-font-family: "Product Sans";
-
-    -fx-background-color: _night3;
-    -fx-text-fill: _light2;
-    -fx-border-color: _light2;
-}
-.addCancelBtn:hover {
+.disconnectBtn {
     -fx-background-color: _night0;
     -fx-text-fill: _light0;
+    -fx-opacity: 0.7;
 }

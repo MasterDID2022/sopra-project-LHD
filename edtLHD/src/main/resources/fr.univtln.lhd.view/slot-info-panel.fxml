@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane fx:id="slotInfoPanel" prefHeight="215.0" prefWidth="250.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="125.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.univtln.lhd.controllers.SlotInfoController">
+    <bottom>
+        <HBox alignment="CENTER" spacing="25.0" BorderPane.alignment="CENTER">
+            <children>
+                <Button fx:id="sipOkBtn" mnemonicParsing="false" onAction="#sipOkBtnOnClick" prefWidth="70.0" styleClass="addOkBtn" text="Ok" textAlignment="CENTER" HBox.hgrow="ALWAYS" />
+                <Button fx:id="sipCancelBtn" layoutX="101.0" layoutY="17.0" mnemonicParsing="false" onAction="#sipCancelBtnOnClick" prefWidth="70.0" styleClass="addCancelBtn" text="Annuler" />
+            </children>
+        </HBox>
+    </bottom>
+    <padding>
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+    </padding>
+   <center>
+      <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+         <children>
+              <HBox>
+                  <children>
+                      <Label fx:id="sipTitle" text="Label" />
+                      <HBox fillHeight="false" HBox.hgrow="ALWAYS" />
+                      <Button fx:id="sipDeleteBtn" mnemonicParsing="false" onAction="#sipDeleteBtnOnClick" text="Delete" textAlignment="CENTER" />
+                  </children>
+              </HBox>
+              <HBox alignment="BOTTOM_LEFT">
+                  <children>
+                      <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                          <padding>
+                              <Insets bottom="5.0" top="5.0" />
+                          </padding>
+                          <children>
+                              <TextField fx:id="sipSName">
+                                  <font>
+                                      <Font size="10.0" />
+                                  </font>
+                        </TextField>
+                              <HBox spacing="10.0">
+                                  <children>
+                                      <TextField fx:id="sipSpFName">
+                                          <font>
+                                              <Font size="10.0" />
+                                          </font>
+                                      </TextField>
+                                      <TextField fx:id="sipSpName" layoutX="10.0" layoutY="10.0">
+                                          <font>
+                                              <Font size="10.0" />
+                                          </font>
+                                      </TextField>
+                                  </children>
+                              </HBox>
+                              <HBox alignment="CENTER_LEFT" layoutX="20.0" layoutY="41.0" spacing="5.0">
+                                  <children>
+                                      <TextField fx:id="sipSgName" HBox.hgrow="ALWAYS">
+                                          <font>
+                                              <Font size="10.0" />
+                                          </font>
+                                      </TextField>
+                                      <ComboBox fx:id="sipSType" minWidth="-Infinity" prefWidth="74.0" promptText="EXAM" HBox.hgrow="ALWAYS" />
+                                  </children>
+                              </HBox>
+                              <HBox spacing="15.0" VBox.vgrow="ALWAYS">
+                                  <children>
+                                      <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                                          <children>
+                                              <TextField fx:id="sipSClassName">
+                                                  <font>
+                                                      <Font size="10.0" />
+                                                  </font>
+                                              </TextField>
+                                              <HBox alignment="CENTER_LEFT" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="120.0" spacing="5.0" VBox.vgrow="NEVER">
+                                                  <children>
+                                                      <TextField fx:id="sipSHourStart" prefWidth="90.0" HBox.hgrow="NEVER">
+                                                          <font>
+                                                              <Font size="10.0" />
+                                                          </font>
+                                                      </TextField>
+                                                      <Label text="-" textAlignment="CENTER" HBox.hgrow="NEVER">
+                                                          <font>
+                                                              <Font size="15.0" />
+                                                          </font>
+                                                      </Label>
+                                                      <TextField fx:id="sipSHourEnd" layoutX="10.0" layoutY="10.0" prefWidth="90.0" HBox.hgrow="NEVER">
+                                                          <font>
+                                                              <Font size="10.0" />
+                                                          </font>
+                                                      </TextField>
+                                                  </children>
+                                              </HBox>
+                                          </children>
+                                      </VBox>
+                                      <ProgressIndicator fx:id="sipSProgress" progress="0.18" HBox.hgrow="ALWAYS">
+                                          <HBox.margin>
+                                              <Insets />
+                                          </HBox.margin>
+                                 <padding>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </padding>
+                                      </ProgressIndicator>
+                                  </children>
+                              </HBox>
+                          </children>
+                          <HBox.margin>
+                              <Insets />
+                          </HBox.margin>
+                      </VBox>
+                  </children>
+              </HBox>
+         </children>
+      </VBox>
+   </center>
+</BorderPane>
