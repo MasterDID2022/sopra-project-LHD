@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane fx:id="slotInfoPanel" prefHeight="215.0" prefWidth="250.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="125.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.univtln.lhd.controllers.SlotInfoController">
+<BorderPane fx:id="slotInfoPanel" prefHeight="250.0" prefWidth="250.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="125.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.univtln.lhd.controllers.SlotInfoController">
     <bottom>
         <HBox alignment="CENTER" spacing="25.0" BorderPane.alignment="CENTER">
             <children>
@@ -72,6 +72,7 @@
                                                       <Font size="10.0" />
                                                   </font>
                                               </TextField>
+                                    <DatePicker fx:id="sipSDate" styleClass="datePicker" />
                                               <HBox alignment="CENTER_LEFT" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="120.0" spacing="5.0" VBox.vgrow="NEVER">
                                                   <children>
                                                       <TextField fx:id="sipSHourStart" prefWidth="90.0" HBox.hgrow="NEVER">

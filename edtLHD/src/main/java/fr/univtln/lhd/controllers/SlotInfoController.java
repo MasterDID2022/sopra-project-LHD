@@ -9,6 +9,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+
 public class SlotInfoController {
     private EdtLhdController controller;
 
@@ -21,6 +24,7 @@ public class SlotInfoController {
     @FXML private TextField sipSgName;
     @FXML private ComboBox<Slot.SlotType> sipSType;
     @FXML private TextField sipSClassName;
+    @FXML private DatePicker sipSDate;
     @FXML private TextField sipSHourStart;
     @FXML private TextField sipSHourEnd;
     @FXML private ProgressIndicator sipSProgress;
@@ -65,6 +69,7 @@ public class SlotInfoController {
         clearPanelInfo();
 
         sipDeleteBtn.setDisable(true);
+        sipTitle.setVisible(true);
         sipTitle.setText( managementType.name() );
     }
 
@@ -97,6 +102,7 @@ public class SlotInfoController {
         sipSType.setDisable(isAdmin);
         sipSClassName.setDisable(isAdmin);
         sipSgName.setDisable(isAdmin);
+        sipSDate.setDisable(isAdmin);
         sipSHourStart.setDisable(isAdmin);
         sipSHourEnd.setDisable(isAdmin);
     }
@@ -108,6 +114,7 @@ public class SlotInfoController {
         sipSType.setValue(Slot.SlotType.CM);
         sipSClassName.setText("");
         sipSgName.setText("");
+        sipSDate.setValue( LocalDate.now() );
         sipSHourStart.setText("");
         sipSHourEnd.setText("");
     }
@@ -130,6 +137,8 @@ public class SlotInfoController {
 
         sipSClassName.setText( slot.getClassroom().getName() );
         sipSgName.setText( slot.getGroup().get(0).getName() );
+
+        sipSDate.setValue( slot.getTimeRange().getStart().atZone(ZoneId.systemDefault()).toLocalDate() );
         String[] hour = slot.getDisplayTimeInterval().split(" - ");
         sipSHourStart.setText( hour[0] );
         sipSHourEnd.setText( hour[1] );
@@ -137,14 +146,20 @@ public class SlotInfoController {
 
     private void addNewSlot(){
         //wip
+        //need to get all panel entry, maybe call method on edt lhd controller which calls schedule to convert entry to right type
+        //exemple, classroom name entry -> string, needs to be Classroom Entity from database
+        //need to add method to create subject or classroom in schedule
+        System.out.println("ADD SLOT WIP");
     }
 
     private void modifySlot(){
         //wip
+        System.out.println("MODIFY SLOT WIP");
     }
 
     private void deleteSlot(){
         //wip
+        System.out.println("DELETE SLOT WIP");
     }
 
     //region BUTTON EVENT HANDLER
