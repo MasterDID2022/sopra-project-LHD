@@ -14,7 +14,7 @@ import lombok.Getter;
  * used for converting a Slot to SlotUi, displaying it afterwards correctly
  */
 @Getter
-@SuppressWarnings("java:S110")//Using an IHM imply a lot inheritance
+@SuppressWarnings("java:S110")//Using an IHM imply a lot of inheritance
 public class SlotUI extends FlowPane {
 
     private static final int MAX_WIDTH_LABEL = 27;
@@ -64,7 +64,6 @@ public class SlotUI extends FlowPane {
             for (Group group : slot.getGroup())
                 slotLabel.append( limitWidthFormat(group.getName()) );
 
-        slotLabel.append(slot.getDisplayTimeInterval());
         slotLabel.append(slot.getDisplayTimeInterval());
 
 
