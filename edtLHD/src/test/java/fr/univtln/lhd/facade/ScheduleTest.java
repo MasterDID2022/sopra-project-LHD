@@ -29,7 +29,7 @@ import java.util.*;
 class ScheduleTest {
 
 
-    private Map mapOfSlot;
+    private Map<String,Object> mapOfSlot;
 
     @BeforeEach
     public void GetNewRealSlot() throws SQLException {
@@ -309,7 +309,7 @@ class ScheduleTest {
     }
 
     @Test
-    void subribeTest(){
+    void subscribeTest(){
         Observer observer = new Observer() {
             @Override
             public void udpate(List<EventChange<?>> changes) {
