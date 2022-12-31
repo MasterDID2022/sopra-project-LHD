@@ -72,7 +72,7 @@ class ProfessorTest {
     @Test
     void ShouldDisplayTheName(){
        Professor professor = getInstanceOfProfessor();
-       Assertions.assertEquals("FIRSTNAME N.",professor.getDisplayName());
+       Assertions.assertEquals("NAME F.",professor.getDisplayName());
     }
 
 
