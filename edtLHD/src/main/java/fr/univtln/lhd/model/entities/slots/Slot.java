@@ -7,6 +7,7 @@ import org.threeten.extra.Interval;
 
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -69,25 +70,18 @@ public class Slot {
 
     /**
      * Take a LocalTime and return a String representing this LocalTime
-     * the precision is discarded at the profit of consistency with the omission
-     * of second and the concatenation of "0" for a more pleasing result
-     * ex: 7h58m23 -> 07H58
+     * eg: 7h58m23 -> 07:58
      * @param time a LocalTime
      * @return Formated String
      */
-    private String formatLocalTimeToString(LocalTime time){
-        String result = "";
-        if (time.getHour() < 10) result += "0";
-        result += time.getHour() + ":";
-        if (time.getMinute() < 10) result += "0";
-        result += time.getMinute();
-        return result;
+    private String formatLocalTimeToString(LocalTime time) {
+    return DateTimeFormatter.ofPattern("HH:mm").format(time);
     }
 
     /**
      * Return a formatted String of an interval using
      * the function <code>formatLocalTimeToString</code>
-     * @return FormattedS tring of an Interval
+     * @return Formatted string of an Interval
      */
     public String getDisplayTimeInterval() {
         String startTime = formatLocalTimeToString( LocalTime.ofInstant(timeRange.getStart(), ZoneId.systemDefault()) );

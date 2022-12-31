@@ -25,7 +25,7 @@ DROP SCHEMA IF EXISTS lhd CASCADE;
 --
 
 CREATE SCHEMA lhd;
-ALTER DATABASE lhd; SET search_path TO lhd;
+ALTER DATABASE lhd SET search_path TO lhd;
 
 --
 -- Name: btree_gist; Type: EXTENSION; Schema: -; Owner: -
@@ -142,7 +142,7 @@ CREATE FUNCTION lhd.check_date_overlap_trigger_slot_update_group() RETURNS trigg
             and s2.timerange && new.timerange))
 
        THEN
-            RAISE unique_violation USING MESSAGE = 'Unavailable group on slot : ' || new.id_slot;
+            RAISE unique_violation USING MESSAGE = 'Unavailable group on slot : ' || new.id;
        END IF;
    RETURN NEW;
        end
@@ -169,7 +169,7 @@ CREATE FUNCTION lhd.check_date_overlap_trigger_slot_update_professor() RETURNS t
             and s2.timerange && new.timerange))
 
        THEN
-            RAISE integrity_constraint_violation USING MESSAGE = 'Unavailable group on slot : ' || new.id_slot;
+            RAISE integrity_constraint_violation USING MESSAGE = 'Unavailable group on slot : ' || new.id;
        END IF;
    RETURN NEW;
        end
@@ -391,11 +391,11 @@ ALTER TABLE ONLY lhd.classrooms
 
 
 --
--- Name: slots creneau_pkey; Type: CONSTRAINT; Schema: lhd; Owner: -
+-- Name: slots slot_pkey; Type: CONSTRAINT; Schema: lhd; Owner: -
 --
 
 ALTER TABLE ONLY lhd.slots
-    ADD CONSTRAINT creneau_pkey PRIMARY KEY (id);
+    ADD CONSTRAINT slot_pkey PRIMARY KEY (id);
 
 
 --
@@ -415,11 +415,11 @@ ALTER TABLE ONLY lhd.professors
 
 
 --
--- Name: group_slot promotion_creneau_pkey; Type: CONSTRAINT; Schema: lhd; Owner: -
+-- Name: group_slot promotion_slot_pkey; Type: CONSTRAINT; Schema: lhd; Owner: -
 --
 
 ALTER TABLE ONLY lhd.group_slot
-    ADD CONSTRAINT promotion_creneau_pkey PRIMARY KEY (id_group, id_slot);
+    ADD CONSTRAINT promotion_slot_pkey PRIMARY KEY (id_group, id_slot);
 
 
 --
@@ -431,11 +431,11 @@ ALTER TABLE ONLY lhd.professor_slot
 
 
 --
--- Name: group_user promotion_usager_pkey; Type: CONSTRAINT; Schema: lhd; Owner: -
+-- Name: group_user promotion_user_pkey; Type: CONSTRAINT; Schema: lhd; Owner: -
 --
 
 ALTER TABLE ONLY lhd.group_user
-    ADD CONSTRAINT promotion_usager_pkey PRIMARY KEY (id_group, id_user);
+    ADD CONSTRAINT promotion_user_pkey PRIMARY KEY (id_group, id_user);
 
 
 --
@@ -557,19 +557,19 @@ CREATE TRIGGER update_slot_check_professor BEFORE UPDATE ON lhd.slots FOR EACH R
 
 
 --
--- Name: group_slot fk_creneau; Type: FK CONSTRAINT; Schema: lhd; Owner: -
+-- Name: group_slot fk_slot; Type: FK CONSTRAINT; Schema: lhd; Owner: -
 --
 
 ALTER TABLE ONLY lhd.group_slot
-    ADD CONSTRAINT fk_creneau FOREIGN KEY (id_slot) REFERENCES lhd.slots(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_slot FOREIGN KEY (id_slot) REFERENCES lhd.slots(id) ON DELETE CASCADE;
 
 
 --
--- Name: professor_slot fk_creneau; Type: FK CONSTRAINT; Schema: lhd; Owner: -
+-- Name: professor_slot fk_slot; Type: FK CONSTRAINT; Schema: lhd; Owner: -
 --
 
 ALTER TABLE ONLY lhd.professor_slot
-    ADD CONSTRAINT fk_creneau FOREIGN KEY (id_slot) REFERENCES lhd.slots(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_slot FOREIGN KEY (id_slot) REFERENCES lhd.slots(id) ON DELETE CASCADE;
 
 
 --
@@ -623,60 +623,61 @@ ALTER TABLE ONLY lhd.slots
 --
 -- PostgreSQL database dump complete
 --
+
 SET session_replication_role = replica;
-        INSERT INTO lhd.users (id, name, fname, email, password) OVERRIDING SYSTEM VALUE VALUES (1, 'Theo', 'Hafsaoui', 'Theo.hafsaoui@superEmail.com', 'LeNomDeMonChien') on conflict do nothing;
+INSERT INTO lhd.users (id, name, fname, email, password) OVERRIDING SYSTEM VALUE VALUES (1, 'Hafsaoui', 'Théo', 'Theo.hafsaoui@superEmail.com', 'LeNomDeMonChien') on conflict do nothing;
 
-        INSERT INTO lhd.professors (id, name, fname, email, password, title) OVERRIDING SYSTEM VALUE VALUES (2, 'Jean-Marc', 'Robert', 'Jean-Marc@TobertSECU.fr', 'LeNomDuChien', 'Enseignant') on conflict do nothing;
-        INSERT INTO lhd.professors (id, name, fname, email, password, title) OVERRIDING SYSTEM VALUE VALUES (3, 'Pierre', 'Mahe', 'pierre-Mahe@univ-tln.fr', 'LeNomDuChien', 'Enseignant') on conflict do nothing;
+INSERT INTO lhd.professors (id, name, fname, email, password, title) OVERRIDING SYSTEM VALUE VALUES (2, 'Robert', 'Jean-Marc', 'Jean-Marc@TobertSECU.fr', 'LeNomDuChien', 'Enseignant') on conflict do nothing;
+INSERT INTO lhd.professors (id, name, fname, email, password, title) OVERRIDING SYSTEM VALUE VALUES (3, 'Mahe', 'Pierre', 'pierre-Mahe@univ-tln.fr', 'LeNomDuChien', 'Enseignant') on conflict do nothing;
 
-        INSERT INTO lhd.classrooms (id, name) OVERRIDING SYSTEM VALUE VALUES (1, 'U001 - M1 Info-DID') on conflict do nothing;
-        INSERT INTO lhd.classrooms (id, name) OVERRIDING SYSTEM VALUE VALUES (2, 'Z001 - L1 Physique') on conflict do nothing;
+INSERT INTO lhd.classrooms (id, name) OVERRIDING SYSTEM VALUE VALUES (1, 'U001 - M1 Info-DID') on conflict do nothing;
+INSERT INTO lhd.classrooms (id, name) OVERRIDING SYSTEM VALUE VALUES (2, 'Z001 - L1 Physique') on conflict do nothing;
 
-        INSERT INTO lhd.groups (id, name) OVERRIDING SYSTEM VALUE VALUES (1, 'M1 informatique DID') on conflict do nothing;
+INSERT INTO lhd.groups (id, name) OVERRIDING SYSTEM VALUE VALUES (1, 'M1 informatique DID') on conflict do nothing;
 
-        INSERT INTO lhd.subjects (id, name, hour_count_max) OVERRIDING SYSTEM VALUE VALUES (6, 'I131 Protect donnees', 61.5) on conflict do nothing;
-        INSERT INTO lhd.subjects (id, name, hour_count_max) OVERRIDING SYSTEM VALUE VALUES (7, 'I122 Base de l apprentissage', 33) on conflict do nothing;
-        INSERT INTO lhd.subjects (id, name, hour_count_max) OVERRIDING SYSTEM VALUE VALUES (8, 'I815 Apprentissage', 33) on conflict do nothing;
-        INSERT INTO lhd.subjects (id, name, hour_count_max) OVERRIDING SYSTEM VALUE VALUES (8, 'M53 Math', 33) on conflict do nothing;
-        INSERT INTO lhd.subjects (id, name, hour_count_max) OVERRIDING SYSTEM VALUE VALUES (8, 'N18 Nucléaire', 33) on conflict do nothing;
+INSERT INTO lhd.subjects (id, name, hour_count_max) OVERRIDING SYSTEM VALUE VALUES (6, 'I131 Protect donnees', 61.5) on conflict do nothing;
+INSERT INTO lhd.subjects (id, name, hour_count_max) OVERRIDING SYSTEM VALUE VALUES (7, 'I122 Base de l apprentissage', 33) on conflict do nothing;
+INSERT INTO lhd.subjects (id, name, hour_count_max) OVERRIDING SYSTEM VALUE VALUES (8, 'I815 Apprentissage', 33) on conflict do nothing;
+INSERT INTO lhd.subjects (id, name, hour_count_max) OVERRIDING SYSTEM VALUE VALUES (8, 'M53 Math', 33) on conflict do nothing;
+INSERT INTO lhd.subjects (id, name, hour_count_max) OVERRIDING SYSTEM VALUE VALUES (8, 'N18 Nucléaire', 33) on conflict do nothing;
 
-        INSERT INTO lhd.slots (id, timerange, classroom, memo, subject, type) OVERRIDING SYSTEM VALUE VALUES (10, '["2022-12-26 10:00:00.72463+01","2022-12-26 12:00:00.72463+01")', 1, NULL, 6, 'TD');
-        INSERT INTO lhd.slots (id, timerange, classroom, memo, subject, type) OVERRIDING SYSTEM VALUE VALUES (11, '["2022-12-26 13:00:00.72463+01","2022-12-26 16:00:00.72463+01")', 2, NULL, 7, 'CM');
-        INSERT INTO lhd.slots (id, timerange, classroom, memo, subject, type) OVERRIDING SYSTEM VALUE VALUES (12, '["2022-12-27 11:35:00.72463+01","2022-12-27 12:35:00.72463+01")', 2, NULL, 7, 'TD');
-        INSERT INTO lhd.slots (id, timerange, classroom, memo, subject, type) OVERRIDING SYSTEM VALUE VALUES (13, '["2022-12-28 09:00:00.72463+01","2022-12-28 11:00:00.72463+01")', 2, NULL, 7, 'CM');
-        INSERT INTO lhd.slots (id, timerange, classroom, memo, subject, type) OVERRIDING SYSTEM VALUE VALUES (14, '["2022-12-30 10:00:00.72463+01","2022-12-30 13:00:00.72463+01")', 2, NULL, 7, 'TP');
-        INSERT INTO lhd.slots (id, timerange, classroom, memo, subject, type) OVERRIDING SYSTEM VALUE VALUES (15, '["2023-01-03 08:00:00.72463+01","2023-01-03 11:00:00.72463+01")', 2, NULL, 7, 'TD');
-        INSERT INTO lhd.slots (id, timerange, classroom, memo, subject, type) OVERRIDING SYSTEM VALUE VALUES (16, '["2023-01-03 15:00:00.72463+01","2023-01-03 17:00:00.72463+01")', 2, NULL, 7, 'CM');
-        INSERT INTO lhd.slots (id, timerange, classroom, memo, subject, type) OVERRIDING SYSTEM VALUE VALUES (17, '["2023-01-05 08:00:00.72463+01","2023-01-05 10:00:00.72463+01")', 2, NULL, 7, 'TD');
-        INSERT INTO lhd.slots (id, timerange, classroom, memo, subject, type) OVERRIDING SYSTEM VALUE VALUES (18, '["2023-01-06 15:00:00.72463+01","2023-01-06 17:00:00.72463+01")', 2, NULL, 7, 'TP');
+INSERT INTO lhd.slots (id, timerange, classroom, memo, subject, type) OVERRIDING SYSTEM VALUE VALUES (10, '["2022-12-26 10:00:00.72463+01","2022-12-26 12:00:00.72463+01")', 1, NULL, 6, 'TD');
+INSERT INTO lhd.slots (id, timerange, classroom, memo, subject, type) OVERRIDING SYSTEM VALUE VALUES (11, '["2022-12-26 13:00:00.72463+01","2022-12-26 16:00:00.72463+01")', 2, NULL, 7, 'CM');
+INSERT INTO lhd.slots (id, timerange, classroom, memo, subject, type) OVERRIDING SYSTEM VALUE VALUES (12, '["2022-12-27 11:35:00.72463+01","2022-12-27 12:35:00.72463+01")', 2, NULL, 7, 'TD');
+INSERT INTO lhd.slots (id, timerange, classroom, memo, subject, type) OVERRIDING SYSTEM VALUE VALUES (13, '["2022-12-28 09:00:00.72463+01","2022-12-28 11:00:00.72463+01")', 2, NULL, 7, 'CM');
+INSERT INTO lhd.slots (id, timerange, classroom, memo, subject, type) OVERRIDING SYSTEM VALUE VALUES (14, '["2022-12-30 10:00:00.72463+01","2022-12-30 13:00:00.72463+01")', 2, NULL, 7, 'TP');
+INSERT INTO lhd.slots (id, timerange, classroom, memo, subject, type) OVERRIDING SYSTEM VALUE VALUES (15, '["2023-01-03 08:00:00.72463+01","2023-01-03 11:00:00.72463+01")', 2, NULL, 7, 'TD');
+INSERT INTO lhd.slots (id, timerange, classroom, memo, subject, type) OVERRIDING SYSTEM VALUE VALUES (16, '["2023-01-03 15:00:00.72463+01","2023-01-03 17:00:00.72463+01")', 2, NULL, 7, 'CM');
+INSERT INTO lhd.slots (id, timerange, classroom, memo, subject, type) OVERRIDING SYSTEM VALUE VALUES (17, '["2023-01-05 08:00:00.72463+01","2023-01-05 10:00:00.72463+01")', 2, NULL, 7, 'TD');
+INSERT INTO lhd.slots (id, timerange, classroom, memo, subject, type) OVERRIDING SYSTEM VALUE VALUES (18, '["2023-01-06 15:00:00.72463+01","2023-01-06 17:00:00.72463+01")', 2, NULL, 7, 'TP');
 
-        INSERT INTO lhd.group_slot (id_group, id_slot) VALUES (1, 10) on conflict do nothing;
-        INSERT INTO lhd.group_slot (id_group, id_slot) VALUES (1, 11) on conflict do nothing;
-        INSERT INTO lhd.group_slot (id_group, id_slot) VALUES (1, 12) on conflict do nothing;
-        INSERT INTO lhd.group_slot (id_group, id_slot) VALUES (1, 13) on conflict do nothing;
-        INSERT INTO lhd.group_slot (id_group, id_slot) VALUES (1, 14) on conflict do nothing;
-        INSERT INTO lhd.group_slot (id_group, id_slot) VALUES (1, 15) on conflict do nothing;
-        INSERT INTO lhd.group_slot (id_group, id_slot) VALUES (1, 16) on conflict do nothing;
-        INSERT INTO lhd.group_slot (id_group, id_slot) VALUES (1, 17) on conflict do nothing;
-        INSERT INTO lhd.group_slot (id_group, id_slot) VALUES (1, 18) on conflict do nothing;
+INSERT INTO lhd.group_slot (id_group, id_slot) VALUES (1, 10) on conflict do nothing;
+INSERT INTO lhd.group_slot (id_group, id_slot) VALUES (1, 11) on conflict do nothing;
+INSERT INTO lhd.group_slot (id_group, id_slot) VALUES (1, 12) on conflict do nothing;
+INSERT INTO lhd.group_slot (id_group, id_slot) VALUES (1, 13) on conflict do nothing;
+INSERT INTO lhd.group_slot (id_group, id_slot) VALUES (1, 14) on conflict do nothing;
+INSERT INTO lhd.group_slot (id_group, id_slot) VALUES (1, 15) on conflict do nothing;
+INSERT INTO lhd.group_slot (id_group, id_slot) VALUES (1, 16) on conflict do nothing;
+INSERT INTO lhd.group_slot (id_group, id_slot) VALUES (1, 17) on conflict do nothing;
+INSERT INTO lhd.group_slot (id_group, id_slot) VALUES (1, 18) on conflict do nothing;
 
-        INSERT INTO lhd.group_user (id_group, id_user) VALUES (1, 1) on conflict do nothing;
+INSERT INTO lhd.group_user (id_group, id_user) VALUES (1, 1) on conflict do nothing;
 
-        INSERT INTO lhd.professor_slot (id_professor, id_slot) VALUES (2, 10) on conflict do nothing;
-        INSERT INTO lhd.professor_slot (id_professor, id_slot) VALUES (3, 11) on conflict do nothing;
-        INSERT INTO lhd.professor_slot (id_professor, id_slot) VALUES (3, 12) on conflict do nothing;
-        INSERT INTO lhd.professor_slot (id_professor, id_slot) VALUES (3, 13) on conflict do nothing;
-        INSERT INTO lhd.professor_slot (id_professor, id_slot) VALUES (3, 14) on conflict do nothing;
-        INSERT INTO lhd.professor_slot (id_professor, id_slot) VALUES (3, 15) on conflict do nothing;
-        INSERT INTO lhd.professor_slot (id_professor, id_slot) VALUES (3, 16) on conflict do nothing;
-        INSERT INTO lhd.professor_slot (id_professor, id_slot) VALUES (3, 17) on conflict do nothing;
-        INSERT INTO lhd.professor_slot (id_professor, id_slot) VALUES (3, 18) on conflict do nothing;
+INSERT INTO lhd.professor_slot (id_professor, id_slot) VALUES (2, 10) on conflict do nothing;
+INSERT INTO lhd.professor_slot (id_professor, id_slot) VALUES (3, 11) on conflict do nothing;
+INSERT INTO lhd.professor_slot (id_professor, id_slot) VALUES (3, 12) on conflict do nothing;
+INSERT INTO lhd.professor_slot (id_professor, id_slot) VALUES (3, 13) on conflict do nothing;
+INSERT INTO lhd.professor_slot (id_professor, id_slot) VALUES (3, 14) on conflict do nothing;
+INSERT INTO lhd.professor_slot (id_professor, id_slot) VALUES (3, 15) on conflict do nothing;
+INSERT INTO lhd.professor_slot (id_professor, id_slot) VALUES (3, 16) on conflict do nothing;
+INSERT INTO lhd.professor_slot (id_professor, id_slot) VALUES (3, 17) on conflict do nothing;
+INSERT INTO lhd.professor_slot (id_professor, id_slot) VALUES (3, 18) on conflict do nothing;
 
-        --
-        -- met à jour les séquence d'ID.
-        --
-        SELECT pg_catalog.setval('lhd.classrooms_id_seq', 100, true);
-        SELECT pg_catalog.setval('lhd.groups_id_seq', 100, true);
-        SELECT pg_catalog.setval('lhd.slots_id_seq', 100, true);
-        SELECT pg_catalog.setval('lhd.subject_id_seq', 100, true);
-        SELECT pg_catalog.setval('lhd.users_id_seq', 100, true);
+--
+-- met à jour les séquence d'ID.
+--
+SELECT pg_catalog.setval('lhd.classrooms_id_seq', 100, true);
+SELECT pg_catalog.setval('lhd.groups_id_seq', 100, true);
+SELECT pg_catalog.setval('lhd.slots_id_seq', 100, true);
+SELECT pg_catalog.setval('lhd.subject_id_seq', 100, true);
+SELECT pg_catalog.setval('lhd.users_id_seq', 100, true);

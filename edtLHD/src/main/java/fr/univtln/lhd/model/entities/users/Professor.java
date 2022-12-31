@@ -51,6 +51,12 @@ public class Professor extends User {
         return super.hashCode();
     }
 
-    public String getDisplayName() { return getFname().toUpperCase() + ' ' + getName().charAt(0) + '.'; }
-
+    /**
+     * Get a formatted composed of the last name in full caps and first name initials.
+     * @return Formatted string
+     */
+    public String getDisplayName() {
+        return getName().toUpperCase() + ' ' +
+                getFname().replaceAll("\\b(-?\\p{L})\\p{L}*\\b", "$1.").toUpperCase();
+    }
 }
