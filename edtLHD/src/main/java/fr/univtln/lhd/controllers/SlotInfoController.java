@@ -1,8 +1,6 @@
 package fr.univtln.lhd.controllers;
 
 import fr.univtln.lhd.model.entities.slots.Slot;
-import fr.univtln.lhd.model.entities.users.Admin;
-import fr.univtln.lhd.model.entities.users.User;
 import fr.univtln.lhd.view.authentification.Auth;
 import fr.univtln.lhd.view.slots.SlotUI;
 import javafx.event.ActionEvent;
@@ -13,6 +11,9 @@ import javafx.scene.layout.BorderPane;
 import java.time.LocalDate;
 import java.time.ZoneId;
 
+/**
+ * Controller for Slot Info Panel
+ */
 public class SlotInfoController {
     private EdtLhdController controller;
 
@@ -29,6 +30,7 @@ public class SlotInfoController {
     @FXML private TextField sipSHourStart;
     @FXML private TextField sipSHourEnd;
     @FXML private ProgressIndicator sipSProgress;
+    @FXML private TextField sipSMaxHour;
     @FXML private Button sipOkBtn;
     @FXML private Button sipCancelBtn;
 
@@ -39,6 +41,10 @@ public class SlotInfoController {
 
     private SlotUI slotUI;
 
+    /**
+     * Base method call from Parent Controller (aka EdtLhdController)
+     * @param controller EdtLhdController parent
+     */
     public void setParentController(EdtLhdController controller){
         this.controller = controller;
         this.currentAuth = controller.getCurrentAuth();
@@ -51,11 +57,25 @@ public class SlotInfoController {
         setupSlotInfoPanel();
     }
 
+    /**
+     * Getter for SlotUi contained inside this Panel
+     * @return SlotUi Entity or null
+     */
     public SlotUI getSlotUI() { return slotUI; }
 
+    /**
+     * Show Slot Info Panel
+     */
     public void showSlotInfoPanel() { slotInfoPanel.setVisible(true); }
+
+    /**
+     * Hide Slot Info Panel
+     */
     public void hideSlotInfoPanel() { slotInfoPanel.setVisible(false); }
 
+    /**
+     * Toggle Show/Hide Slot Info Panel
+     */
     public void toggleSlotInfoPanel(){
         if (slotInfoPanel.isVisible())
             hideSlotInfoPanel();
@@ -63,23 +83,35 @@ public class SlotInfoController {
             showSlotInfoPanel();
     }
 
+    /**
+     * Show Slot Info Panel for Adding a Slot
+     */
     public void showAddPanel(){
         managementType = SlotManagementType.ADD;
         showSlotInfoPanel();
         //empty panel
         clearPanelInfo();
 
-        sipDeleteBtn.setDisable(true);
+        sipDeleteBtn.setVisible(false);
         sipTitle.setVisible(true);
         sipTitle.setText( managementType.name() );
     }
 
+    /**
+     * Show Slot Info Panel given a SlotUi (generally called when clicking on a slot on the planning)
+     * @param slotUI SlotUi Entity from the planning
+     */
     public void showSlotInfoPanel(SlotUI slotUI){
         this.slotUI = slotUI;
         showSlotInfoPanel();
         populateSlotInfoPanel();
     }
 
+    /**
+     * Setting up base information on Slot Info Panel
+     * populate SlotType Combo Box
+     * Show/Hide some fields depending on which types of user is logged in
+     */
     private void setupSlotInfoPanel(){
         for (Slot.SlotType type : Slot.SlotType.values())
             sipSType.getItems().add(type);
@@ -97,17 +129,21 @@ public class SlotInfoController {
 
         sipTitle.setVisible(isAdmin);
         sipDeleteBtn.setVisible(isAdmin);
-        sipSName.setDisable(isAdmin);
-        sipSpFName.setDisable(isAdmin);
-        sipSpName.setDisable(isAdmin);
-        sipSType.setDisable(isAdmin);
-        sipSClassName.setDisable(isAdmin);
-        sipSgName.setDisable(isAdmin);
-        sipSDate.setDisable(isAdmin);
-        sipSHourStart.setDisable(isAdmin);
-        sipSHourEnd.setDisable(isAdmin);
+        sipSName.setDisable(!isAdmin);
+        sipSpFName.setDisable(!isAdmin);
+        sipSpName.setDisable(!isAdmin);
+        sipSType.setDisable(!isAdmin);
+        sipSClassName.setDisable(!isAdmin);
+        sipSgName.setDisable(!isAdmin);
+        sipSDate.setDisable(!isAdmin);
+        sipSMaxHour.setDisable(!isAdmin);
+        sipSHourStart.setDisable(!isAdmin);
+        sipSHourEnd.setDisable(!isAdmin);
     }
 
+    /**
+     * Clears every field to default value
+     */
     private void clearPanelInfo(){
         sipSName.setText("");
         sipSpFName.setText("");
@@ -116,10 +152,14 @@ public class SlotInfoController {
         sipSClassName.setText("");
         sipSgName.setText("");
         sipSDate.setValue( LocalDate.now() );
+        sipSMaxHour.setText("");
         sipSHourStart.setText("");
         sipSHourEnd.setText("");
     }
 
+    /**
+     * Populate Slot Info Panel from current slotUi
+     */
     private void populateSlotInfoPanel(){
         Slot slot = slotUI.getSlot();
 
@@ -140,11 +180,18 @@ public class SlotInfoController {
         sipSgName.setText( slot.getGroup().get(0).getName() );
 
         sipSDate.setValue( slot.getTimeRange().getStart().atZone(ZoneId.systemDefault()).toLocalDate() );
+        sipSMaxHour.setText( "/ " + slot.getSubject().getHourCountMax() + "h");
+
         String[] hour = slot.getDisplayTimeInterval().split(" - ");
         sipSHourStart.setText( hour[0] );
         sipSHourEnd.setText( hour[1] );
     }
 
+    /**
+     * Add new slot
+     * Gets all information from each field
+     * Calls a method on parent Controller to create a new slot
+     */
     private void addNewSlot(){
         //wip
         //need to get all panel entry, maybe call method on edt lhd controller which calls schedule to convert entry to right type
@@ -153,17 +200,36 @@ public class SlotInfoController {
         System.out.println("ADD SLOT WIP");
     }
 
+    /**
+     * Modify a slot
+     * Gets all information from each field
+     * Calls a method on parent Controller to modify old Slot with new modified information
+     */
     private void modifySlot(){
         //wip
         System.out.println("MODIFY SLOT WIP");
     }
 
+    /**
+     * Delete a slot
+     * Gets all informatino from each field
+     * Calls a method on parent Controller to delete the selected slot
+     */
     private void deleteSlot(){
         //wip
         System.out.println("DELETE SLOT WIP");
     }
 
     //region BUTTON EVENT HANDLER
+
+    /**
+     * Callback Method when clicking on the ok button
+     * do different action based on managementType
+     * - ADD => add new slot
+     * - MODIFY => modify a slot
+     * - default / READ => hide slot info panel
+     * @param actionEvent ActionEvent
+     */
     @FXML public void sipOkBtnOnClick(ActionEvent actionEvent) {
         switch (managementType){
             case ADD -> addNewSlot();
@@ -172,8 +238,18 @@ public class SlotInfoController {
         }
     }
 
+    /**
+     * Callback method when clicking on the cancel button
+     * Hides the slot info panel
+     * @param actionEvent ActionEvent
+     */
     @FXML public void sipCancelBtnOnClick(ActionEvent actionEvent) { hideSlotInfoPanel(); }
 
+    /**
+     * Callback method when clicking on the delete button
+     * Delete currently selected slot
+     * @param actionEvent ActionEvent
+     */
     @FXML public void sipDeleteBtnOnClick(ActionEvent actionEvent) { deleteSlot(); }
     //endregion
 }

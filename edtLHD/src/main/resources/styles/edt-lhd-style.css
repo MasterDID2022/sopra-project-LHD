@@ -211,3 +211,25 @@ Pane {
     -fx-text-fill: _light0;
     -fx-opacity: 0.7;
 }
+
+
+
+.combo-box {
+    -fx-border-width: 1;
+    -fx-border-radius: 3;
+
+    -fx-background-color: _night0;
+    -fx-border-color: _light0;
+    -fx-text-fill: _light0;
+}
+
+.combo-box .list-cell {
+    -fx-background-color: _night0;
+    -fx-text-fill: _light0;
+    -fx-opacity: 1;
+}
+
+.combo-box .list-view {
+    -fx-background-color: _night3;
+    -fx-text-fill: _light0;
+}
