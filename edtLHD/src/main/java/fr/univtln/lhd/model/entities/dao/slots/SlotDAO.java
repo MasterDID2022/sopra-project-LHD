@@ -28,6 +28,7 @@ public class SlotDAO implements DAO<Slot> {
     private static final String SAVE_STMT = "INSERT INTO SLOTS VALUES (DEFAULT,?::tstzrange,?,?,?,?)";
     private static final String UPDATE_STMT = "UPDATE SLOTS SET TIMERANGE=?::tstzrange, CLASSROOM=?, MEMO=?, SUBJECT=?, TYPE=? WHERE ID=?";
 
+    private static final String GET_SLOT_FROM_A_PROFESSOR_STMT = "SELECT ID_SLOT FROM PROFESSOR_SLOT WHERE ID_PROFESSOR= ?";
     private static final String GET_SLOT_FROM_GROUP_STMT = "SELECT ID_SLOT FROM GROUP_SLOT WHERE ID_GROUP= ?";
 
     private static final String GETALL_STMT = "SELECT * FROM SLOTS";
@@ -115,6 +116,31 @@ public class SlotDAO implements DAO<Slot> {
              PreparedStatement stmt = conn.prepareStatement(GET_SLOT_FROM_GROUP_STMT)
         ){
             stmt.setLong(1,group.getId());
+            stmt.executeQuery();
+            ResultSet rs =stmt.getResultSet();
+            while (rs.next()) {
+                slotList.add(get(rs.getLong(1)).orElseThrow(SQLException::new) );
+            }
+        }
+        catch (SQLException e) {
+            log.error(e.getMessage());
+            throw e;
+        }
+        return Collections.unmodifiableList(slotList);
+    }
+
+    /**
+     * Take a professor and return a List of the slot with this professor
+     * @param professor the professor taken
+     * @return List of slot
+     * @throws SQLException if an error occurs
+     */
+    public  List<Slot> getSlotOfAProfessor (Professor professor) throws SQLException {
+        List<Slot> slotList= new ArrayList<>();
+        try (Connection conn = Datasource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(GET_SLOT_FROM_A_PROFESSOR_STMT)
+        ){
+            stmt.setLong(1,professor.getId());
             stmt.executeQuery();
             ResultSet rs =stmt.getResultSet();
             while (rs.next()) {
