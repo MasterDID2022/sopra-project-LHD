@@ -14,6 +14,7 @@ import fr.univtln.lhd.model.entities.slots.Subject;
 import fr.univtln.lhd.model.entities.users.Admin;
 import fr.univtln.lhd.model.entities.users.Professor;
 import fr.univtln.lhd.model.entities.users.Student;
+import fr.univtln.lhd.model.entities.users.User;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.threeten.extra.Interval;
@@ -107,6 +108,26 @@ class ScheduleTest {
     }
 
     @Test
+    void getScheduleOfUser() throws SQLException {
+        Slot slotOfMap = (Slot) mapOfSlot.get("Slot");
+        User userOfMap = (User) mapOfSlot.get("Student");
+        LocalDate today = LocalDate.now();
+        LocalDate tomorow = LocalDate.now().plusDays(1);
+        List<Slot> scheduleFetch = Schedule.getSchedule(userOfMap,today,tomorow);
+        Assertions.assertEquals(slotOfMap.getId(),scheduleFetch.get(0).getId());
+    }
+
+    @Test
+    void getScheduleOfUserProfessor() throws SQLException {
+        Slot slotOfMap = (Slot) mapOfSlot.get("Slot");
+        User userOfMap = (User) mapOfSlot.get("Professor");
+        LocalDate today = LocalDate.now();
+        LocalDate tomorow = LocalDate.now().plusDays(1);
+        List<Slot> scheduleFetch = Schedule.getSchedule(userOfMap,today,tomorow);
+        Assertions.assertEquals(slotOfMap.getId(),scheduleFetch.get(0).getId());
+    }
+
+    @Test
     void getScheduleOfNonePersistedStudentWithLocalDate() throws SQLException {
         Slot slotOfMap = (Slot) mapOfSlot.get("Slot");
         Student student = Student.of("Does","not","Exist");
@@ -180,6 +201,7 @@ class ScheduleTest {
                 Interval.of(Instant.now(), Duration.ofHours(1)) );
         Assertions.assertTrue(Schedule.addToSchedule(newSlot));
     }
+
     @Test
     void shouldAddSlotToDatabase() throws SQLException {
         List<Group> groups= new ArrayList<Group>();
@@ -297,6 +319,159 @@ class ScheduleTest {
         Schedule.subscribe("event",observer);
         Schedule instance = new Schedule();
         instance.notifyChanges("event",new ArrayList<>());
+    }
+
+    @Test
+    void addSubject(){
+        SubjectDAO dao = SubjectDAO.getInstance();
+        int oldSize = dao.getAll().size();
+        Subject newSubject = Schedule.addSubjectInSchedule("Test",42);
+        Assertions.assertEquals(oldSize+1,dao.getAll().size());
+        dao.delete(newSubject);
+    }
+
+    @Test
+    void deleteSubject(){
+        SubjectDAO dao = SubjectDAO.getInstance();
+        int oldSize = dao.getAll().size();
+        Subject newSubject = Schedule.addSubjectInSchedule("Test",42);
+        Schedule.deleteSubjectInSchedule(newSubject);
+        Assertions.assertEquals(oldSize,dao.getAll().size());
+        dao.delete(newSubject);
+    }
+
+    @Test
+    void updateSubject(){
+        SubjectDAO dao = SubjectDAO.getInstance();
+        int oldSize = dao.getAll().size();
+        Subject newSubject = Subject.getInstance("tttt",42);
+        Schedule.updateSubjectInSchedule((Subject) mapOfSlot.get("Subject"),newSubject);
+        Assertions.assertEquals(((Subject) mapOfSlot.get("Subject")).getId(),newSubject.getId());
+        Schedule.deleteSubjectInSchedule(newSubject);
+    }
+
+    @Test
+    void addSubjectWithMoreParameter(){
+        SubjectDAO dao = SubjectDAO.getInstance();
+        int oldSize = dao.getAll().size();
+        Subject newSubject = Schedule.addSubjectInSchedule("Test",23,42);
+        Assertions.assertEquals(oldSize+1,dao.getAll().size());
+        dao.delete(newSubject);
+    }
+
+    @Test
+    void addGroup() throws SQLException {
+        GroupDAO dao = GroupDAO.getInstance();
+        int oldSize = dao.getAll().size();
+        Group newGroup = Schedule.addGroupInSchedule("Test");
+        Assertions.assertEquals(oldSize+1,dao.getAll().size());
+        dao.delete(newGroup);
+    }
+
+    @Test
+    void addGroupWithParameter() throws SQLException {
+        GroupDAO dao = GroupDAO.getInstance();
+        int oldSize = dao.getAll().size();
+        Group newGroup = Schedule.addGroupInSchedule("Test",3);
+        Assertions.assertEquals(oldSize+1,dao.getAll().size());
+        dao.delete(newGroup);
+    }
+
+    @Test
+    void deleteGroup() throws SQLException {
+        GroupDAO dao = GroupDAO.getInstance();
+        int oldSize = dao.getAll().size();
+        Group newGroup = Schedule.addGroupInSchedule("Test",3);
+        Schedule.deleteGroupInSchedule(newGroup);
+        Assertions.assertEquals(oldSize,dao.getAll().size());
+    }
+
+    @Test
+    void updateGroup() throws SQLException {
+        GroupDAO dao = GroupDAO.getInstance();
+        int oldSize = dao.getAll().size();
+        Group newGroup = Group.getInstance("tettt");
+        Schedule.updateGroupInSchedule((Group) mapOfSlot.get("Group"),newGroup);
+        Assertions.assertEquals(((Group) mapOfSlot.get("Group")).getId(),newGroup.getId());
+        Schedule.deleteGroupInSchedule(newGroup);
+    }
+
+    @Test
+    void updateClassroom() throws SQLException {
+        ClassroomDAO dao = ClassroomDAO.getInstance();
+        int oldSize = dao.getAll().size();
+        Classroom newClassroom = Classroom.getInstance("testtt");
+        Schedule.updateClassroomInSchedule((Classroom) mapOfSlot.get("Classroom"),newClassroom);
+        Assertions.assertEquals(((Classroom) mapOfSlot.get("Classroom")).getId(),newClassroom.getId());
+        dao.delete(newClassroom);
+    }
+    @Test
+    void addGroupWithWrongParameter() throws SQLException {
+        GroupDAO dao = GroupDAO.getInstance();
+        int oldSize = dao.getAll().size();
+        Group newGroup = Schedule.addGroupInSchedule("Test",5);
+        dao.delete(newGroup);
+        Assertions.assertEquals("T",newGroup.getName().substring(0,1));
+    }
+
+    @Test
+    void addGroupWithWrong2Parameter() throws SQLException {
+        GroupDAO dao = GroupDAO.getInstance();
+        int oldSize = dao.getAll().size();
+        Group newGroup = Schedule.addGroupInSchedule("Test",-1);
+        dao.delete(newGroup);
+        Assertions.assertEquals("T",newGroup.getName().substring(0,1));
+    }
+
+    @Test
+    void addClassroom() throws SQLException {
+        ClassroomDAO dao = ClassroomDAO.getInstance();
+        int oldSize = dao.getAll().size();
+        Classroom newClassroom = Schedule.addClassroomInSchedule("Test");
+        Assertions.assertEquals(oldSize+1,dao.getAll().size());
+        dao.delete(newClassroom);
+    }
+
+    @Test
+    void addClassroomWithParameter() throws SQLException {
+        ClassroomDAO dao = ClassroomDAO.getInstance();
+        int oldSize = dao.getAll().size();
+        Classroom newClassroom = Schedule.addClassroomInSchedule("Test",42);
+        Assertions.assertEquals(oldSize+1,dao.getAll().size());
+        dao.delete(newClassroom);
+    }
+
+    @Test
+    void deleteClassroom() throws SQLException {
+        ClassroomDAO dao = ClassroomDAO.getInstance();
+        int oldSize = dao.getAll().size();
+        Classroom newClassroom = Schedule.addClassroomInSchedule("Test",42);
+        Schedule.deleteClassroomInSchedule(newClassroom);
+        Assertions.assertEquals(oldSize,dao.getAll().size());
+    }
+
+    @Test
+    void shouldgetRatio() throws SQLException {
+        List<Group> groups= new ArrayList<Group>();
+        groups.add((Group) mapOfSlot.get("Group"));
+        List<Professor> professors= new ArrayList<Professor>();
+        professors.add((Professor) mapOfSlot.get("Professor"));
+        Slot newSlot = Slot.getInstance(Slot.SlotType.CM,
+                (Classroom)mapOfSlot.get("Classroom"),
+                (Subject)mapOfSlot.get("Subject"),
+                groups,
+                professors,
+                Interval.of(Instant.now().plusSeconds(3600), Duration.ofHours(1)) );
+        Schedule.addToSchedule(newSlot);
+        SlotDAO dao = SlotDAO.getInstance();
+        Optional<Slot> slotDb =null;
+        try {
+            slotDb = dao.get(newSlot.getId());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        Assertions.assertEquals((float)0.02,Schedule.getPercentageOf((Group) mapOfSlot.get("Group"),newSlot));
+        dao.delete(newSlot);
     }
 
 }
