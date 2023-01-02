@@ -1,37 +1,41 @@
 package fr.univtln.lhd.facade;
 
 import fr.univtln.lhd.exceptions.IdException;
+import fr.univtln.lhd.model.entities.dao.slots.ClassroomDAO;
+import fr.univtln.lhd.model.entities.dao.slots.GroupDAO;
 import fr.univtln.lhd.model.entities.dao.slots.SlotDAO;
+import fr.univtln.lhd.model.entities.dao.slots.SubjectDAO;
 import fr.univtln.lhd.model.entities.dao.users.AdminDAO;
 import fr.univtln.lhd.model.entities.dao.users.ProfessorDAO;
 import fr.univtln.lhd.model.entities.dao.users.StudentDAO;
+import fr.univtln.lhd.model.entities.slots.Classroom;
 import fr.univtln.lhd.model.entities.slots.Group;
+import fr.univtln.lhd.model.entities.slots.Subject;
 import fr.univtln.lhd.model.entities.users.Admin;
 import fr.univtln.lhd.model.entities.users.Professor;
 import fr.univtln.lhd.model.entities.users.Student;
 import fr.univtln.lhd.model.entities.slots.Slot;
+import fr.univtln.lhd.model.entities.users.User;
 import lombok.extern.slf4j.Slf4j;
 import org.threeten.extra.Interval;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
-import java.util.Map;
+import java.util.*;
 
 /**
  * facade of the entities/dao and the ihm
  */
 @Slf4j
-public class Schedule implements Observable{
+public class Schedule implements Observable {
     private static Map<String, List<Observer>> observerMap = new HashMap<>();
+    private static final String ERR_MSG_DELETE_UPDATE = "this entity doesn't seem persisted";
 
     private static final Schedule schedule = new Schedule();
-
 
 
     /**
@@ -71,6 +75,25 @@ public class Schedule implements Observable{
     }
 
     /**
+     * Take a user(Student or Professor) and two LocalDate(start/end) and return every slot that the user is
+     * in in the timerange of the two LocalDate
+     * The user must be persisted or will return an empty array
+     *
+     * @param user      a persisted User
+     * @param timeStart the start of the timerange
+     * @param timeEnd   the end of the timerange
+     * @return a List of slot that is in the timerange and with the Groups of the User
+     */
+    public static List<Slot> getSchedule(User user, LocalDate timeStart, LocalDate timeEnd) {
+        if (user instanceof Student student) {
+            return Schedule.getSchedule(student, timeStart, timeEnd);
+        } else if (user instanceof Professor professor) {
+            return Schedule.getSchedule(professor, timeStart, timeEnd);
+        }
+        return new ArrayList<>();
+    }
+
+    /**
      * Take a student and two LocalDate(start/end) and return every slot that the student is
      * in in the timerange of the two LocalDate
      * The student must be persisted or will return an empty array
@@ -99,6 +122,44 @@ public class Schedule implements Observable{
     public static List<Slot> getSchedule(Group group, LocalDate timeStart, LocalDate timeEnd) {
         Interval timerange = schedule.getIntervalOf(timeStart, timeEnd);
         return Schedule.getSchedule(group, timerange);
+    }
+
+    /**
+     * Take a Professor and two LocalDate(start/end) and return every slot that the professor is
+     * in, in the timerange of the two LocalDate
+     * The professor must be persisted or will return an empty array
+     *
+     * @param professor a persisted professor
+     * @param timeStart the start of the timerange
+     * @param timeEnd   the end of the timerange
+     * @return a List of slot that is in the timerange with this professor
+     */
+    public static List<Slot> getSchedule(Professor professor, LocalDate timeStart, LocalDate timeEnd) {
+        Interval timerange = schedule.getIntervalOf(timeStart, timeEnd);
+        return Schedule.getSchedule(professor, timerange);
+    }
+
+    /**
+     * Take a professor and an Interval timerange and return every slot within the timerange
+     * where the professor is in
+     *
+     * @param professor a persisted Professor
+     * @param timerange An Interval
+     * @return a List of slot that is in the timerange and with the Groups of the Professor
+     */
+    public static List<Slot> getSchedule(Professor professor, Interval timerange) {
+        List<Slot> slotList = new ArrayList<>();
+        if (professor.getId() < 0) {
+            return slotList;
+        }
+        SlotDAO dao = SlotDAO.getInstance();
+        try {
+            slotList.addAll(dao.getSlotOfAProfessor(professor));
+        } catch (SQLException e) {
+            log.error(e.getMessage());
+        }
+        slotList = schedule.filterEverySlotOutsideTimerange(slotList, timerange);
+        return slotList;
     }
 
     /**
@@ -150,6 +211,46 @@ public class Schedule implements Observable{
             log.error(e.getMessage());
         }
         return schedule.filterEverySlotOutsideTimerange(allSlotOfGroup, timerange);
+    }
+    /**
+     * Round to certain number of decimals
+     * Author:jav-rock
+     * @param d
+     * @param decimalPlace
+     * @return
+     */
+    public static float round(float d, int decimalPlace) {
+        BigDecimal bd = new BigDecimal(Float.toString(d));
+        bd = bd.setScale(decimalPlace, RoundingMode.FLOOR);
+        return bd.floatValue();
+    }
+
+    /**
+     * Take a group and a slot and return a percentage of
+     * the number of slot passed on the number of slot in the future
+     * for the group
+     * it is a rough estimate and doesn't take account the difference of length between slot
+     *
+     * @param group
+     * @param slot
+     * @return
+     */
+    public static float getPercentageOf(Group group, Slot slot) {
+        int passed = 0;
+        List<Slot> listOfSlot;
+        SlotDAO dao = SlotDAO.getInstance();
+        try {
+            listOfSlot = dao.getSlotOfGroup(group);
+        } catch (SQLException e) {
+            return -1;
+        }
+        for (Slot xslot :
+                listOfSlot) {
+            if (xslot.getSubject().equals(slot.getSubject()) && xslot.getTimeRange().isBefore(slot.getTimeRange())) {
+                passed +=xslot.getTimeRange().toDuration().toHours();
+            }
+        }
+        return round((((float) passed)/slot.getSubject().getHourCountMax()),2);
     }
 
     /**
@@ -243,6 +344,303 @@ public class Schedule implements Observable{
     }
 
     /**
+     * return a String with an uppercase letter at the beginning followed by
+     * lowercase letter
+     * @param str
+     * @return
+     */
+    private String upperFollowedByOnlyLower(String str){
+        return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
+    }
+
+    /**
+     * simple error mesaage to keep the code DRY
+     * @param str
+     */
+    private void erroMessageForAtt(String str){
+        log.error("failed to persist" + str + ",maybe this name is already in" +
+                "the database");
+    }
+//Getter For persisted attribute of Slot
+
+    /**
+     * Take one String and an Int and return a persisted Group with the right format
+     * The year is comprised beteween 0 and 4 0 is L1 and 4 is M2 if the value is not
+     * correct is will be ignored
+     * if group is failed to be persisted it will return an empty Group
+     * eg:(informAtique,5) -> M2 Informatique
+     *
+     * @param formation
+     * @param year
+     * @return
+     */
+    public static Group addGroupInSchedule(String formation, int year) {
+        if (year<0 || year>4){
+            return addGroupInSchedule(formation);
+        }
+        String[] intToYear = {"L1", "l2", "l3", "M1", "M2"};
+        Group group = Group.getInstance(" " + intToYear[year]+"-"+schedule.upperFollowedByOnlyLower(formation));
+        if (Boolean.TRUE.equals(schedule.persistGroup(group))) {//this style of code is sonar...
+            schedule.erroMessageForAtt(group.toString());
+            return Group.getInstance("");
+        }
+        return group;
+    }
+
+    /**
+     * Take a String and an Int and return a persisted Classroom with right format
+     * if the classroom is failed to be persisted it will return an empty classroom
+     *
+     * @param building
+     * @param roomNumber
+     * @return
+     */
+    public static Classroom addClassroomInSchedule(String building, int roomNumber) {
+        Classroom classroom = Classroom.getInstance(building.toUpperCase() + "." + roomNumber);
+        if (Boolean.TRUE.equals(schedule.persistClassroom(classroom))) {
+            schedule.erroMessageForAtt(classroom.toString());
+            return Classroom.getInstance("");
+        }
+        return classroom;
+    }
+
+    /**
+     * Take a String and an Int and return a persisted Subject with right format
+     * if the subject is failed to be persisted it will return an empty subject
+     *
+     * @param moduleName
+     * @param moduleNumber
+     * @return
+     */
+    public static Subject addSubjectInSchedule(String moduleName, int moduleNumber, int numberOfHour) {
+        Subject subject = Subject.getInstance(moduleName.substring(0, 1).toUpperCase() + moduleNumber + " " +
+                schedule.upperFollowedByOnlyLower(moduleName), numberOfHour);
+        if (Boolean.TRUE.equals(schedule.persistSubject(subject))) {
+            schedule.erroMessageForAtt(subject.toString());
+            return Subject.getInstance("", 0);
+        }
+        return subject;
+    }
+
+    /**
+     * Take a String and return a persisted Classroom with right format
+     * if the classroom is failed to be persisted it will return an empty classroom
+     *
+     * @param building
+     * @return
+     */
+    public static Classroom addClassroomInSchedule(String building) {
+        Classroom classroom = Classroom.getInstance(building.toUpperCase());
+        if (Boolean.TRUE.equals(schedule.persistClassroom(classroom))) {
+            schedule.erroMessageForAtt(classroom.toString());
+            return Classroom.getInstance("");
+        }
+        return classroom;
+    }
+
+    /**
+     * Take one String and return a persisted Group with the right format
+     * if group is failed to be persisted it will return an empty Group
+     * eg:(informAtique) -> Informatique
+     *
+     * @param formation
+     * @return
+     */
+    public static Group addGroupInSchedule(String formation) {
+        Group group = Group.getInstance(formation.substring(0, 1).toUpperCase() + formation.substring(1).toLowerCase());
+        if (Boolean.TRUE.equals(schedule.persistGroup(group))) {
+            schedule.erroMessageForAtt(group.toString());
+            return Group.getInstance("");
+        }
+        return group;
+    }
+
+    /**
+     * Take a String and an Int and return a persisted Subject with right format
+     * if the subject is failed to be persisted it will return an empty subject
+     *
+     * @param moduleName
+     * @return
+     */
+    public static Subject addSubjectInSchedule(String moduleName, int numberOfHour) {
+        Subject subject = Subject.getInstance(schedule.upperFollowedByOnlyLower(moduleName), numberOfHour);
+        if (Boolean.TRUE.equals(schedule.persistSubject(subject))) {
+            schedule.erroMessageForAtt(subject.toString());
+            return Subject.getInstance("", 0);
+        }
+        return subject;
+    }
+
+    /**
+     * update a Group in the database with a new Group
+     *
+     * @param oldGroup
+     * @param newGroup
+     * @return true in case of failure false if it's a success
+     */
+    public static boolean updateGroupInSchedule(Group oldGroup,Group newGroup){
+        try {
+            newGroup.setId(oldGroup.getId());
+        } catch (IdException e) {
+            log.error(ERR_MSG_DELETE_UPDATE);
+            return true;
+        }
+        GroupDAO dao = GroupDAO.getInstance();
+        try {
+            dao.update(newGroup);
+        } catch (SQLException e) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * update a Classroom in the database with a new Classroom
+     *
+     * @param oldClassroom
+     * @param newClassroom
+     * @return true in case of failure false if it's a success
+     */
+    public static boolean updateClassroomInSchedule(Classroom oldClassroom,Classroom newClassroom){
+        try {
+            newClassroom.setId(oldClassroom.getId());
+        } catch (IdException e) {
+            log.error(ERR_MSG_DELETE_UPDATE);
+            return true;
+        }
+        ClassroomDAO dao = ClassroomDAO.getInstance();
+        try {
+            dao.update(newClassroom);
+        } catch (SQLException e) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * update a Subject in the database with a new Subject
+     *
+     * @param oldSubject
+     * @param newSubject
+     * @return true in case of failure false if it's a success
+     */
+    public static boolean updateSubjectInSchedule(Subject oldSubject,Subject newSubject){
+        try {
+            newSubject.setId(oldSubject.getId());
+        } catch (IdException e) {
+            log.error(ERR_MSG_DELETE_UPDATE);
+            return true;
+        }
+        SubjectDAO dao = SubjectDAO.getInstance();
+        dao.update(newSubject);
+        return false;
+    }
+
+    /**
+     * Delete a group in the database
+     *
+     * @param group
+     * @return true in case of failure false if it's a success
+     */
+    public static boolean deleteGroupInSchedule(Group group){
+        if (group.getId()<0){
+            log.error(ERR_MSG_DELETE_UPDATE);
+            return true;
+        }
+        GroupDAO dao = GroupDAO.getInstance();
+        try {
+            dao.delete(group);
+        } catch (SQLException e) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Delete a subject in the database
+     *
+     * @param subject
+     * @return true in case of failure false if it's a success
+     */
+    public static boolean deleteSubjectInSchedule(Subject subject){
+        if (subject.getId()<0){
+            log.error(ERR_MSG_DELETE_UPDATE);
+            return true;
+        }
+        SubjectDAO dao = SubjectDAO.getInstance();
+        dao.delete(subject);
+        return false;
+    }
+
+    /**
+     * Delete a classroom in the database
+     *
+     * @param classroom
+     * @return true in case of failure false if it's a success
+     */
+    public static boolean deleteClassroomInSchedule(Classroom classroom){
+        if (classroom.getId()<0){
+            log.error(ERR_MSG_DELETE_UPDATE);
+            return true;
+        }
+        ClassroomDAO dao = ClassroomDAO.getInstance();
+        try {
+            dao.delete(classroom);
+        } catch (SQLException e) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Take a group, persisted it and return false in case of
+     * success True if not
+     *
+     * @param group
+     * @return
+     */
+    private Boolean persistGroup(Group group) {
+        GroupDAO dao = GroupDAO.getInstance();
+        try {
+            dao.save(group);
+        } catch (SQLException e) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Take a subject, persisted it and return false in case of
+     * success True if not
+     *
+     * @param subject
+     * @return
+     */
+    private Boolean persistSubject(Subject subject) {
+        SubjectDAO dao = SubjectDAO.getInstance();
+        dao.save(subject);
+        return false;
+    }
+
+
+    /**
+     * Take a classroom, persisted it and return false in case of
+     * success True if not
+     *
+     * @param classroom
+     * @return
+     */
+    private Boolean persistClassroom(Classroom classroom) {
+        ClassroomDAO dao = ClassroomDAO.getInstance();
+        try {
+            dao.save(classroom);
+        } catch (SQLException e) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Go through every attribute of slot and verify if it is persisted
      * if not it add it to a list and return every
      * state
@@ -315,11 +713,11 @@ public class Schedule implements Observable{
 
     @Override
     public void subscribeToEvent(String eventName, Observer observer) {
-        observerMap.putIfAbsent(eventName,new ArrayList<>());
+        observerMap.putIfAbsent(eventName, new ArrayList<>());
         observerMap.get(eventName).add(observer);
     }
 
-    public static void subscribe(String eventName, Observer observer){
+    public static void subscribe(String eventName, Observer observer) {
         schedule.subscribeToEvent(eventName, observer);
     }
 
@@ -329,7 +727,7 @@ public class Schedule implements Observable{
         observerMap.get(eventName).remove(observer);
     }
 
-    public static void unsubscribe(String eventName, Observer observer){
+    public static void unsubscribe(String eventName, Observer observer) {
         schedule.unsubscribeToEvent(eventName, observer);
     }
 
