@@ -8,6 +8,9 @@ import javafx.stage.Stage;
 
 import java.net.URL;
 
+/**
+ * Edt App Class which loads xml and css files, then display it into the app
+ */
 public class EdtApp extends Application {
     @Override
     public void start(Stage stage) throws Exception {

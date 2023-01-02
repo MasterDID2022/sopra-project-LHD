@@ -14,8 +14,12 @@ import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.threeten.extra.Interval;
 
+/**
+ * Edt Planning Wrapper class, extending Grid base class
+ * Suppressing Warning java:S110, because too much inheritance is caused by using JavaFx Related Objects
+ */
 @Slf4j
-@SuppressWarnings("java:S110")//Using an IHM imply a lot inheritance
+@SuppressWarnings("java:S110")
 public class EdtGrid extends Grid {
 
     public enum Days { LUNDI, MARDI, MERCREDI, JEUDI, VENDREDI }
@@ -23,6 +27,14 @@ public class EdtGrid extends Grid {
 
     private LocalDate currentWeekStart;
 
+    /**
+     * Base constructor of Edt grid, setup planning for row number and column number
+     * Setting up each row's hour label
+     * Setting up each column's days label
+     * Leaving the planning grid empty of custom cells (Flow Pane Label)
+     * @param rowNumber int Number of Rows
+     * @param columnNumber int Number of Columns
+     */
     private EdtGrid(int rowNumber, int columnNumber){
         super( Grid.builder(rowNumber, columnNumber) );
 
@@ -55,20 +67,37 @@ public class EdtGrid extends Grid {
         changeTodayStyleClass();
     }
 
+    /**
+     * Returns an Instance of EdtGrid Class, default rowNumber to 11, and columnNumber to 6
+     * from 08:00 to 17:00 and from Monday to Friday
+     * @return EdtGrid instance
+     */
     public static EdtGrid getInstance(){ return new EdtGrid(11, 6); }
 
+    /**
+     * Populate each planning cells to an empty cell
+     */
     private void setupEmptyGrid(){
         for (int i = 1; i < getRowNumber(); i++)
             for (int j = 1; j < getColumnNumber(); j++)
                 add( getEmptyCell(), i, j);
     }
 
+    /**
+     * Returns an empty cell (FlowPane parent, Label children of flow pane)
+     * adding a custom style of cell to manipulate its style within css files
+     * @return FlowPane empty cell
+     */
     private FlowPane getEmptyCell(){
         FlowPane f = new FlowPane( new Label("") );
         f.getStyleClass().add("cell");
         return f;
     }
 
+    /**
+     * Update each day's label based on current week
+     * getting days name and Date of Month ( example Monday 18 )
+     */
     public void updateDaysLabel() {
         LocalDate week = currentWeekStart;
         int currentWeekDay;
@@ -84,6 +113,10 @@ public class EdtGrid extends Grid {
         }
     }
 
+    /**
+     * Clears each cell from the planning leaving hours and days label untouched
+     * Resets slot styles to empty cells styles
+     */
     public void clearFullGrid(){
         ObservableList<Node> childs = getChildren();
 
@@ -103,25 +136,54 @@ public class EdtGrid extends Grid {
         changeTodayStyleClass();
     }
 
+    /**
+     * Getter for current Week Start
+     * @return LocalDate current week start (monday)
+     */
     public LocalDate getCurrentWeekStart() { return currentWeekStart; }
 
+    /**
+     * Setup for current week start
+     * Gets LocalDateTime.now() and gets the LocalDate of Monday of that week
+     */
     public void setCurrentWeekStart() {
         int currentDayOfTheWeekIndex = LocalDateTime.now().getDayOfWeek().ordinal();
         this.currentWeekStart = LocalDateTime.now().minusDays(currentDayOfTheWeekIndex).toLocalDate();
     }
 
+    /**
+     * Add weeksToAdd to the current week start then updates days label
+     * @param weeksToAdd int Number of Weeks to add
+     */
     public void nextWeek(int weeksToAdd) {
         this.currentWeekStart = currentWeekStart.plusWeeks(weeksToAdd);
         updateDaysLabel();
     }
+
+    /**
+     * Add 1 week to the current week start
+     */
     public void nextWeek() { nextWeek(1); }
 
+
+    /**
+     * Subtract weeksToSubtract to the current week start then updates days label
+     * @param weeksToSubtract int Number of Weeks to subtract
+     */
     public void previousWeek(int weeksToSubtract) {
         this.currentWeekStart = currentWeekStart.minusWeeks(weeksToSubtract);
         updateDaysLabel();
     }
+
+    /**
+     * Subtract 1 week to the current week start
+     */
     public void previousWeek() { previousWeek(1); }
 
+    /**
+     * Based on today's date and if it's currently displayed on planning
+     * Change column style of today's date for aesthetic purposes
+     */
     private void changeTodayStyleClass(){
         LocalDate nowDate = LocalDate.now();
         int dayIndex = nowDate.getDayOfWeek().ordinal();
@@ -138,6 +200,11 @@ public class EdtGrid extends Grid {
 
     }
 
+    /**
+     * Converts int hour to hour String Ui Format ( example: 8 => 08:00 )
+     * @param hour int Hour to converts
+     * @return String Hour formatted
+     */
     private String convertIntToHourLabel(int hour){
         String hourStart;
         if (hour < 10) hourStart = "0" + hour + ":00";
@@ -145,6 +212,14 @@ public class EdtGrid extends Grid {
         return hourStart;
     }
 
+    /**
+     * Add node to planning grid
+     * converts day and hour information to 2D cell coordinates
+     * @param node Node to add to planning grid
+     * @param day String day
+     * @param hourStart String starting hour format
+     * @param hourEnd String end hour format
+     */
     public void add(Node node, String day, String hourStart, String hourEnd){
         int rowIndex = hours.indexOf(hourStart);
         if (rowIndex == -1) {
@@ -162,10 +237,22 @@ public class EdtGrid extends Grid {
         super.add(node, rowIndex+1, columnIndex, (rowIndexEnd+1) - (rowIndex+1), 1);
     }
 
+    /**
+     * Add node to planning grid at Day and specific hour
+     * @param node Node to add
+     * @param day Days type, day of the week
+     * @param hourStart String starting hour format
+     * @param hourEnd String end hour format
+     */
     public void add(Node node, Days day, String hourStart, String hourEnd){
         add(node, day.name(), hourStart, hourEnd);
     }
 
+    /**
+     * Add Node at Interval
+     * @param node Node to add
+     * @param interval Interval, containing starting and ending hour
+     */
     public void add(Node node, Interval interval){
         LocalDateTime localDateTimeStart = LocalDateTime.ofInstant(interval.getStart(), ZoneId.systemDefault());
         LocalTime localTimeEnd = LocalTime.ofInstant(interval.getEnd(), ZoneId.systemDefault());
@@ -181,28 +268,54 @@ public class EdtGrid extends Grid {
         add(node, day, hourStart, hourEnd);
     }
 
+    /**
+     * Add SlotUi to planning
+     * @param slotUI SlotUI to add
+     */
     public void add(SlotUI slotUI){
         add(slotUI, slotUI.getSlot().getTimeRange());
     }
 
+    /**
+     * Add Slot to planning
+     * @param slot Slot to add
+     */
     public void add(Slot slot){
         SlotUI slotUI = SlotUI.of(slot);
         add( slotUI );
     }
 
+    /**
+     * Add Slots to planning
+     * @param slots List of Slots to add
+     */
     public void add(Slot ... slots){
         for(Slot slot : slots)
             add(slot);
     }
+
+    /**
+     * Add Slots to planning
+     * @param slots List of Slots to add
+     */
     public void add(List<Slot> slots){
         for(Slot slot : slots)
             add(slot);
     }
 
+    /**
+     * Delete SlotUI from planning
+     * @param slotUI SlotUI to delete
+     */
     public void delete(SlotUI slotUI){
         getChildren().remove( slotUI );
     }
 
+    /**
+     * Replace SlotUI with new Slot
+     * @param slotUI SlotUI to delete
+     * @param slot Slot to add and replace the slotUi with
+     */
     public void replace(SlotUI slotUI, Slot slot){
         delete(slotUI);
         add(slot);
