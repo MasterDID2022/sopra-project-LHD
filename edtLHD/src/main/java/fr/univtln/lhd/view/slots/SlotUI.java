@@ -12,9 +12,10 @@ import lombok.Getter;
 /**
  * Slot Ui wrapper class extending FlowPane Node
  * used for converting a Slot to SlotUi, displaying it afterwards correctly
+ * Suppressing Warning java:S110, because too much inheritance is caused by using JavaFx Related Objects
  */
 @Getter
-@SuppressWarnings("java:S110")//Using an IHM imply a lot of inheritance
+@SuppressWarnings("java:S110")
 public class SlotUI extends FlowPane {
 
     private static final int MAX_WIDTH_LABEL = 27;
@@ -29,6 +30,10 @@ public class SlotUI extends FlowPane {
 
     private boolean isActive = true;
 
+    /**
+     * SlotUI Constructor
+     * @param slot Slot to construct the SlotUI from
+     */
     private SlotUI(Slot slot){
         super();
         Label l = new Label();
@@ -44,17 +49,42 @@ public class SlotUI extends FlowPane {
         this.setStyle("-fx-background-color:" + getAssociatedColor() );
     }
 
+    /**
+     * Slot UI Factory
+     * @param slot Slot to construct the SlotUI from
+     * @return SlotUI Instance
+     */
     public static SlotUI of(Slot slot) { return new SlotUI(slot); }
 
+    /**
+     * Is the SlotUI active or not
+     * @return boolean isActive
+     */
     public boolean isActive() { return isActive; }
+
+    /**
+     * Sets isActive on current SlotUI
+     * @param value boolean Value
+     */
     public void setIsActive(boolean value) { isActive = value; }
 
+    /**
+     * Format and Adds Ellipsis if text is considered too long (surpassing limit MAX_WIDTH_LABEL)
+     * @param text String text to format
+     * @return String formatted to correct width
+     */
     private String limitWidthFormat(String text){
         if (text.length() > MAX_WIDTH_LABEL)
             return text.substring(0, MAX_WIDTH_LABEL-3) + "...\n";
         return text + '\n';
     }
 
+    /**
+     * Gets all slot related information and returns the constructed label for display
+     * Some information are not retained if the slot duration is less than 2 hours.
+     * Removing information to gain space on display
+     * @return String Slot info to display onto the SlotUI
+     */
     private String formatSlotLabel(){
         StringBuilder slotLabel = new StringBuilder( limitWidthFormat(subject.getName()) );
 
@@ -73,7 +103,6 @@ public class SlotUI extends FlowPane {
                 slotLabel.append( limitWidthFormat(group.getName()) );
 
         slotLabel.append(slot.getDisplayTimeInterval());
-
 
         if (hoursInterval < MIN_HOUR_INTERVAL){
             slotLabel.append("\n...");

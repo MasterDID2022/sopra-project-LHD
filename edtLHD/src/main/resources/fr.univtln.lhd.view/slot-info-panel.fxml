@@ -9,7 +9,7 @@
     <bottom>
         <HBox alignment="CENTER" spacing="25.0" BorderPane.alignment="CENTER">
             <children>
-                <Button fx:id="sipOkBtn" mnemonicParsing="false" onAction="#sipOkBtnOnClick" prefWidth="70.0" styleClass="addOkBtn" text="Ok" textAlignment="CENTER" HBox.hgrow="ALWAYS" />
+                <Button fx:id="sipOkBtn" minWidth="70.0" mnemonicParsing="false" onAction="#sipOkBtnOnClick" styleClass="addOkBtn" text="Ok" textAlignment="CENTER" HBox.hgrow="ALWAYS" />
                 <Button fx:id="sipCancelBtn" layoutX="101.0" layoutY="17.0" mnemonicParsing="false" onAction="#sipCancelBtnOnClick" prefWidth="70.0" styleClass="addCancelBtn" text="Annuler" />
             </children>
         </HBox>
@@ -94,14 +94,16 @@
                                               </HBox>
                                           </children>
                                       </VBox>
-                                      <ProgressIndicator fx:id="sipSProgress" progress="0.18" HBox.hgrow="ALWAYS">
-                                          <HBox.margin>
-                                              <Insets />
-                                          </HBox.margin>
-                                 <padding>
-                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                 </padding>
-                                      </ProgressIndicator>
+                              <VBox>
+                                 <children>
+                                            <ProgressIndicator fx:id="sipSProgress" progress="0.18">
+                                       <padding>
+                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                       </padding>
+                                            </ProgressIndicator>
+                                    <TextField fx:id="sipSMaxHour" alignment="CENTER" prefWidth="50.0" />
+                                 </children>
+                              </VBox>
                                   </children>
                               </HBox>
                           </children>

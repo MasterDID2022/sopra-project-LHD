@@ -64,3 +64,30 @@
     -fx-background-color: _night0;
     -fx-text-fill: _light0;
 }
+
+.date-picker {
+    -fx-opacity: 1;
+    -fx-border-radius: 1;
+    -fx-background-color: _night0;
+    -fx-border-color: _light0;
+    -fx-text-fill: _light0;
+}
+
+.date-picker .arrow-button {
+    -fx-background-color: _night3;
+    -fx-text-fill: _night0;
+}
+
+.date-picker .arrow-button .arrow {
+    -fx-background-color: _light0;
+}
+
+.date-picker .cell {
+    -fx-opacity: 1;
+    -fx-background-color: _night3;
+    -fx-text-fill: _light0;
+}
+
+.date-picker-popup .month-year-pane {
+    -fx-background-color: _night0;
+}

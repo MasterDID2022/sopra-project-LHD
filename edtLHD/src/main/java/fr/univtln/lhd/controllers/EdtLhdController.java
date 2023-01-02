@@ -27,6 +27,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+/**
+ * Controller class for EDT LHD View
+ */
 public class EdtLhdController implements Initializable, Observer {
     @FXML private BorderPane borderPane;
 
@@ -49,11 +52,19 @@ public class EdtLhdController implements Initializable, Observer {
 
     private Node lastSlotClicked;
 
+    /**
+     * Initialize method, called automatically on initializing the view to render
+     * @param url URL
+     * @param resourceBundle ResourceBundle
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Schedule.subscribe(Schedule.SLOT_EVENT, this);
 
-        currentAuth = Auth.authAsStudent("Theo.hafsaoui@superEmail.com", "LeNomDeMonChien");
+        //currentAuth = Auth.authAsStudent("Theo.hafsaoui@superEmail.com", "LeNomDeMonChien");
+        currentAuth = Auth.authAsAdmin("adminTest@test.com", "adminPasswordTest");
+        //currentAuth = Auth.authAsGuest();
+
         //currentAuthStudent = Schedule.getAdminFromAuth("adminTest@test.com", "adminPasswordTest").orElseThrow(RuntimeException::new);
         //currentAuthStudent = Schedule.getStudentFromAuth("Theo.hafsaoui@superEmail.com", "LeNomDeMonChien").orElseThrow(RuntimeException::new);
         //currentAuthStudent = Schedule.getProfessorFromAuth("pierre-Mahe@univ-tln.fr", "LeNomDuChien").orElseThrow(RuntimeException::new);
@@ -74,25 +85,48 @@ public class EdtLhdController implements Initializable, Observer {
         borderPane.setCenter(edtGrid);
     }
 
+    /**
+     * Getter for Current Authentication User
+     * @return Auth Entity
+     */
     public Auth getCurrentAuth() { return currentAuth; }
 
+    /**
+     * Setup View based on role of auth user (also setup greetings msg)
+     * - Admin will see : planning, group selection list, add slot button
+     * - Guest will see : planning, group selection list
+     * - Student / Professor : planning
+     */
     private void setupAuthenticatedView(){
-        if (!currentAuth.isAdmin()){
-            addBtn.setVisible(false);
-            groupComboBox.setVisible(false);
-        }else
-            setupGroupsComboBox();
+        if (!currentAuth.isAdmin()) addBtn.setVisible(false);
+        if (!currentAuth.isGuest() && !currentAuth.isAdmin()) groupComboBox.setVisible(false);
+        else if (currentAuth.isAdmin() || currentAuth.isGuest()) setupGroupsComboBox();
 
         accountLabel.setText( currentAuth.getGreetingsMessage() );
     }
 
+    /**
+     * Populate Group Selection List (aka Combo Box in java fx)
+     * Get all groups from Schedule facade then populate the combo box with it
+     */
     private void setupGroupsComboBox() {
         //wip
         //get all groups from schedule method
         //populate group combobox
-
+        List<Group> groupList = List.of(
+                Group.getInstance("M1 Info"),
+                Group.getInstance("SVT"),
+                Group.getInstance("Physique")
+        ); // change to Schedule method call
+        for (Group group : groupList)
+            groupComboBox.getItems().add(group);
     }
 
+    /**
+     * Observer Update Override
+     * updates changes based on the type of change and the data given to it
+     * @param change EventChange type, contains the type of changes (ADD / MODIFY / REMOVE), and the changed data
+     */
     @Override
     public void update(EventChange<?> change) {
         //wip
@@ -104,6 +138,9 @@ public class EdtLhdController implements Initializable, Observer {
         }
     }
 
+    /**
+     * Populate Current Week edt planning for current auth user
+     */
     private void updateEdtForCurrentAuth() {
         //bug if user is not student, will throw exception
         edtGrid.clearFullGrid();
@@ -123,29 +160,54 @@ public class EdtLhdController implements Initializable, Observer {
             }
         }
 
-        //List<Slot> weekStudentSlots = Schedule.getSchedule((Student) currentAuthStudent, weekStart, weekEnd);
+        if (weekSlots.isEmpty()) return;
         edtGrid.add(weekSlots);
     }
 
     //region BUTTON EVENT HANDLER
+
+    /**
+     * Callback method when clicking on the add button (only available for admin users)
+     * Show the add panel on the slot info controller child
+     * @param actionEvent ActionEvent
+     */
     @FXML private void addBtnOnClick(ActionEvent actionEvent) { slotInfoController.showAddPanel(); }
 
+    /**
+     * Callback method when clicking on the previous week button
+     * go to previous week on the edt planning then update its content
+     * @param actionEvent ActionEvent
+     */
     @FXML private void previousWeekBtnOnClick(ActionEvent actionEvent) {
         edtGrid.previousWeek();
         updateEdtForCurrentAuth();
     }
 
+    /**
+     * Callback method when clicking on the next week button
+     * go to next week on the edt planning then update its content
+     * @param actionEvent ActionEvent
+     */
     @FXML private void nextWeekBtnOnClick(ActionEvent actionEvent) {
         edtGrid.nextWeek();
         updateEdtForCurrentAuth();
     }
 
+    /**
+     * Callback method when clicking on the Today's Date Top label
+     * brings the user back to today's week planning
+     * @param actionEvent ActionEvent
+     */
     @FXML private void edtTopDateLabelBtnOnClick(ActionEvent actionEvent) {
         edtGrid.setCurrentWeekStart();
         edtGrid.updateDaysLabel();
         updateEdtForCurrentAuth();
     }
 
+    /**
+     * Toggle Slot Info Panel On Click upon SlotUi Element inside planning grid
+     * @param event MouseEvent
+     */
     private void clickGrid(MouseEvent event){
         Node clickedNode = event.getPickResult().getIntersectedNode();
 
@@ -158,10 +220,20 @@ public class EdtLhdController implements Initializable, Observer {
         }
     }
 
+    /**
+     * Callback method when clicking on the disconnect button
+     * Disconnect current user and go back to auth view
+     * @param actionEvent ActionEvent
+     */
     @FXML private void disconnectBtnOnClick(ActionEvent actionEvent) {
         System.out.println("DISCONNECT BTN CLICKED - wip");
     }
 
+    /**
+     * Callback method when selecting an item in the group selection list
+     * update current week planning to the selected group
+     * @param actionEvent ActionEvent
+     */
     public void groupComboBoxOnEndEdit(ActionEvent actionEvent) {
         System.out.println("sdjfklsdjflsdjfkls");
     }
