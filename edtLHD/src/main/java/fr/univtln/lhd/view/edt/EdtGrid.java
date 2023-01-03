@@ -10,6 +10,7 @@ import javafx.scene.layout.FlowPane;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import lombok.extern.slf4j.Slf4j;
 import org.threeten.extra.Interval;
@@ -18,6 +19,7 @@ import org.threeten.extra.Interval;
  * Edt Planning Wrapper class, extending Grid base class
  * Suppressing Warning java:S110, because too much inheritance is caused by using JavaFx Related Objects
  */
+import static java.time.format.TextStyle.SHORT_STANDALONE;
 @Slf4j
 @SuppressWarnings("java:S110")
 public class EdtGrid extends Grid {
@@ -52,7 +54,7 @@ public class EdtGrid extends Grid {
             currentWeekDay++;
         }
 
-        FlowPane empty = new FlowPane( new Label( currentWeekStart.getMonth().name().toUpperCase().substring(0, 3) + "." ) );
+        FlowPane empty = new FlowPane( new Label( currentWeekStart.getMonth().getDisplayName(SHORT_STANDALONE, Locale.getDefault()).toUpperCase()) );
         empty.getStyleClass().add("day");
         add(empty, 0, 0);
 
@@ -104,7 +106,7 @@ public class EdtGrid extends Grid {
 
         for (int i = 0; i < Days.values().length; i++){
             if (i == 0) {
-                ((Label)((FlowPane) get(0, i)).getChildren().get(0)).setText( week.getMonth().name().toUpperCase().substring(0, 3) + "." );
+                ((Label)((FlowPane) get(0, i)).getChildren().get(0)).setText( week.getMonth().getDisplayName(SHORT_STANDALONE, Locale.getDefault()).toUpperCase());
             }
 
             currentWeekDay = week.getDayOfMonth();
