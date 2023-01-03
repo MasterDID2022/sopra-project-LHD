@@ -50,6 +50,7 @@
 .addOkBtn:hover {
     -fx-background-color: _night3;
     -fx-text-fill: _light2;
+    -fx-cursor: hand;
 }
 
 .addCancelBtn {
@@ -63,6 +64,7 @@
 .addCancelBtn:hover {
     -fx-background-color: _night0;
     -fx-text-fill: _light0;
+    -fx-cursor: hand;
 }
 
 .date-picker {
