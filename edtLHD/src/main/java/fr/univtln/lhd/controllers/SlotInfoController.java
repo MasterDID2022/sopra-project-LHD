@@ -189,8 +189,10 @@ public class SlotInfoController {
             sipSgName.setText("");
 
         sipSDate.setValue( slot.getTimeRange().getStart().atZone(ZoneId.systemDefault()).toLocalDate() );
-        sipSProgress.setProgress( controller.getSlotFinishedPercent( slot.getGroup().get(0), slot) );
-        sipSMaxHour.setText( "/ " + slot.getSubject().getHourCountMax() + "h");
+        final double percent=controller.getSlotFinishedPercent( slot.getGroup().get(0), slot);
+        sipSProgress.setProgress( percent );
+        final double hourCountMax=slot.getSubject().getHourCountMax();
+        sipSMaxHour.setText(  (int) (percent * hourCountMax) + " / " + (int) hourCountMax + "h");
 
         String[] hour = slot.getDisplayTimeInterval().split(" - ");
         sipSHourStart.setText( hour[0] );
