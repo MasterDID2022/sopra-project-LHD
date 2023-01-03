@@ -171,13 +171,23 @@ public class SlotInfoController {
         }
 
         sipSName.setText( slot.getSubject().getName() );
-        sipSpFName.setText( slot.getProfessors().get(0).getFname() );
-        sipSpName.setText( slot.getProfessors().get(0).getName() );
+
+        if (!slot.getProfessors().isEmpty()){
+            sipSpFName.setText( slot.getProfessors().get(0).getFname() );
+            sipSpName.setText( slot.getProfessors().get(0).getName() );
+        }else {
+            sipSpFName.setText("");
+            sipSpName.setText("");
+        }
 
         sipSType.setValue( slot.getType() );
 
         sipSClassName.setText( slot.getClassroom().getName() );
-        sipSgName.setText( slot.getGroup().get(0).getName() );
+
+        if (!slot.getGroup().isEmpty())
+            sipSgName.setText( slot.getGroup().get(0).getName() );
+        else
+            sipSgName.setText("");
 
         sipSDate.setValue( slot.getTimeRange().getStart().atZone(ZoneId.systemDefault()).toLocalDate() );
         sipSMaxHour.setText( "/ " + slot.getSubject().getHourCountMax() + "h");

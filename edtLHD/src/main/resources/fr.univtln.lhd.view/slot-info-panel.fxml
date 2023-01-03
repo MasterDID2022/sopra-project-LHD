@@ -101,7 +101,13 @@
                                           <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                        </padding>
                                             </ProgressIndicator>
-                                    <TextField fx:id="sipSMaxHour" alignment="CENTER" prefWidth="50.0" />
+                                    <TextField fx:id="sipSMaxHour" minHeight="-Infinity" minWidth="-Infinity" prefHeight="21.0" prefWidth="50.0" VBox.vgrow="ALWAYS">
+                                       <VBox.margin>
+                                          <Insets top="6.0" />
+                                       </VBox.margin>
+                                       <font>
+                                          <Font size="10.0" />
+                                       </font></TextField>
                                  </children>
                               </VBox>
                                   </children>
