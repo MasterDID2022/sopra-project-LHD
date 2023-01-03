@@ -51,9 +51,6 @@ public class SlotInfoController {
 
         slotInfoPanel.getStyleClass().add("slotInfoPanel");
 
-        //testing only
-        sipSProgress.setProgress(0.43);
-
         setupSlotInfoPanel();
     }
 
@@ -136,6 +133,7 @@ public class SlotInfoController {
         sipSClassName.setDisable(!isAdmin);
         sipSgName.setDisable(!isAdmin);
         sipSDate.setDisable(!isAdmin);
+        sipSProgress.setDisable(!isAdmin);
         sipSMaxHour.setDisable(!isAdmin);
         sipSHourStart.setDisable(!isAdmin);
         sipSHourEnd.setDisable(!isAdmin);
@@ -152,6 +150,7 @@ public class SlotInfoController {
         sipSClassName.setText("");
         sipSgName.setText("");
         sipSDate.setValue( LocalDate.now() );
+        sipSProgress.setProgress(0);
         sipSMaxHour.setText("");
         sipSHourStart.setText("");
         sipSHourEnd.setText("");
@@ -190,6 +189,7 @@ public class SlotInfoController {
             sipSgName.setText("");
 
         sipSDate.setValue( slot.getTimeRange().getStart().atZone(ZoneId.systemDefault()).toLocalDate() );
+        sipSProgress.setProgress( controller.getSlotFinishedPercent( slot.getGroup().get(0), slot) );
         sipSMaxHour.setText( "/ " + slot.getSubject().getHourCountMax() + "h");
 
         String[] hour = slot.getDisplayTimeInterval().split(" - ");
@@ -208,6 +208,11 @@ public class SlotInfoController {
         //exemple, classroom name entry -> string, needs to be Classroom Entity from database
         //need to add method to create subject or classroom in schedule
         System.out.println("ADD SLOT WIP");
+
+        /*Slot slotToAdd = Slot.getInstance(
+                sipSType.getValue(),
+
+        );*/
     }
 
     /**
