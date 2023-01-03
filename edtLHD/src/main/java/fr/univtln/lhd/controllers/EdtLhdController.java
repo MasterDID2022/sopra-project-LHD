@@ -47,7 +47,6 @@ public class EdtLhdController implements Initializable, Observer {
     @FXML private SlotInfoController slotInfoController; //name it exact same as Parent adding 'Controller', javafx auto attribute the associated Controller
 
     private EdtGrid edtGrid;
-    //private User currentAuthStudent;
     private Auth currentAuth;
 
     private Node lastSlotClicked;
@@ -88,6 +87,16 @@ public class EdtLhdController implements Initializable, Observer {
     public Auth getCurrentAuth() { return currentAuth; }
 
     /**
+     * Getter for Slot Percentage from Schedule
+     * @param group Group to get the percentage for
+     * @param slot Slot to access his subject information
+     * @return double between 0-1
+     */
+    public double getSlotFinishedPercent(Group group, Slot slot){
+        return Schedule.getPercentageOf(group, slot);
+    }
+
+    /**
      * Setup View based on role of auth user (also setup greetings msg)
      * - Admin will see : planning, group selection list, add slot button
      * - Guest will see : planning, group selection list
@@ -106,16 +115,8 @@ public class EdtLhdController implements Initializable, Observer {
      * Get all groups from Schedule facade then populate the combo box with it
      */
     private void setupGroupsComboBox() {
-        //wip
-        //get all groups from schedule method
-        //populate group combobox
-        List<Group> groupList = List.of(
-                Group.getInstance("M1 Info"),
-                Group.getInstance("SVT"),
-                Group.getInstance("Physique")
-        ); // change to Schedule method call
-        for (Group group : groupList)
-            groupComboBox.getItems().add(group);
+        List<Group> groupList = Schedule.getAllGroups();
+        groupComboBox.getItems().addAll(groupList);
     }
 
     /**
@@ -144,8 +145,7 @@ public class EdtLhdController implements Initializable, Observer {
 
         List<Slot> weekSlots = new ArrayList<>();
         switch (currentAuth.getType()){
-
-            case STUDENT: {
+            case STUDENT, PROFESSOR: {
                 weekSlots = Schedule.getSchedule(
                         (Student) currentAuth.getAuthUser(),
                         weekStart,
@@ -153,11 +153,17 @@ public class EdtLhdController implements Initializable, Observer {
                 );
                 break;
             }
+            default: break;
         }
 
         if (weekSlots.isEmpty()) return;
         edtGrid.add(weekSlots);
     }
+
+    public static void addSlot(Slot slot) {
+        Schedule.addToSchedule( slot );
+    }
+
 
     //region BUTTON EVENT HANDLER
 

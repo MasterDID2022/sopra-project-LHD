@@ -255,6 +255,18 @@ public class Schedule implements Observable {
         return round((((float) passed)/slot.getSubject().getHourCountMax()),2);
     }
 
+    public static List<Group> getAllGroups(){
+        GroupDAO dao = GroupDAO.getInstance();
+        List<Group> groupList = new ArrayList<>();
+        try {
+            groupList = dao.getAll();
+        } catch (SQLException e){
+            log.error(e.getMessage());
+        }
+
+        return groupList;
+    }
+
     /**
      * Get Student of Database via email & password
      *
