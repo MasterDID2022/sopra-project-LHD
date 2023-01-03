@@ -61,13 +61,9 @@ public class EdtLhdController implements Initializable, Observer {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Schedule.subscribe(Schedule.SLOT_EVENT, this);
 
-        //currentAuth = Auth.authAsStudent("Theo.hafsaoui@superEmail.com", "LeNomDeMonChien");
-        currentAuth = Auth.authAsAdmin("adminTest@test.com", "adminPasswordTest");
+        currentAuth = Auth.authAsStudent("Theo.hafsaoui@superEmail.com", "LeNomDeMonChien");
+        //currentAuth = Auth.authAsAdmin("adminTest@test.com", "adminPasswordTest");
         //currentAuth = Auth.authAsGuest();
-
-        //currentAuthStudent = Schedule.getAdminFromAuth("adminTest@test.com", "adminPasswordTest").orElseThrow(RuntimeException::new);
-        //currentAuthStudent = Schedule.getStudentFromAuth("Theo.hafsaoui@superEmail.com", "LeNomDeMonChien").orElseThrow(RuntimeException::new);
-        //currentAuthStudent = Schedule.getProfessorFromAuth("pierre-Mahe@univ-tln.fr", "LeNomDuChien").orElseThrow(RuntimeException::new);
 
         slotInfoController.setParentController(this);
 
@@ -142,7 +138,6 @@ public class EdtLhdController implements Initializable, Observer {
      * Populate Current Week edt planning for current auth user
      */
     private void updateEdtForCurrentAuth() {
-        //bug if user is not student, will throw exception
         edtGrid.clearFullGrid();
         LocalDate weekStart = edtGrid.getCurrentWeekStart();
         LocalDate weekEnd = edtGrid.getCurrentWeekStart().plusDays(5);
@@ -235,7 +230,7 @@ public class EdtLhdController implements Initializable, Observer {
      * @param actionEvent ActionEvent
      */
     public void groupComboBoxOnEndEdit(ActionEvent actionEvent) {
-        System.out.println("sdjfklsdjflsdjfkls");
+        System.out.println("Group Combo Box Selection - wip");
     }
     //endregion
 }

@@ -83,6 +83,13 @@ Pane {
     -fx-background-color: _night3;
 }
 
+.slot:hover {
+    -fx-cursor: hand;
+
+    -fx-border-width: 2;
+    -fx-border-color: _light2;
+}
+
 .slot Label{
     -fx-text-fill: _night3;
 }
@@ -162,7 +169,7 @@ Pane {
     -fx-text-fill: _light0;
 }
 .resetWeekBtn:hover {
-    -fx-cursor: pointer;
+    -fx-cursor: hand;
 }
 
 
@@ -178,6 +185,7 @@ Pane {
 .addBtn:hover {
     -fx-background-color: _light0;
     -fx-text-fill: _night0;
+    -fx-cursor: hand;
 }
 
 .weekBtn {
@@ -192,6 +200,7 @@ Pane {
 .weekBtn:hover {
     -fx-background-color: _light0;
     -fx-text-fill: _night0;
+    -fx-cursor: hand;
 }
 .weekBtn:pressed {
     -fx-background-color: _light2;
@@ -210,6 +219,9 @@ Pane {
     -fx-background-color: _night0;
     -fx-text-fill: _light0;
     -fx-opacity: 0.7;
+}
+.disconnectBtn:hover {
+    -fx-cursor: hand;
 }
 
 
