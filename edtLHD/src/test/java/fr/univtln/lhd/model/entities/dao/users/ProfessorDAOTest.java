@@ -21,7 +21,9 @@ import org.threeten.extra.Interval;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -128,14 +130,14 @@ class ProfessorDAOTest {
                 Slot.SlotType.TP,
                 classroom,
                 subject,
-                new ArrayList<>(),
-                List.of(professor1, professor2),
+                new HashSet<>(),
+                Set.of(professor1, professor2),
                 Interval.of(Instant.ofEpochSecond((long) (10000 + Math.random())), Instant.ofEpochSecond((long) (1000000 + Math.random())))
         );
 
         try {
             slotDAO.save(slot);
-            List<Professor> professorsOfSlot = dao.getProfessorOfSlots( slot.getId() );
+            Set<Professor> professorsOfSlot = dao.getProfessorOfSlots( slot.getId() );
             assertEquals(professorsOfSlot, slot.getProfessors());
             slotDAO.delete(slot);
         } catch (SQLException e){

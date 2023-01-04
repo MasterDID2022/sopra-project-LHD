@@ -55,9 +55,9 @@ class ScheduleTest {
         ClassroomDAO classroomDAO = ClassroomDAO.getInstance();
         classroomDAO.save(classroomTest);
         mapOfSlot.put("Classroom", classroomTest);
-        List<Group> lgroup = new ArrayList<>();
+        Set<Group> lgroup = new HashSet<>();
         lgroup.add(groupTest);
-        List<Professor> lprofessor = new ArrayList<>();
+        Set<Professor> lprofessor = new HashSet<>();
         lprofessor.add(professorTest);
         Interval intervalTest = Interval.of(Instant.now(), Duration.ofHours(1));
         Slot slotTest = Slot.getInstance(Slot.SlotType.CM, classroomTest, subjectTest, lgroup, lprofessor,intervalTest );
@@ -189,9 +189,9 @@ class ScheduleTest {
 
     @Test
     void shouldNotAddSlotToDatabase(){
-        List<Group> groups= new ArrayList<Group>();
+        Set<Group> groups= new HashSet<Group>();
         groups.add(Group.getInstance("groupe"));
-        List<Professor> professors= new ArrayList<Professor>();
+        Set<Professor> professors= new HashSet<>();
         professors.add(Professor.of("n","f","m"+Math.random(),"t"));
         Slot newSlot = Slot.getInstance(Slot.SlotType.CM,
                 Classroom.getInstance("ClasssUnitTest"),
@@ -204,9 +204,9 @@ class ScheduleTest {
 
     @Test
     void shouldAddSlotToDatabase() throws SQLException {
-        List<Group> groups= new ArrayList<Group>();
+        Set<Group> groups= new HashSet<Group>();
         groups.add((Group) mapOfSlot.get("Group"));
-        List<Professor> professors= new ArrayList<Professor>();
+        Set<Professor> professors= new HashSet<>();
         professors.add((Professor) mapOfSlot.get("Professor"));
         Slot newSlot = Slot.getInstance(Slot.SlotType.CM,
                 (Classroom)mapOfSlot.get("Classroom"),
@@ -228,9 +228,10 @@ class ScheduleTest {
 
     @Test
     void shouldDeleteSlotFromDB() throws SQLException {
-        List<Group> groups= new ArrayList<Group>();
+        Set<Group> groups= new HashSet<>() {
+        };
         groups.add((Group) mapOfSlot.get("Group"));
-        List<Professor> professors= new ArrayList<Professor>();
+        Set<Professor> professors= new HashSet<>();
         professors.add((Professor) mapOfSlot.get("Professor"));
         Slot newSlot = Slot.getInstance(Slot.SlotType.CM,
                 (Classroom)mapOfSlot.get("Classroom"),
@@ -249,9 +250,9 @@ class ScheduleTest {
 
     @Test
     void shouldUpdateSlotInDB() throws SQLException {
-        List<Group> groups= new ArrayList<Group>();
+        Set<Group> groups= new HashSet<Group>();
         groups.add((Group) mapOfSlot.get("Group"));
-        List<Professor> professors= new ArrayList<Professor>();
+        Set<Professor> professors= new HashSet<>();
         professors.add((Professor) mapOfSlot.get("Professor"));
         Slot newSlot = Slot.getInstance(Slot.SlotType.TD,
                 (Classroom)mapOfSlot.get("Classroom"),
@@ -267,9 +268,9 @@ class ScheduleTest {
 
     @Test
     void shouldNotUpdateSlotInDB() throws SQLException {
-        List<Group> groups= new ArrayList<Group>();
+        Set<Group> groups= new HashSet<Group>();
         groups.add((Group) mapOfSlot.get("Group"));
-        List<Professor> professors= new ArrayList<Professor>();
+        Set<Professor> professors= new HashSet<>();
         professors.add((Professor) mapOfSlot.get("Professor"));
         Slot newSlot = Slot.getInstance(Slot.SlotType.TD,
                 (Classroom)mapOfSlot.get("Classroom"),
@@ -282,9 +283,9 @@ class ScheduleTest {
 
     @Test
     void shouldNotDeleteSlotFromDB() throws SQLException {
-        List<Group> groups= new ArrayList<Group>();
+        Set<Group> groups= new HashSet<Group>();
         groups.add((Group) mapOfSlot.get("Group"));
-        List<Professor> professors= new ArrayList<Professor>();
+        Set<Professor> professors= new HashSet<>();
         professors.add((Professor) mapOfSlot.get("Professor"));
         Slot newSlot = Slot.getInstance(Slot.SlotType.CM,
                 (Classroom)mapOfSlot.get("Classroom"),
@@ -311,7 +312,10 @@ class ScheduleTest {
     @Test
     void subscribeTest(){
         Observer observer = new Observer() {
-            @Override
+            public void update(EventChange<?> change) {
+
+            }
+
             public void udpate(List<EventChange<?>> changes) {
                 Assertions.assertEquals(0,changes.size());
             }
@@ -452,9 +456,9 @@ class ScheduleTest {
 
     @Test
     void shouldgetRatio() throws SQLException {
-        List<Group> groups= new ArrayList<Group>();
+        Set<Group> groups= new HashSet<Group>();
         groups.add((Group) mapOfSlot.get("Group"));
-        List<Professor> professors= new ArrayList<Professor>();
+        Set<Professor> professors= new HashSet<>();
         professors.add((Professor) mapOfSlot.get("Professor"));
         Slot newSlot = Slot.getInstance(Slot.SlotType.CM,
                 (Classroom)mapOfSlot.get("Classroom"),

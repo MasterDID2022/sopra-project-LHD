@@ -10,6 +10,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Class defining a Slot
@@ -25,8 +26,8 @@ public class Slot {
     private final SlotType type;
     private final Classroom  classroom;
     private final Subject subject;
-    private final List<Group> group;
-    private final List<Professor> professors;
+    private final Set<Group> group;
+    private final Set<Professor> professors;
     private Interval timeRange;
     @Getter(AccessLevel.NONE)
     private String memo; //Slot annotation
@@ -45,7 +46,7 @@ public class Slot {
      * @param timeRange indicates the Time taken by the Slot
      * @return an instance of Slot
      */
-    public static Slot getInstance(SlotType type, Classroom classroom, Subject subject, List<Group> group, List<Professor> professors, Interval timeRange,  String memo){
+    public static Slot getInstance(SlotType type, Classroom classroom, Subject subject, Set<Group> group, Set<Professor> professors, Interval timeRange,  String memo){
         return new Slot(-1, type, classroom, subject, group, professors,timeRange, memo);
     }
 
@@ -59,7 +60,7 @@ public class Slot {
      * @param timeRange indicates the Time taken by the Slot
      * @return an instance of Slot
      */
-    public static Slot getInstance(SlotType type, Classroom classroom, Subject subject, List<Group> group,List<Professor> professors, Interval timeRange){
+    public static Slot getInstance(SlotType type, Classroom classroom, Subject subject, Set<Group> group,Set<Professor> professors, Interval timeRange){
         return getInstance(type, classroom, subject, group, professors,timeRange, null);
     }
 

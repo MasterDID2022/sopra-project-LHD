@@ -10,10 +10,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
@@ -88,28 +85,28 @@ public class GroupDAO implements DAO<Group> {
                 group.setId( rs.getLong("ID") );
                 groupList.add(group);
             }
-        } catch (SQLException e){
+        } catch (SQLException e) {
             log.error(e.getMessage());
             throw e;
-        } catch (IdException e){
+        } catch (IdException e) {
             log.error(e.getMessage());
         }
         return groupList;
     }
 
 
-    public List<Group> getGroupOfSlot(final long slotID) throws SQLException {
-        List<Group> groupList = new ArrayList<>();
+    public Set<Group> getGroupOfSlot(final long slotID) throws SQLException {
+        Set<Group> groupList = new HashSet<>();
 
         try (Connection conn = Datasource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(GET_SLOT_GROUP_STMT)
-        ){
-           stmt.setLong(1,slotID);
-           ResultSet rs = stmt.executeQuery();
-           while (rs.next()){
-               groupList.add(
-                       get(rs.getLong(1)).orElseThrow(SQLException::new)
-               );
+        ) {
+            stmt.setLong(1, slotID);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                groupList.add(
+                        get(rs.getLong(1)).orElseThrow(SQLException::new)
+                );
            }
        }
        catch (SQLException e) {
@@ -117,7 +114,7 @@ public class GroupDAO implements DAO<Group> {
            throw e;
        }
 
-       return Collections.unmodifiableList(groupList);
+        return Collections.unmodifiableSet(groupList);
     }
 
     /**

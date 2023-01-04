@@ -10,13 +10,14 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class SlotTest {
-    private Slot slot = InitgetInstanceOfSlot();
-    private Slot slot2 = InitgetInstanceOfSlot();
+    private final Slot slot = InitgetInstanceOfSlot();
+    private final Slot slot2 = InitgetInstanceOfSlot();
 
 
     public Classroom getInstanceOfClassroom () {
@@ -31,8 +32,8 @@ class SlotTest {
         return Group.getInstance("Name");
     }
     public Professor getInstanceOfProfessor(){return Professor.of("Name","fname","email@lhd.org","test");}
-    public List<Professor> getListOfProfessor(){return  List.of(getInstanceOfProfessor());}
-    public List<Group> getListOfGroup () {return List.of(getInstanceOfGroup());}
+    public Set<Professor> getListOfProfessor(){return  Set.of(getInstanceOfProfessor());}
+    public Set<Group> getListOfGroup () {return Set.of(getInstanceOfGroup());}
 
     public Slot getInstanceOfSlot () {
         return slot;
@@ -140,7 +141,7 @@ class SlotTest {
     @Test
     void ShouldGetGroup(){
         Assertions.assertEquals(getInstanceOfGroup(),
-                getInstanceOfSlot().getGroup().get(0));
+                getInstanceOfSlot().getGroup().iterator().next());
     }
 
     @Test

@@ -11,9 +11,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
@@ -257,8 +255,8 @@ public class ProfessorDAO implements DAO<Professor> {
      * @param slotId an Id of a sot
      * @return List of Professor
      */
-    public List<Professor> getProfessorOfSlots(long slotId) {
-        List<Professor> professorsOfSlot = new ArrayList<>();
+    public Set<Professor> getProfessorOfSlots(long slotId) {
+        Set<Professor> professorsOfSlot = new HashSet<>();
         try (Connection conn = Datasource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(GET_PROFESSOR_OF_SLOT)
         ) {

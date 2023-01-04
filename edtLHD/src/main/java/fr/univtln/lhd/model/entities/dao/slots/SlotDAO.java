@@ -10,12 +10,12 @@ import fr.univtln.lhd.model.entities.users.Professor;
 import lombok.extern.slf4j.Slf4j;
 import org.threeten.extra.Interval;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
@@ -63,11 +63,11 @@ public class SlotDAO implements DAO<Slot> {
                             Slot.SlotType.valueOf(rs.getString("TYPE")),
                             ClassroomDAO.getInstance().get(rs.getLong("CLASSROOM")).orElseThrow(SQLException::new),
                             SubjectDAO.getInstance().get(rs.getLong("SUBJECT")).orElseThrow(SQLException::new),
-                            new ArrayList<>(GroupDAO.getInstance().getGroupOfSlot(id)), //the returned list is unmodifiable, requiring a copy.
+                            new HashSet<>(GroupDAO.getInstance().getGroupOfSlot(id)), //the returned list is unmodifiable, requiring a copy.
                             ProfessorDAO.of().getProfessorOfSlots(id),
 
                             Interval.of(Instant.parse(rs.getString("begin")),
-                                        Instant.parse(rs.getString("end"))),
+                                    Instant.parse(rs.getString("end"))),
                             rs.getString("MEMO")
                     )
             );
