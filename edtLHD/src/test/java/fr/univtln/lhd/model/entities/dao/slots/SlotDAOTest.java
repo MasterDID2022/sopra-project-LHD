@@ -16,7 +16,6 @@ import org.threeten.extra.Interval;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -140,8 +139,8 @@ class SlotDAOTest {
             slotDAO.save(slot);
 
             Group firstGroup = groupDAO.get(slot.getGroup().iterator().next().getId()).orElseThrow(SQLException::new);
-            List<Slot> groupSlots = slotDAO.getSlotOfGroup(firstGroup);
-            assertEquals(groupSlots.get(0), slot);
+            Set<Slot> groupSlots = slotDAO.getSlotOfGroup(firstGroup);
+            assertEquals(groupSlots.stream().findFirst().orElse(null), slot);
         } catch (SQLException e) {
             throw new AssertionError();
         }

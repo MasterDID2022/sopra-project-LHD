@@ -16,7 +16,10 @@ import fr.univtln.lhd.model.entities.users.Professor;
 import fr.univtln.lhd.model.entities.users.Student;
 import fr.univtln.lhd.model.entities.users.User;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.threeten.extra.Interval;
 
 import java.sql.SQLException;

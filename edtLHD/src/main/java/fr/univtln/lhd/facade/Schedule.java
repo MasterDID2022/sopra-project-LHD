@@ -10,11 +10,11 @@ import fr.univtln.lhd.model.entities.dao.users.ProfessorDAO;
 import fr.univtln.lhd.model.entities.dao.users.StudentDAO;
 import fr.univtln.lhd.model.entities.slots.Classroom;
 import fr.univtln.lhd.model.entities.slots.Group;
+import fr.univtln.lhd.model.entities.slots.Slot;
 import fr.univtln.lhd.model.entities.slots.Subject;
 import fr.univtln.lhd.model.entities.users.Admin;
 import fr.univtln.lhd.model.entities.users.Professor;
 import fr.univtln.lhd.model.entities.users.Student;
-import fr.univtln.lhd.model.entities.slots.Slot;
 import fr.univtln.lhd.model.entities.users.User;
 import lombok.extern.slf4j.Slf4j;
 import org.threeten.extra.Interval;
@@ -179,8 +179,7 @@ public class Schedule implements Observable {
         for (Group group :
                 student.getStudentGroup()) {
             try {
-                List<Slot> allSlotOfGroup = dao.getSlotOfGroup(group);
-                slotList.addAll(allSlotOfGroup);
+                slotList.addAll(dao.getSlotOfGroup(group));
             } catch (SQLException e) {
                 log.error(e.getMessage());
             }
@@ -200,13 +199,14 @@ public class Schedule implements Observable {
      * @return a List of slot that is in the timerange and with this group
      */
     public static List<Slot> getSchedule(Group group, Interval timerange) {
+        List<Slot> slotList = new ArrayList<>();
         if (group.getId() < 0) {
-            return new ArrayList<>();
+            return slotList;
         }//Might be an edge case
         SlotDAO dao = SlotDAO.getInstance();
         List<Slot> allSlotOfGroup = new ArrayList<>();
         try {
-            allSlotOfGroup = dao.getSlotOfGroup(group);
+            allSlotOfGroup.addAll(dao.getSlotOfGroup(group));
         } catch (SQLException e) {
             log.error(e.getMessage());
         }
@@ -237,7 +237,7 @@ public class Schedule implements Observable {
      */
     public static float getPercentageOf(Group group, Slot slot) {
         int passed = 0;
-        List<Slot> listOfSlot;
+        Set<Slot> listOfSlot;
         SlotDAO dao = SlotDAO.getInstance();
         try {
             listOfSlot = dao.getSlotOfGroup(group);
