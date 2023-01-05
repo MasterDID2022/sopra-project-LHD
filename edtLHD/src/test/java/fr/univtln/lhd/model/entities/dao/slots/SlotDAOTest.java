@@ -141,8 +141,9 @@ class SlotDAOTest {
         } catch (SQLException e){
             throw new AssertionError();
         }
-
-        deleteFullTestEnvironment();
+        finally {
+            deleteFullTestEnvironment();
+        }
     }
 
     @Test
@@ -184,8 +185,9 @@ class SlotDAOTest {
         } catch (SQLException e){
             throw new AssertionError();
         }
-
-        deleteFullTestEnvironment();
+        finally {
+            deleteFullTestEnvironment();
+        }
     }
 
     @Test
