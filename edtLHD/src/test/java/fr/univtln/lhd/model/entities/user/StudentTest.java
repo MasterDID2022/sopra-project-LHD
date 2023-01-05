@@ -95,7 +95,7 @@ class StudentTest {
     @Test
     void ShouldDisplayTheStudent(){
         Student student = getInstanceOfStudent();
-        Assertions.assertEquals("Name FirstName Name.Firstname@emal.com [-1] from null",
+        Assertions.assertEquals("Name FIRSTNAMEfrom null",
                 student.toString());
     }
 

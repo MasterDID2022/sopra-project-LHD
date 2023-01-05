@@ -24,7 +24,7 @@
                   <children>
                       <Label fx:id="sipTitle" text="Label" />
                       <HBox fillHeight="false" HBox.hgrow="ALWAYS" />
-                      <Button fx:id="sipDeleteBtn" mnemonicParsing="false" onAction="#sipDeleteBtnOnClick" text="Delete" textAlignment="CENTER" />
+                      <Button fx:id="sipDeleteBtn" mnemonicParsing="false" onAction="#sipDeleteBtnOnClick" styleClass="deleteBtn" text="Delete" textAlignment="CENTER" />
                   </children>
               </HBox>
               <HBox alignment="BOTTOM_LEFT">
@@ -34,62 +34,33 @@
                               <Insets bottom="5.0" top="5.0" />
                           </padding>
                           <children>
-                              <TextField fx:id="sipSName">
-                                  <font>
-                                      <Font size="10.0" />
-                                  </font>
-                        </TextField>
-                              <HBox spacing="10.0">
-                                  <children>
-                                      <TextField fx:id="sipSpFName">
-                                          <font>
-                                              <Font size="10.0" />
-                                          </font>
-                                      </TextField>
-                                      <TextField fx:id="sipSpName" layoutX="10.0" layoutY="10.0">
-                                          <font>
-                                              <Font size="10.0" />
-                                          </font>
-                                      </TextField>
-                                  </children>
-                              </HBox>
+                        <ComboBox fx:id="sipSName" prefWidth="1000.0">
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
+                        </ComboBox>
+                        <ComboBox fx:id="sipSPName" layoutX="10.0" layoutY="41.0" prefWidth="1000.0" />
                               <HBox alignment="CENTER_LEFT" layoutX="20.0" layoutY="41.0" spacing="5.0">
                                   <children>
-                                      <TextField fx:id="sipSgName" HBox.hgrow="ALWAYS">
-                                          <font>
-                                              <Font size="10.0" />
-                                          </font>
-                                      </TextField>
-                                      <ComboBox fx:id="sipSType" minWidth="-Infinity" prefWidth="74.0" promptText="EXAM" HBox.hgrow="ALWAYS" />
+                              <ComboBox fx:id="sipSgName" prefWidth="1000.0" />
+                                      <ComboBox fx:id="sipSType" minWidth="-Infinity" prefWidth="60.0" promptText="EXAM" HBox.hgrow="ALWAYS" />
                                   </children>
                               </HBox>
                               <HBox spacing="15.0" VBox.vgrow="ALWAYS">
                                   <children>
                                       <VBox spacing="5.0" HBox.hgrow="ALWAYS">
                                           <children>
-                                              <TextField fx:id="sipSClassName">
-                                                  <font>
-                                                      <Font size="10.0" />
-                                                  </font>
-                                              </TextField>
-                                    <DatePicker fx:id="sipSDate" styleClass="datePicker" />
-                                              <HBox alignment="CENTER_LEFT" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="120.0" spacing="5.0" VBox.vgrow="NEVER">
+                                    <ComboBox fx:id="sipSClassName" prefWidth="1000.0" />
+                                    <DatePicker fx:id="sipSDate" />
+                                              <HBox alignment="CENTER_LEFT" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="165.0" spacing="5.0" VBox.vgrow="ALWAYS">
                                                   <children>
-                                                      <TextField fx:id="sipSHourStart" prefWidth="90.0" HBox.hgrow="NEVER">
-                                                          <font>
-                                                              <Font size="10.0" />
-                                                          </font>
-                                                      </TextField>
+                                          <ComboBox fx:id="sipSHourStart" prefWidth="1000.0" />
                                                       <Label text="-" textAlignment="CENTER" HBox.hgrow="NEVER">
                                                           <font>
                                                               <Font size="15.0" />
                                                           </font>
                                                       </Label>
-                                                      <TextField fx:id="sipSHourEnd" layoutX="10.0" layoutY="10.0" prefWidth="90.0" HBox.hgrow="NEVER">
-                                                          <font>
-                                                              <Font size="10.0" />
-                                                          </font>
-                                                      </TextField>
+                                          <ComboBox fx:id="sipSHourEnd" layoutX="10.0" layoutY="10.0" prefWidth="1000.0" />
                                                   </children>
                                               </HBox>
                                           </children>

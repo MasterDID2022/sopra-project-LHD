@@ -31,6 +31,7 @@ public class ProfessorDAO implements DAO<Professor> {
     private static final String SAVE = "INSERT INTO PROFESSORS VALUES (DEFAULT, ?, ?, ?, ?, ?)";
     private static final String SAVE_SLOT_STMT = "INSERT INTO PROFESSOR_SLOT VALUES (?, ?)";
     private static final String UPDATE = "UPDATE PROFESSORS SET name=?, fname=? ,email=?,title=? WHERE ID=?";
+    private static final String UPDATE_PROFESSOR_SLOT_STMT = "UPDATE PROFESSOR_SLOT SET ID_PROFESSOR=? WHERE ID_SLOT=?";
     private static final String DELETE = "DELETE FROM PROFESSORS WHERE ID=?";
 
     private static final String GET_PROFESSOR_AUTH = "SELECT * FROM PROFESSORS WHERE EMAIL=? AND PASSWORD=?";
@@ -167,7 +168,7 @@ public class ProfessorDAO implements DAO<Professor> {
     @Override
     public void save(Professor professor) {
         try (Connection conn = Datasource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(SAVE)
+             PreparedStatement stmt = conn.prepareStatement(SAVE, RETURN_GENERATED_KEYS)
         ) {
             stmt.setString(1, professor.getName());
             stmt.setString(2, professor.getFname());
@@ -175,7 +176,10 @@ public class ProfessorDAO implements DAO<Professor> {
             stmt.setString(4, "NO_PASSWORD");
             stmt.setString(5, professor.getTitle());
             stmt.executeUpdate();
-        } catch (SQLException e) {
+            ResultSet resultSetID = stmt.getGeneratedKeys();
+            resultSetID.next();
+            professor.setId(resultSetID.getLong(1));
+        } catch (SQLException | IdException e) {
             log.error(e.getMessage());
         }
         log.error("Not supposed to be used,Saving without password");
@@ -247,6 +251,23 @@ public class ProfessorDAO implements DAO<Professor> {
             log.error(e.getMessage());
         }
         return professor;
+    }
+
+    /**
+     * Update a professor linked to a slot on the join tables
+     * @param slotId the Slot id
+     * @param newProfessorId the new Professor id assigned to the Slot
+     */
+    public void update(long slotId, long newProfessorId) {
+        try(Connection conn = Datasource.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(UPDATE_PROFESSOR_SLOT_STMT)
+        ){
+            stmt.setLong(1, newProfessorId);
+            stmt.setLong(2, slotId);
+            stmt.executeUpdate();
+        } catch (SQLException e){
+            log.error(e.getMessage());
+        }
     }
 
 

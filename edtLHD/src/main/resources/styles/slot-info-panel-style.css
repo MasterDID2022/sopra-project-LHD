@@ -19,6 +19,7 @@
 
 .slotInfoPanel ComboBox {
     -fx-opacity: 1;
+    -fx-border-width: 0;
 
     -fx-background-color: _night3;
 }
@@ -26,6 +27,7 @@
     -fx-opacity: 1;
     -fx-border-width: 0;
     -fx-border-radius: 3;
+    -fx-font-size: 10;
 
     -fx-background-color: _night3;
     -fx-text-fill: _light0;
@@ -53,6 +55,20 @@
     -fx-cursor: hand;
 }
 
+.deleteBtn {
+    -fx-font-family: "Product Sans";
+    -fx-border-width: 1;
+
+    -fx-text-fill: _light2;
+    -fx-background-color: _night3;
+    -fx-border-color: _light2;
+}
+.deleteBtn:hover{
+    -fx-background-color: _night0;
+    -fx-text-fill: _light0;
+    -fx-cursor: hand;
+}
+
 .addCancelBtn {
     -fx-border-width: 1;
     -fx-font-family: "Product Sans";
@@ -69,7 +85,7 @@
 
 .date-picker {
     -fx-opacity: 1;
-    -fx-border-radius: 1;
+    -fx-border-width: 0;
     -fx-background-color: _night0;
     -fx-border-color: _light0;
     -fx-text-fill: _light0;

@@ -244,7 +244,7 @@ class SlotTest {
         Interval timerangeTest = Interval.of(instant, Duration.ofHours(1));
         Slot slot = getInstanceOfSlot();
         slot.setTimeRange(timerangeTest);
-        Assertions.assertEquals("Slot(id=-1, type=CM, classroom=Classroom(id=-1, name=Name), subject=Subject(id=-1, name=name, hourCountMax=70.0), group=[Group(id=-1, name=Name)], professors=[Professor(super=Name fname email@lhd.org [-1] , title=test)], timeRange=2022-12-29T07:00:00Z/2022-12-29T08:00:00Z, memo=Optional.empty)",
+        Assertions.assertEquals("Slot(id=-1, type=CM, classroom=Name, subject=name, group=[Name], professors=[Name FNAME], timeRange=2022-12-29T07:00:00Z/2022-12-29T08:00:00Z, memo=Optional.empty)",
                 slot.toString());
     }
 

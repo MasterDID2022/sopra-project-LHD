@@ -30,4 +30,9 @@ public class Classroom {
         if (id<0) throw new IdException();
         this.id = id;
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

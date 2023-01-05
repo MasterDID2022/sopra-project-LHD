@@ -157,7 +157,7 @@ public class StudentDAO implements DAO<Student> {
     public void save(Student student) throws SQLException {
         try(
                 Connection conn = Datasource.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(SAVE)
+                PreparedStatement stmt = conn.prepareStatement(SAVE, RETURN_GENERATED_KEYS)
                 )
         {
             stmt.setString(1, student.getName());
@@ -165,8 +165,11 @@ public class StudentDAO implements DAO<Student> {
             stmt.setString(3, student.getEmail());
             stmt.setString(4, "NO_PASSWORD");
             stmt.executeUpdate();
+            ResultSet idSet = stmt.getGeneratedKeys();
+            idSet.next();
+            student.setId(idSet.getLong(1));
             saveStudentGroup(student);
-        } catch (SQLException e){
+        } catch (SQLException |IdException e){
             log.error(e.getMessage());
         }
         log.error("Not supposed to be used,Saving without password");

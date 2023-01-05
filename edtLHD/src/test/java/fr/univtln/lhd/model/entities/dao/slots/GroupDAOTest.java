@@ -32,6 +32,7 @@ class GroupDAOTest {
             int oldSize = dao.getAll().size();
             dao.save(group);
             assertEquals(oldSize+1,dao.getAll().size());
+            dao.delete(group);
         } catch (SQLException e){
             throw new RuntimeException();
         }
@@ -49,6 +50,7 @@ class GroupDAOTest {
             group1.setId(group.getId());
             dao.update(group1);
             assertEquals(dao.get(group.getId()).orElseThrow(SQLException::new), group1);
+            dao.delete(group);
         } catch (SQLException | IdException e){
             throw new RuntimeException();
         }

@@ -15,17 +15,18 @@ import java.util.Locale;
 import lombok.extern.slf4j.Slf4j;
 import org.threeten.extra.Interval;
 
+import static java.time.format.TextStyle.SHORT_STANDALONE;
+
 /**
  * Edt Planning Wrapper class, extending Grid base class
  * Suppressing Warning java:S110, because too much inheritance is caused by using JavaFx Related Objects
  */
-import static java.time.format.TextStyle.SHORT_STANDALONE;
 @Slf4j
 @SuppressWarnings("java:S110")
 public class EdtGrid extends Grid {
 
     public enum Days { LUNDI, MARDI, MERCREDI, JEUDI, VENDREDI }
-    private final List<String> hours;
+    public static List<String> hours = new ArrayList<>();
 
     private LocalDate currentWeekStart;
 
@@ -40,7 +41,6 @@ public class EdtGrid extends Grid {
     private EdtGrid(int rowNumber, int columnNumber){
         super( Grid.builder(rowNumber, columnNumber) );
 
-        hours = new ArrayList<>();
         for (int i = 8; i < 18; i++)
             hours.add(convertIntToHourLabel(i));
 
@@ -207,7 +207,7 @@ public class EdtGrid extends Grid {
      * @param hour int Hour to converts
      * @return String Hour formatted
      */
-    private String convertIntToHourLabel(int hour){
+    public static String convertIntToHourLabel(int hour){
         String hourStart;
         if (hour < 10) hourStart = "0" + hour + ":00";
         else hourStart = hour + ":00";

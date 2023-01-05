@@ -255,6 +255,10 @@ public class Schedule implements Observable {
         return round((((float) passed)/slot.getSubject().getHourCountMax()),2);
     }
 
+    /**
+     * Returns all Groups currently stored in database
+     * @return List of Group
+     */
     public static List<Group> getAllGroups(){
         GroupDAO dao = GroupDAO.getInstance();
         List<Group> groupList = new ArrayList<>();
@@ -265,6 +269,39 @@ public class Schedule implements Observable {
         }
 
         return groupList;
+    }
+
+    /**
+     * Returns all Classrooms currently stored in database
+     * @return List of Classroom
+     */
+    public static List<Classroom> getAllClassrooms(){
+        ClassroomDAO dao = ClassroomDAO.getInstance();
+        List<Classroom> classroomList = new ArrayList<>();
+        try {
+            classroomList = dao.getAll();
+        } catch (SQLException e){
+            log.error(e.getMessage());
+        }
+        return classroomList;
+    }
+
+    /**
+     * Returns all Subjects currently stored in database
+     * @return List of Subject
+     */
+    public static List<Subject> getAllSubjects(){
+        SubjectDAO dao = SubjectDAO.getInstance();
+        return dao.getAll();
+    }
+
+    /**
+     * Returns all Professor currently stored in database
+     * @return List of Professor
+     */
+    public static List<Professor> getAllProfessors(){
+        ProfessorDAO dao = ProfessorDAO.of();
+        return dao.getAll();
     }
 
     /**
@@ -294,6 +331,7 @@ public class Schedule implements Observable {
      */
     public static boolean addToSchedule(Slot slot) {
         SlotDAO dao = SlotDAO.getInstance();
+
         if (!schedule.verifyIfPersisted(slot).isEmpty()) {
             log.error("This attribute of slot are not persisted",
                     schedule.verifyIfPersisted(slot));
@@ -314,7 +352,7 @@ public class Schedule implements Observable {
      * Take a Slot and delete it in the database
      *
      * @param slot
-     * @return false if failure true if it's a success
+     * @return true if failure false if it's a success
      */
     public static boolean deleteInSchedule(Slot slot) {
         if (slot.getId() < 0) {
@@ -340,10 +378,13 @@ public class Schedule implements Observable {
      *
      * @param oldSlot the old slot, persisted
      * @param newSlot the new one, not yet persisted
-     * @return false if failure true if it's a success
+     * @return true if failure false if it's a success
      */
     public static boolean updateInSchedule(Slot oldSlot, Slot newSlot) {
         SlotDAO slotDAO = SlotDAO.getInstance();
+        ProfessorDAO professorDAO = ProfessorDAO.of();
+        GroupDAO groupDAO = GroupDAO.getInstance();
+
         if (oldSlot.getId() < 0) {
             log.error("slot [" + oldSlot.toString() +
                     "]\nis not in database, furthermore cannot update" +
@@ -353,6 +394,16 @@ public class Schedule implements Observable {
         try {
             newSlot.setId(oldSlot.getId());
             slotDAO.update(newSlot);
+
+            if (professorDAO.getProfessorOfSlots(newSlot.getId()).isEmpty() && !newSlot.getProfessors().isEmpty())
+                professorDAO.save(newSlot.getId(), new long[] { newSlot.getProfessors().get(0).getId() });
+            else if(!newSlot.getProfessors().isEmpty())
+                professorDAO.update(newSlot.getId(), newSlot.getProfessors().get(0).getId());
+
+            if (groupDAO.getGroupOfSlot(newSlot.getId()).isEmpty() && !newSlot.getGroup().isEmpty())
+                groupDAO.save(newSlot.getId(), new long[] { newSlot.getGroup().get(0).getId() });
+            else if(!newSlot.getGroup().isEmpty())
+                groupDAO.update(newSlot.getId(), newSlot.getGroup().get(0).getId());
         } catch (IdException | SQLException e) {
             log.error(e.getMessage());
             return true;
@@ -752,6 +803,8 @@ public class Schedule implements Observable {
     @Override
     public void notifyChanges(String eventName, EventChange<?> changes) {
         if (!observerMap.containsKey(eventName)) return;
-        ((Observer) observerMap.get(eventName)).update(changes);
+
+        for (Observer obs : observerMap.get(eventName))
+            obs.update(changes);
     }
 }
