@@ -14,6 +14,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
+import lombok.extern.slf4j.Slf4j;
 import org.threeten.extra.Interval;
 
 import java.time.*;
@@ -23,6 +24,7 @@ import java.util.List;
 /**
  * Controller for Slot Info Panel
  */
+@Slf4j
 public class SlotInfoController {
     private EdtLhdController controller;
 
@@ -44,7 +46,7 @@ public class SlotInfoController {
 
     private Auth currentAuth;
 
-    private enum SlotManagementType { ADD, MODIFY, READ }
+    private enum SlotManagementType {AJOUTER, MODIFIER, LIRE}
     private SlotManagementType managementType;
 
     private SlotUI slotUI;
@@ -92,10 +94,10 @@ public class SlotInfoController {
      * Show Slot Info Panel for Adding a Slot
      */
     public void showAddPanel(){
-        managementType = SlotManagementType.ADD;
+        managementType = SlotManagementType.AJOUTER;
         controller.setLastSlotClicked(null); //resets last clicked slot
-        showSlotInfoPanel();
-        //empty panel
+        //showSlotInfoPanel();
+        toggleSlotInfoPanel();
         clearPanelInfo();
 
         sipDeleteBtn.setVisible(false);
@@ -121,6 +123,7 @@ public class SlotInfoController {
         for (Subject subject : Schedule.getAllSubjects())
             sipSName.getItems().add(subject);
 
+        sipSPName.getItems().add(null);
         for (Professor professor : Schedule.getAllProfessors())
             sipSPName.getItems().add(professor);
 
@@ -151,7 +154,7 @@ public class SlotInfoController {
         boolean isAdmin = currentAuth.isAdmin();
 
         if(!isAdmin){
-            managementType = SlotManagementType.READ;
+            managementType = SlotManagementType.LIRE;
             sipOkBtn.setText("Ok");
             sipCancelBtn.setText("Fermer");
         }else{
@@ -199,7 +202,7 @@ public class SlotInfoController {
         slotInfoPanel.setStyle("-fx-border-color: " + slotUI.getAssociatedColor());
 
         if (currentAuth.isAdmin()){
-            managementType = SlotManagementType.MODIFY;
+            managementType = SlotManagementType.MODIFIER;
             sipTitle.setText( managementType.name() );
         }
 
@@ -234,7 +237,12 @@ public class SlotInfoController {
     private Interval getDateTimeInstant(){
         String startDateTime = sipSDate.getValue().toString() + "T" + sipSHourStart.getValue() + ":00.00Z";
         String endDateTime = sipSDate.getValue().toString() + "T" + sipSHourEnd.getValue() + ":00.00Z";
-        return Interval.of( Instant.parse(startDateTime).atZone(ZoneId.systemDefault()).minusHours(1).toInstant(), Instant.parse(endDateTime).atZone(ZoneId.systemDefault()).minusHours(1).toInstant() );
+
+        Instant start = Instant.parse(startDateTime).atZone(ZoneId.systemDefault()).minusHours(1).toInstant();
+        Instant end = Instant.parse(endDateTime).atZone(ZoneId.systemDefault()).minusHours(1).toInstant();
+        if (start.isBefore(end))
+            return Interval.of( start, end);
+        return Interval.of(end, start);
     }
 
     private Slot getSlotFromPanel(){
@@ -267,7 +275,7 @@ public class SlotInfoController {
         //exemple, classroom name entry -> string, needs to be Classroom Entity from database
         //need to add method to create subject or classroom in schedule
         if (Schedule.addToSchedule( getSlotFromPanel() ))
-            System.out.println("ADD ERROR");
+            log.error("ADD ERROR");
         hideSlotInfoPanel();
     }
 
@@ -280,7 +288,7 @@ public class SlotInfoController {
         Slot oldSlot = getSlotUI().getSlot();
 
         if(Schedule.updateInSchedule(oldSlot, getSlotFromPanel()))
-            System.out.println("MODIFY ERROR");
+            log.error("MODIFY ERROR");
 
         hideSlotInfoPanel();
     }
@@ -295,11 +303,11 @@ public class SlotInfoController {
         try {
             slotToDelete.setId( getSlotUI().getSlot().getId() );
         } catch (IdException e){
-            throw new RuntimeException();
+            log.error(e.getMessage());
         }
 
         if(Schedule.deleteInSchedule( slotToDelete ))
-            System.out.println("DELETE ERROR");
+            log.error("DELETE ERROR");
 
         hideSlotInfoPanel();
     }
@@ -316,8 +324,8 @@ public class SlotInfoController {
      */
     @FXML public void sipOkBtnOnClick(ActionEvent actionEvent) {
         switch (managementType){
-            case ADD -> addNewSlot();
-            case MODIFY -> modifySlot();
+            case AJOUTER -> addNewSlot();
+            case MODIFIER -> modifySlot();
             default -> hideSlotInfoPanel();
         }
     }

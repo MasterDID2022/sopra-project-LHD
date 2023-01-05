@@ -24,7 +24,7 @@
                   <children>
                       <Label fx:id="sipTitle" text="Label" />
                       <HBox fillHeight="false" HBox.hgrow="ALWAYS" />
-                      <Button fx:id="sipDeleteBtn" mnemonicParsing="false" onAction="#sipDeleteBtnOnClick" styleClass="deleteBtn" text="Delete" textAlignment="CENTER" />
+                      <Button fx:id="sipDeleteBtn" mnemonicParsing="false" onAction="#sipDeleteBtnOnClick" styleClass="deleteBtn" text="Supprimer" textAlignment="CENTER" />
                   </children>
               </HBox>
               <HBox alignment="BOTTOM_LEFT">
