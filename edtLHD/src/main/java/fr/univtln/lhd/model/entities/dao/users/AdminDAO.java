@@ -134,7 +134,7 @@ public class AdminDAO implements DAO<Admin> {
     @Override
     public void save(Admin admin) {
         try (Connection conn = Datasource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(SAVE)
+             PreparedStatement stmt = conn.prepareStatement(SAVE, RETURN_GENERATED_KEYS)
         ){
             stmt.setString(1, admin.getName());
             stmt.setString(2, admin.getFname());
@@ -142,7 +142,10 @@ public class AdminDAO implements DAO<Admin> {
             stmt.setString(4, "NO_PASSWORD");
             stmt.setString(5, admin.getFaculty());
             stmt.executeUpdate();
-        } catch (SQLException e){
+            ResultSet resultSetID = stmt.getGeneratedKeys();
+            resultSetID.next();
+            admin.setId(resultSetID.getLong(1));
+        } catch (SQLException | IdException e){
             log.error(e.getMessage());
         }
         log.error("Not supposed to be used,Saving without password");

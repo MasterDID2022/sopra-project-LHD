@@ -30,6 +30,7 @@ public class GroupDAO implements DAO<Group> {
     private static final String SAVE_STMT = "INSERT INTO GROUPS VALUES (DEFAULT, ?)";
     private static final String SAVE_SLOT_STMT = "INSERT INTO GROUP_SLOT VALUES (?, ?)";
     private static final String UPDATE_STMT = "UPDATE GROUPS SET NAME=? WHERE ID=?";
+    private static final String UPDATE_GROUP_SLOT_STMT = "UPDATE GROUP_SLOT SET ID_GROUP=? WHERE ID_SLOT=?";
     private static final String DELETE_STMT = "DELETE FROM GROUPS WHERE ID=?";
 
     /**
@@ -211,6 +212,24 @@ public class GroupDAO implements DAO<Group> {
             throw e;
         }
         return group;
+    }
+
+    /**
+     * Updates join table group_slot with new Group id
+     * @param slotId slot id
+     * @param newGroupId new Group id assigned to the slot
+     */
+    public void update(long slotId, long newGroupId){
+        try (Connection conn = Datasource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(UPDATE_GROUP_SLOT_STMT)
+        ){
+            stmt.setLong(1, newGroupId);
+            stmt.setLong(2, slotId);
+            stmt.executeUpdate();
+        }
+        catch (SQLException e){
+            log.error(e.getMessage());
+        }
     }
 
     /**

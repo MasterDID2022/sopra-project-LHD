@@ -5,7 +5,6 @@ import fr.univtln.lhd.facade.Observer;
 import fr.univtln.lhd.facade.Schedule;
 import fr.univtln.lhd.model.entities.slots.Group;
 import fr.univtln.lhd.model.entities.slots.Slot;
-import fr.univtln.lhd.model.entities.users.Student;
 import fr.univtln.lhd.view.authentification.Auth;
 import fr.univtln.lhd.view.edt.EdtGrid;
 import fr.univtln.lhd.view.slots.SlotUI;
@@ -35,9 +34,6 @@ public class EdtLhdController implements Initializable, Observer {
 
     @FXML private Label edtTopSectionLabel;
     @FXML private Button edtTopDateLabelBtn;
-
-    @FXML private Button previousWeekBtn;
-    @FXML private Button nextWeekBtn;
     @FXML private ComboBox<Group> groupComboBox;
 
     @FXML private Button addBtn;
@@ -60,8 +56,8 @@ public class EdtLhdController implements Initializable, Observer {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Schedule.subscribe(Schedule.SLOT_EVENT, this);
 
-        currentAuth = Auth.authAsStudent("Theo.hafsaoui@superEmail.com", "LeNomDeMonChien");
-        //currentAuth = Auth.authAsAdmin("adminTest@test.com", "adminPasswordTest");
+        //currentAuth = Auth.authAsStudent("Theo.hafsaoui@superEmail.com", "LeNomDeMonChien");
+        currentAuth = Auth.authAsAdmin("adminTest@test.com", "adminPasswordTest");
         //currentAuth = Auth.authAsGuest();
 
         slotInfoController.setParentController(this);
@@ -117,6 +113,7 @@ public class EdtLhdController implements Initializable, Observer {
     private void setupGroupsComboBox() {
         List<Group> groupList = Schedule.getAllGroups();
         groupComboBox.getItems().addAll(groupList);
+        groupComboBox.setValue( groupList.get(0) );
     }
 
     /**
@@ -147,7 +144,15 @@ public class EdtLhdController implements Initializable, Observer {
         switch (currentAuth.getType()){
             case STUDENT, PROFESSOR: {
                 weekSlots = Schedule.getSchedule(
-                        (Student) currentAuth.getAuthUser(),
+                        currentAuth.getAuthUser(),
+                        weekStart,
+                        weekEnd
+                );
+                break;
+            }
+            case ADMIN, GUEST: {
+                weekSlots = Schedule.getSchedule(
+                        groupComboBox.getValue(),
                         weekStart,
                         weekEnd
                 );
@@ -158,10 +163,6 @@ public class EdtLhdController implements Initializable, Observer {
 
         if (weekSlots.isEmpty()) return;
         edtGrid.add(weekSlots);
-    }
-
-    public static void addSlot(Slot slot) {
-        Schedule.addToSchedule( slot );
     }
 
 
@@ -236,7 +237,7 @@ public class EdtLhdController implements Initializable, Observer {
      * @param actionEvent ActionEvent
      */
     public void groupComboBoxOnEndEdit(ActionEvent actionEvent) {
-        System.out.println("Group Combo Box Selection - wip");
+        updateEdtForCurrentAuth();
     }
     //endregion
 }

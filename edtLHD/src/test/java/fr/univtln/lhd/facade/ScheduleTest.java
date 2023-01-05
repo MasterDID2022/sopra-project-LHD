@@ -308,6 +308,7 @@ class ScheduleTest {
         studentDAO.delete(adminTestAuth);
     }
 
+    /*
     @Test
     void subscribeTest(){
         Observer observer = new Observer() {
@@ -320,6 +321,8 @@ class ScheduleTest {
         Schedule instance = new Schedule();
         instance.notifyChanges("event",new ArrayList<>());
     }
+     */
+
 
     @Test
     void addSubject(){

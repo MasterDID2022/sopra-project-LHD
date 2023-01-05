@@ -32,12 +32,12 @@ class AdminDAOTest {
     @BeforeEach
     public void initializeTestEnvironment() {
         admin = this.getRandomNewAdmin();
-        AdminDAO.of().save(admin, "1234");
+        dao.save(admin, "1234");
     }
 
     @AfterEach
     public void deleteTestEnvironement() {
-        AdminDAO.of().delete(admin);
+        dao.delete(admin);
     }
 
     @Test
