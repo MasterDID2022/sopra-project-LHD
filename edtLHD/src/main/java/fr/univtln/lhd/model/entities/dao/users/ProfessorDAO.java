@@ -33,6 +33,7 @@ public class ProfessorDAO implements DAO<Professor> {
     private static final String UPDATE = "UPDATE PROFESSORS SET name=?, fname=? ,email=?,title=? WHERE ID=?";
     private static final String UPDATE_PROFESSOR_SLOT_STMT = "UPDATE PROFESSOR_SLOT SET ID_PROFESSOR=? WHERE ID_SLOT=?";
     private static final String DELETE = "DELETE FROM PROFESSORS WHERE ID=?";
+    private static final String DELETE_PROFESSOR_SLOT_STMT = "DELETE FROM PROFESSOR_SLOT WHERE ID_SLOT=? AND ID_PROFESSOR=?";
 
     private static final String GET_PROFESSOR_AUTH = "SELECT * FROM PROFESSORS WHERE EMAIL=? AND PASSWORD=?";
 
@@ -307,6 +308,23 @@ public class ProfessorDAO implements DAO<Professor> {
              PreparedStatement stmt = conn.prepareStatement(DELETE)
         ) {
             stmt.setLong(1, professor.getId());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            log.error(e.getMessage());
+        }
+    }
+
+    /**
+     * Delete a professor from a slot in join table professor_slot
+     * @param slotId The slot id where the professor need to be removed
+     * @param professorId The professor id
+     */
+    public void delete(long slotId, long professorId){
+        try (Connection conn = Datasource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(DELETE_PROFESSOR_SLOT_STMT)
+        ) {
+            stmt.setLong(1, slotId);
+            stmt.setLong(2, professorId);
             stmt.executeUpdate();
         } catch (SQLException e) {
             log.error(e.getMessage());
