@@ -29,7 +29,7 @@ ALTER DATABASE lhd SET search_path TO lhd;
 --
 
 CREATE EXTENSION IF NOT EXISTS btree_gist WITH SCHEMA lhd;
-
+CREATE EXTENSION IF NOT EXISTS pgcrypto  WITH SCHEMA lhd;
 
 --
 -- Name: EXTENSION btree_gist; Type: COMMENT; Schema: -; Owner: -
@@ -716,17 +716,17 @@ INSERT INTO lhd.group_slot (id_group, id_slot) VALUES (1, 50);
 
 
 
-INSERT INTO lhd.users (id, name, fname, email, password) OVERRIDING SYSTEM VALUE VALUES (1, 'Hafsaoui', 'Théo', 'Theo.hafsaoui@superEmail.com', 'LeNomDeMonChien');
-INSERT INTO lhd.users (id, name, fname, email, password) OVERRIDING SYSTEM VALUE VALUES (4, 'Dupont', 'Martin', 'martin.dupont@lhd.org', 'password');
-INSERT INTO lhd.admins VALUES (5,'TheTestAdmin','TheTestAdmin','test@test.lhd','NO','NO');
+INSERT INTO lhd.users (id, name, fname, email, password) OVERRIDING SYSTEM VALUE VALUES (1, 'Hafsaoui', 'Théo', 'Theo.hafsaoui@superEmail.com', '$2a$06$f16jdGDx4U/hcrWKRt9PJO8plz3B0EpuWdF1Jnnnwn3QRaipQ3Wqe');
+INSERT INTO lhd.users (id, name, fname, email, password) OVERRIDING SYSTEM VALUE VALUES (4, 'Dupont', 'Martin', 'martin.dupont@lhd.org', '$2a$06$Z4IaAiw1Cj92gjl3evW7dOlSYvYV2erfH4PZNeUmh1GQCG1dWahRy');
+INSERT INTO lhd.admins VALUES (5,'TheTestAdmin','TheTestAdmin','test@test.lhd','$2a$06$.kkkbqpTkpwZgg3mZQOPB.hd0ptJNKM/oJ8aZ7LV5w3zvkhXOQZ3q','NO');
 
 
 INSERT INTO lhd.group_user (id_group, id_user) VALUES (1, 1);
 
 
 
-INSERT INTO lhd.professors (id, name, fname, email, password, title) VALUES (3, 'Mahe', 'Pierre', 'pierre-Mahe@univ-tln.fr', 'LeNomDuChien', 'Enseignant');
-INSERT INTO lhd.professors (id, name, fname, email, password, title) VALUES (2, 'Robert', 'Jean-Marc smith', 'Jean-Marc@TobertSECU.fr', 'LeNomDuChien', 'Enseignant');
+INSERT INTO lhd.professors (id, name, fname, email, password, title) VALUES (3, 'Mahe', 'Pierre', 'pierre-Mahe@univ-tln.fr', '$2a$06$BLL.KYHKUVJWrRHz2VuFGu34mO0qoN7IowmSJO3ifxj/SpTKa1C/y', 'Enseignant');
+INSERT INTO lhd.professors (id, name, fname, email, password, title) VALUES (2, 'Robert', 'Jean-Marc smith', 'Jean-Marc@TobertSECU.fr', '$2a$06$PD3x2cqxwVugbgHZXvdJ6uCl4AkCcAwP2OyE5OzSGQ09IeIoh/jC6', 'Enseignant');
 
 
 

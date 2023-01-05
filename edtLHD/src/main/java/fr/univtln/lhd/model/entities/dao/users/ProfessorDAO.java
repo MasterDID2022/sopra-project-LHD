@@ -28,14 +28,13 @@ public class ProfessorDAO implements DAO<Professor> {
     private static final String GET_ALL = "SELECT * FROM PROFESSORS";
     private static final String GET_PROFESSOR_OF_SLOT = "SELECT ID_PROFESSOR from PROFESSOR_SLOT where id_SLOT= ?";
     private static final String GET_ALL_PROFESSOR_SLOT_STMT = "SELECT * FROM PROFESSOR_SLOT";
-    private static final String SAVE = "INSERT INTO PROFESSORS VALUES (DEFAULT, ?, ?, ?, ?, ?)";
+    private static final String SAVE = "INSERT INTO PROFESSORS VALUES (DEFAULT, ?, ?, ?, crypt(?, gen_salt('bf')), ?)";//NOSONAR
     private static final String SAVE_SLOT_STMT = "INSERT INTO PROFESSOR_SLOT VALUES (?, ?)";
     private static final String UPDATE = "UPDATE PROFESSORS SET name=?, fname=? ,email=?,title=? WHERE ID=?";
     private static final String UPDATE_PROFESSOR_SLOT_STMT = "UPDATE PROFESSOR_SLOT SET ID_PROFESSOR=? WHERE ID_SLOT=?";
     private static final String DELETE = "DELETE FROM PROFESSORS WHERE ID=?";
     private static final String DELETE_PROFESSOR_SLOT_STMT = "DELETE FROM PROFESSOR_SLOT WHERE ID_SLOT=? AND ID_PROFESSOR=?";
-
-    private static final String GET_PROFESSOR_AUTH = "SELECT * FROM PROFESSORS WHERE EMAIL=? AND PASSWORD=?";
+    private static final String GET_PROFESSOR_AUTH = "SELECT * FROM PROFESSORS WHERE EMAIL=? AND PASSWORD=crypt(?,password)";//NOSONAR
 
 
     private ProfessorDAO() {

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<GridPane xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.univtln.lhd.controllers.LoginController">
+   <columnConstraints>
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+   </rowConstraints>
+   <children>
+      <AnchorPane prefHeight="1100.0" prefWidth="650.0" style="-fx-background-color: #2e3440;">
+         <children>
+            <ImageView fitHeight="1100.0" fitWidth="650.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../styles/logo-utln.png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="650.0" fitWidth="1100.0" pickOnBounds="true">
+               <image>
+                  <Image url="@../styles/wallpaperLogin.png" />
+               </image>
+            </ImageView>
+            <AnchorPane layoutY="89.0" opacity="0.82" prefHeight="166.0" prefWidth="541.0" style="-fx-background-color: #2e3440;" />
+            <AnchorPane layoutX="538.0" prefHeight="650.0" prefWidth="562.0" style="-fx-background-color: #2e3440;">
+               <children>
+                  <Button fx:id="connectButton" layoutX="42.0" layoutY="198.0" mnemonicParsing="false" onAction="#verifyUser" onMouseEntered="#onMouseEnteredLoginButton" onMouseExited="#onMouseExitLoginButton" onMousePressed="#onMousePressedLoginButton" onMouseReleased="#onMouseReleasedLoginButton" style="-fx-background-color: #5e81ac;" text="SE CONNECTER" textFill="#eceff4">
+                     <font>
+                        <Font name="System Bold" size="13.0" />
+                     </font>
+                     <cursor>
+                        <Cursor fx:constant="CLOSED_HAND" />
+                     </cursor></Button>
+                  <PasswordField fx:id="passwordField" layoutX="41.0" layoutY="148.0" prefHeight="24.0" prefWidth="223.0" style="-fx-background-color: #3b4252; -fx-border-width: 2; -fx-border-color: #d8dee9; -fx-border-radius: 3;" />
+                  <Label fx:id="warning" layoutX="37.0" layoutY="49.0" opacity="0.93" textFill="#bf616a">
+                     <font>
+                        <Font name="System Bold" size="16.0" />
+                     </font></Label>
+                  <TextField fx:id="textField" layoutX="41.0" layoutY="97.0" prefHeight="24.0" prefWidth="223.0" style="-fx-background-color: #3b4252; -fx-border-width: 2;" />
+                  <Text fx:id="ident" fill="#a0a6b2" layoutX="42.0" layoutY="94.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Identifiant:" wrappingWidth="82.13000106811523">
+                     <font>
+                        <Font size="12.0" />
+                     </font></Text>
+                  <Text fx:id="pwd" fill="#a0a6b2" layoutX="42.0" layoutY="145.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Mot de passe">
+                     <font>
+                        <Font size="12.0" />
+                     </font></Text>
+               </children>
+            </AnchorPane>
+            <ImageView blendMode="SCREEN" fitHeight="84.0" fitWidth="324.0" layoutX="12.0" layoutY="100.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../styles/logo-utln.png" />
+               </image>
+            </ImageView>
+            <Label layoutX="359.0" layoutY="109.0" prefHeight="26.0" prefWidth="124.0" text="Pas de compte ? " textFill="#eceff4">
+               <font>
+                  <Font size="10.0" />
+               </font>
+            </Label>
+            <Label layoutX="359.0" layoutY="129.0" prefHeight="18.0" prefWidth="142.0" text="connectez vous en tant que" textFill="#eceff4">
+               <font>
+                  <Font size="10.0" />
+               </font>
+            </Label>
+            <Label fx:id="guestButton" layoutX="359.0" layoutY="147.0" onMouseClicked="#onMouseClickedGuestLabel" onMouseEntered="#onMouseEnteredGuestLabel" onMouseExited="#onMouseExitGuestLabel" text="invité" textFill="#d08770" underline="true">
+               <font>
+                  <Font size="10.0" />
+               </font>
+               <cursor>
+                  <Cursor fx:constant="CLOSED_HAND" />
+               </cursor>
+            </Label>
+         </children>
+      </AnchorPane>
+   </children>
+   <fx:include source="edt-lhd.fxml" fx:id="main" />
+</GridPane>

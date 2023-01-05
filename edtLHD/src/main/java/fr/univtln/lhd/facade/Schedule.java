@@ -16,6 +16,7 @@ import fr.univtln.lhd.model.entities.users.Professor;
 import fr.univtln.lhd.model.entities.users.Student;
 import fr.univtln.lhd.model.entities.slots.Slot;
 import fr.univtln.lhd.model.entities.users.User;
+import fr.univtln.lhd.view.authentification.Auth;
 import lombok.extern.slf4j.Slf4j;
 import org.threeten.extra.Interval;
 
@@ -202,7 +203,7 @@ public class Schedule implements Observable {
      * @return a List of slot that is in the timerange and with this group
      */
     public static List<Slot> getSchedule(Group group, Interval timerange) {
-        if (group.getId() < 0) {
+        if ( group ==null || group.getId() < 0) {
             return new ArrayList<>();
         }//Might be an edge case
         SlotDAO dao = SlotDAO.getInstance();
@@ -809,4 +810,6 @@ public class Schedule implements Observable {
         for (Observer obs : observerMap.get(eventName))
             obs.update(changes);
     }
+
+
 }
