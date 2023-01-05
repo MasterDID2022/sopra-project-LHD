@@ -1,13 +1,11 @@
 package fr.univtln.lhd.model.entities.users;
 
 import lombok.Getter;
-import lombok.ToString;
 
 /**
  *Class that represent a User that is a Lecturer
  */
 @Getter
-@ToString(callSuper = true)
 public class Professor extends User {
     private final String title;
 
