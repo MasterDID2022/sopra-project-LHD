@@ -124,7 +124,7 @@ class ClassroomTest {
 
     @Test
     void ShoudlReturnToSTringOfClassroom(){
-        Assertions.assertEquals("Classroom(id=-1, name=Name)",
+        Assertions.assertEquals("Name",
                 getInstanceOfClassroom().toString());
     }
 

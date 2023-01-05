@@ -61,6 +61,6 @@ public abstract class User {
 
     @Override
     public String toString() {
-        return  name +' '+ fname +' '+ email + " ["+id+"] ";
+        return  name +' '+ fname.toUpperCase();
     }
 }

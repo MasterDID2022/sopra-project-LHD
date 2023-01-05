@@ -149,7 +149,7 @@ class SubjectTest {
 
     @Test
     void ShoudlReturnToSTringOfSubject(){
-        Assertions.assertEquals("Subject(id=-1, name=Name, hourCountMax=70.0)",
+        Assertions.assertEquals("Name",
                 getInstanceOfSubject().toString());
     }
 

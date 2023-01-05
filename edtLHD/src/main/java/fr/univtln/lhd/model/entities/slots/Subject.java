@@ -33,4 +33,8 @@ public class Subject {
         this.id = id;
     }
 
+    @Override
+    public String toString() {
+        return name;
+    }
 }
