@@ -147,7 +147,7 @@ public class SlotDAO implements DAO<Slot> {
      * Take a group and return a List of the slot with this group
      *
      * @param group the group taken
-     * @return Set of slot
+     * @return List of slot
      * @throws SQLException if an error occurs
      */
     public List<Slot> getSlotOfGroup(Group group) throws SQLException {
