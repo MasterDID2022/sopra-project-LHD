@@ -93,6 +93,7 @@ public class SlotInfoController {
      */
     public void showAddPanel(){
         managementType = SlotManagementType.ADD;
+        controller.setLastSlotClicked(null); //resets last clicked slot
         showSlotInfoPanel();
         //empty panel
         clearPanelInfo();
@@ -109,6 +110,7 @@ public class SlotInfoController {
     public void showSlotInfoPanel(SlotUI slotUI){
         this.slotUI = slotUI;
         showSlotInfoPanel();
+        sipDeleteBtn.setVisible(currentAuth.isAdmin());
         populateSlotInfoPanel();
     }
 
@@ -225,8 +227,8 @@ public class SlotInfoController {
 
         String[] hour = slot.getDisplayTimeInterval().split(" - ");
 
-        sipSHourStart.setValue(hour[0]);
-        sipSHourEnd.setValue(hour[1]);
+        sipSHourStart.setValue(hour[0].substring(0, 3) + "00");
+        sipSHourEnd.setValue(hour[1].substring(0, 3) + "00");
     }
 
     private Interval getDateTimeInstant(){
