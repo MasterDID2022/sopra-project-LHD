@@ -172,7 +172,7 @@ class ScheduleTest {
         StudentDAO studentDAO = StudentDAO.getInstance();
         studentDAO.save(studentTestAuth, "test");
         Optional<Student> resultGetter = Schedule.getStudentFromAuth(email, "test");
-        Assertions.assertEquals(studentTestAuth, resultGetter.get());
+        Assertions.assertEquals(studentTestAuth, resultGetter.orElseThrow(AssertionError::new));
         studentDAO.delete(studentTestAuth);
     }
 
@@ -183,7 +183,7 @@ class ScheduleTest {
         ProfessorDAO DAO = ProfessorDAO.of();
         DAO.save(professorTestAuth, "test");
         Optional<Professor> resultGetter = Schedule.getProfessorFromAuth(email, "test");
-        Assertions.assertEquals(professorTestAuth, resultGetter.get());
+        Assertions.assertEquals(professorTestAuth, resultGetter.orElseThrow(AssertionError::new));
         DAO.delete(professorTestAuth);
     }
 
@@ -262,7 +262,7 @@ class ScheduleTest {
         SlotDAO dao = SlotDAO.getInstance();
         Schedule.updateInSchedule((Slot) mapOfSlot.get("Slot"),newSlot);
         Optional<Slot> slotfromDb = dao.get(((Slot) mapOfSlot.get("Slot")).getId());
-        Assertions.assertNotEquals(slotfromDb.get().getType(),mapOfSlot.get("Type"));
+        Assertions.assertNotEquals(slotfromDb.orElseThrow(AssertionError::new).getType(),mapOfSlot.get("Type"));
     }
 
     @Test
@@ -475,6 +475,46 @@ class ScheduleTest {
         }
         Assertions.assertEquals((float)0.02,Schedule.getPercentageOf((Group) mapOfSlot.get("Group"),newSlot));
         dao.delete(newSlot);
+    }
+
+    @Test
+    void checkScheduleAllGroupsIntegrity(){
+        GroupDAO dao = GroupDAO.getInstance();
+        try {
+            int expectedSize = dao.getAll().size();
+            int actualSize = Schedule.getAllGroups().size();
+            Assertions.assertEquals(expectedSize, actualSize);
+        } catch (SQLException e){
+            throw new AssertionError();
+        }
+    }
+
+    @Test
+    void checkScheduleAllClassroomsIntegrity(){
+        ClassroomDAO dao = ClassroomDAO.getInstance();
+        try {
+            int expectedSize = dao.getAll().size();
+            int actualSize = Schedule.getAllClassrooms().size();
+            Assertions.assertEquals(expectedSize, actualSize);
+        } catch (SQLException e){
+            throw new AssertionError();
+        }
+    }
+
+    @Test
+    void checkScheduleAllSubjectsIntegrity(){
+        SubjectDAO dao = SubjectDAO.getInstance();
+        int expectedSize = dao.getAll().size();
+        int actualSize = Schedule.getAllSubjects().size();
+        Assertions.assertEquals(expectedSize, actualSize);
+    }
+
+    @Test
+    void checkScheduleAllProfessorsIntegrity(){
+        ProfessorDAO dao = ProfessorDAO.of();
+        int expectedSize = dao.getAll().size();
+        int actualSize = Schedule.getAllProfessors().size();
+        Assertions.assertEquals(expectedSize, actualSize);
     }
 
 }
