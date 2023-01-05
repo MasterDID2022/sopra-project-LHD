@@ -57,7 +57,7 @@ public class EdtLhdController implements Initializable, Observer {
         Schedule.subscribe(Schedule.SLOT_EVENT, this);
 
         //currentAuth = Auth.authAsStudent("Theo.hafsaoui@superEmail.com", "LeNomDeMonChien");
-        currentAuth = Auth.authAsAdmin("adminTest@test.com", "adminPasswordTest");
+        currentAuth = Auth.authAsAdmin("test@test.lhd", "NO");
         //currentAuth = Auth.authAsGuest();
 
         slotInfoController.setParentController(this);
@@ -81,6 +81,12 @@ public class EdtLhdController implements Initializable, Observer {
      * @return Auth Entity
      */
     public Auth getCurrentAuth() { return currentAuth; }
+
+    /**
+     * Setter for last clicked node
+     * @param n Node to assign
+     */
+    public void setLastSlotClicked(Node n){ lastSlotClicked = n; }
 
     /**
      * Getter for Slot Percentage from Schedule
@@ -123,13 +129,15 @@ public class EdtLhdController implements Initializable, Observer {
      */
     @Override
     public void update(EventChange<?> change) {
-        //wip
+
         switch (change.getType()){
             case ADD: edtGrid.add( (Slot) change.getData()); break;
             case MODIFY: edtGrid.replace( slotInfoController.getSlotUI(), (Slot) change.getData() ); break;
             case REMOVE: edtGrid.delete( slotInfoController.getSlotUI() ); break;
             default: break;
         }
+
+        updateEdtForCurrentAuth();
     }
 
     /**
