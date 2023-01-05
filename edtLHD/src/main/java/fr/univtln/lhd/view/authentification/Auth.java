@@ -1,13 +1,20 @@
 package fr.univtln.lhd.view.authentification;
 
 import fr.univtln.lhd.facade.Schedule;
+import fr.univtln.lhd.model.entities.dao.users.AdminDAO;
+import fr.univtln.lhd.model.entities.dao.users.ProfessorDAO;
+import fr.univtln.lhd.model.entities.dao.users.StudentDAO;
 import fr.univtln.lhd.model.entities.users.User;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+
+import java.sql.SQLException;
 
 /**
  * Authentication class for ease of use regarding of authenticating a user into the planning
  */
 @Getter
+@Slf4j
 public class Auth {
 
     public enum AuthType { ADMIN, STUDENT, PROFESSOR, GUEST }
@@ -25,7 +32,6 @@ public class Auth {
      */
     private Auth(AuthType type, String email, String password) {
         this.type = type;
-
         switch (type) {
             case GUEST -> authUser = null;
             case ADMIN -> authUser = Schedule.getAdminFromAuth(email, password).orElseThrow(RuntimeException::new);
@@ -102,4 +108,44 @@ public class Auth {
                 + ", " + authUser.getName()
                 + ". (compte " + authUser.getClass().getSimpleName() + ")";
     }
+    /**
+     * get a combination of email and password and return if it's the
+     * database and if so of which User if not it will return Guest
+     * @param email
+     * @param password
+     * @return
+     */
+    public static Auth.AuthType isAcorectCombination(String email, String password){
+        log.info("Try to connect with"+email+"|"+password);
+        AdminDAO adminDAO = AdminDAO.of();
+        try {
+            if (adminDAO.get(email,password).isPresent()){
+                return Auth.AuthType.ADMIN;
+            }
+        } catch (SQLException e) {
+            log.error(e.getMessage());
+        }
+
+
+        ProfessorDAO professorDAO = ProfessorDAO.of();
+        try {
+            if (professorDAO.get(email,password).isPresent()){
+                return Auth.AuthType.PROFESSOR;
+            }
+        } catch (SQLException e) {
+            log.error(e.getMessage());
+        }
+
+        StudentDAO studentDAO = StudentDAO.getInstance();
+        try {
+            if (studentDAO.get(email,password).isPresent()){
+                return Auth.AuthType.STUDENT;
+            }
+        } catch (SQLException e) {
+            log.error(e.getMessage());
+        }
+
+        return Auth.AuthType.GUEST;
+    }
+
 }

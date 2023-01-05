@@ -25,13 +25,13 @@ public class StudentDAO implements DAO<Student> {
     private static final String ATT_EMAIL="EMAIL";
     private static final String GET="SELECT * FROM USERS WHERE ID=?";
     private static final String GET_ALL ="SELECT * FROM USERS";
-    private static final String SAVE="INSERT INTO USERS VALUES (DEFAULT,?, ?,?,?)";
+    private static final String SAVE="INSERT INTO USERS VALUES (DEFAULT,?, ?,?,crypt(?, gen_salt('bf')))"; //NOSONAR
     private static final String UPDATE="UPDATE USERS SET name=?, fname=? ,email=? WHERE ID=?";
     private static final String DELETE="DELETE FROM USERS WHERE ID=?";
     private static final String GET_ALL_GROUP="SELECT * FROM GROUP_USER WHERE ID_USER=?";
     private static final String SAVE_GROUP="INSERT INTO GROUP_USER VALUES (?, ?)";
 
-    private static final String GET_STUDENT_AUTH = "SELECT * FROM USERS WHERE EMAIL=? AND PASSWORD=?";
+    private static final String GET_STUDENT_AUTH = "SELECT * FROM USERS WHERE EMAIL=? AND PASSWORD=crypt(?,password)";//NOSONAR
 
     private StudentDAO (){ }
 

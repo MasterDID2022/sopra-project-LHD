@@ -25,11 +25,11 @@ public class AdminDAO implements DAO<Admin> {
     private static final String GET="SELECT * FROM ADMINS WHERE ID=?";
 
     private static final String GET_ALL="SELECT * FROM ADMINS";
-    private static final String SAVE="INSERT INTO ADMINS VALUES (DEFAULT, ?, ?, ?, ?, ?)";
+    private static final String SAVE="INSERT INTO ADMINS VALUES (DEFAULT, ?, ?, ?,crypt(?, gen_salt('bf')) , ?)"; //NOSONAR
     private static final String UPDATE="UPDATE ADMINS SET name=?, fname=? ,email=?,dpt=? WHERE ID=?";
     private static final String DELETE="DELETE FROM ADMINS WHERE ID=?";
 
-    private static final String GET_ADMIN_AUTH = "SELECT * FROM ADMINS WHERE EMAIL=? AND PASSWORD=?";
+    private static final String GET_ADMIN_AUTH = "SELECT * FROM ADMINS WHERE EMAIL=? AND PASSWORD=crypt(?, password)";//NOSONAR
 
 
     public static AdminDAO of (){ return new AdminDAO(); }

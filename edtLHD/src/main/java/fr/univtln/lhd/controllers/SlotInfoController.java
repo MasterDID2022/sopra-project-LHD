@@ -14,6 +14,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import lombok.extern.slf4j.Slf4j;
 import org.threeten.extra.Interval;
 
@@ -26,6 +27,7 @@ import java.util.List;
  */
 @Slf4j
 public class SlotInfoController {
+    public VBox box;
     private EdtLhdController controller;
 
     @FXML public BorderPane slotInfoPanel;
@@ -64,6 +66,10 @@ public class SlotInfoController {
         setupSlotInfoPanel();
     }
 
+    public VBox getBox() {
+        return box;
+    }
+
     /**
      * Getter for SlotUi contained inside this Panel
      * @return SlotUi Entity or null
@@ -78,7 +84,8 @@ public class SlotInfoController {
     /**
      * Hide Slot Info Panel
      */
-    public void hideSlotInfoPanel() { slotInfoPanel.setVisible(false); }
+    public void hideSlotInfoPanel() {
+        slotInfoPanel.setVisible(false); }
 
     /**
      * Toggle Show/Hide Slot Info Panel
@@ -120,25 +127,36 @@ public class SlotInfoController {
      * Setting up All Combo Boxes on slot info panel
      */
     private void setupAllComboBoxes(){
-        for (Subject subject : Schedule.getAllSubjects())
+        for (Subject subject : Schedule.getAllSubjects()){
+            //sipSName.getItems().removeAll(subject);
             sipSName.getItems().add(subject);
-
+        }
         sipSPName.getItems().add(null);
-        for (Professor professor : Schedule.getAllProfessors())
+        for (Professor professor : Schedule.getAllProfessors()){
+            //sipSPName.getItems().removeAll(professor);
             sipSPName.getItems().add(professor);
+        }
 
-        for (Group group : Schedule.getAllGroups())
+        for (Group group : Schedule.getAllGroups()){
+            //sipSgName.getItems().removeAll(group);
             sipSgName.getItems().add(group);
+        }
 
-        for (Slot.SlotType type : Slot.SlotType.values())
+        for (Slot.SlotType type : Slot.SlotType.values()){
+            //sipSType.getItems().removeAll(type);
             sipSType.getItems().add(type);
+        }
 
-        for (Classroom classroom : Schedule.getAllClassrooms())
+        for (Classroom classroom : Schedule.getAllClassrooms()){
+            //sipSClassName.getItems().removeAll(classroom);
             sipSClassName.getItems().add(classroom);
+        }
 
         for (int i = 8; i < 18; i++){
             String hourString = EdtGrid.convertIntToHourLabel(i);
+            //sipSHourStart.getItems().removeAll(hourString);
             sipSHourStart.getItems().add(hourString);
+            //sipSHourEnd.getItems().removeAll(hourString);
             sipSHourEnd.getItems().add(hourString);
         }
     }
@@ -191,6 +209,20 @@ public class SlotInfoController {
         sipSMaxHour.setText("");
         sipSHourStart.setValue("");
         sipSHourEnd.setValue("");
+    }
+
+    public void clearAllEntry(){
+        sipSName.getItems().removeAll(Schedule.getAllSubjects());
+        sipSClassName.getItems().removeAll(Schedule.getAllClassrooms());
+        sipSPName.getItems().removeAll(Schedule.getAllProfessors());
+        sipSPName.getItems().remove(null);
+        sipSgName.getItems().removeAll(Schedule.getAllGroups());
+        sipSType.getItems().removeAll(Slot.SlotType.values());
+        for (int i = 8; i < 18; i++){
+            String hourString = EdtGrid.convertIntToHourLabel(i);
+            sipSHourStart.getItems().removeAll(hourString);
+            sipSHourEnd.getItems().removeAll(hourString);
+        }
     }
 
     /**

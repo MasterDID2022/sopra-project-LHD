@@ -17,6 +17,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 
 import java.net.URL;
@@ -30,6 +31,7 @@ import java.util.ResourceBundle;
  * Controller class for EDT LHD View
  */
 public class EdtLhdController implements Initializable, Observer {
+    public AnchorPane anchor;
     @FXML private BorderPane borderPane;
 
     @FXML private Label edtTopSectionLabel;
@@ -55,13 +57,43 @@ public class EdtLhdController implements Initializable, Observer {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Schedule.subscribe(Schedule.SLOT_EVENT, this);
+    }
 
-        //currentAuth = Auth.authAsStudent("Theo.hafsaoui@superEmail.com", "LeNomDeMonChien");
-        currentAuth = Auth.authAsAdmin("test@test.lhd", "NO");
-        //currentAuth = Auth.authAsGuest();
-
+    /**
+     * update the schedule for an exterior
+     */
+    public void setCurrentAuthAsGuest(){
+        currentAuth = Auth.authAsGuest();
         slotInfoController.setParentController(this);
+        setupAuthenticatedView();
+        updateEdtForCurrentAuth();
+    }
 
+    /**
+     * Take An AuthType an email and a password and update the
+     * schedule with the schedule of the user associate
+     * Use an Auth to assert the validity of the connexion
+     * @param type Student or Professor or Admin
+     * @param email mail of user
+     * @param password password of user
+     */
+    public void setCurrentAuth(Auth.AuthType type,String email,String password){
+        if (type.equals(Auth.AuthType.STUDENT)){
+            currentAuth = Auth.authAsStudent(email,password);
+        }
+        else if (type.equals(Auth.AuthType.PROFESSOR)){
+            currentAuth = Auth.authAsProfessor(email,password);
+        }
+        else if (type.equals(Auth.AuthType.ADMIN)){
+            currentAuth = Auth.authAsAdmin(email,password);
+        }
+        slotInfoController.setParentController(this);
+        setupAuthenticatedView();
+        updateEdtForCurrentAuth();
+    }
+
+    public void initialize() {
+        currentAuth = Auth.authAsStudent("Theo.hafsaoui@superEmail.com", "LeNomDeMonChien");
         edtGrid = EdtGrid.getInstance();
         edtGrid.addEventHandler(MouseEvent.MOUSE_CLICKED, this::clickGrid);
 
@@ -81,6 +113,20 @@ public class EdtLhdController implements Initializable, Observer {
      * @return Auth Entity
      */
     public Auth getCurrentAuth() { return currentAuth; }
+
+    public void hideEDT(){
+        borderPane.setMouseTransparent(true);
+        borderPane.setOpacity(0);
+        borderPane.setVisible(false);
+    }
+
+    public void showEDT(){
+        borderPane.setMouseTransparent(false);
+        borderPane.setOpacity(1);
+        borderPane.setVisible(true);
+    }
+
+    @FXML
 
     /**
      * Setter for last clicked node
@@ -107,8 +153,11 @@ public class EdtLhdController implements Initializable, Observer {
     private void setupAuthenticatedView(){
         if (!currentAuth.isAdmin()) addBtn.setVisible(false);
         if (!currentAuth.isGuest() && !currentAuth.isAdmin()) groupComboBox.setVisible(false);
-        else if (currentAuth.isAdmin() || currentAuth.isGuest()) setupGroupsComboBox();
-
+        else if (currentAuth.isAdmin() || currentAuth.isGuest()){
+            groupComboBox.setVisible(true);
+            setupGroupsComboBox();
+        }
+        if (currentAuth.isAdmin()) addBtn.setVisible(true);
         accountLabel.setText( currentAuth.getGreetingsMessage() );
     }
 
@@ -118,6 +167,7 @@ public class EdtLhdController implements Initializable, Observer {
      */
     private void setupGroupsComboBox() {
         List<Group> groupList = Schedule.getAllGroups();
+        //groupComboBox.getItems().removeAll(groupList);
         groupComboBox.getItems().addAll(groupList);
         groupComboBox.setValue( groupList.get(0) );
     }
@@ -147,7 +197,6 @@ public class EdtLhdController implements Initializable, Observer {
         edtGrid.clearFullGrid();
         LocalDate weekStart = edtGrid.getCurrentWeekStart();
         LocalDate weekEnd = edtGrid.getCurrentWeekStart().plusDays(5);
-
         List<Slot> weekSlots = new ArrayList<>();
         switch (currentAuth.getType()){
             case STUDENT, PROFESSOR: {
@@ -168,7 +217,6 @@ public class EdtLhdController implements Initializable, Observer {
             }
             default: break;
         }
-
         if (weekSlots.isEmpty()) return;
         edtGrid.add(weekSlots);
     }
@@ -181,7 +229,10 @@ public class EdtLhdController implements Initializable, Observer {
      * Show the add panel on the slot info controller child
      * @param actionEvent ActionEvent
      */
-    @FXML private void addBtnOnClick(ActionEvent actionEvent) { slotInfoController.showAddPanel(); }
+    @FXML private void addBtnOnClick(ActionEvent actionEvent) {
+        slotInfo.setDisable(false);
+        slotInfoController.getBox().setDisable(false);
+        slotInfoController.showAddPanel(); }
 
     /**
      * Callback method when clicking on the previous week button
@@ -231,12 +282,19 @@ public class EdtLhdController implements Initializable, Observer {
     }
 
     /**
+     * BUG
      * Callback method when clicking on the disconnect button
      * Disconnect current user and go back to auth view
      * @param actionEvent ActionEvent
      */
     @FXML private void disconnectBtnOnClick(ActionEvent actionEvent) {
-        System.out.println("DISCONNECT BTN CLICKED - wip");
+        this.hideEDT();
+        slotInfoController.hideSlotInfoPanel();
+        slotInfoController.clearAllEntry();
+        anchor.setDisable(true);
+        addBtn.getScene().getStylesheets().clear();
+        addBtn.getScene().getStylesheets().add("/styles/login-lhd-style.css");
+        groupComboBox.getItems().removeAll(Schedule.getAllGroups());
     }
 
     /**
