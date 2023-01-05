@@ -718,7 +718,7 @@ INSERT INTO lhd.group_slot (id_group, id_slot) VALUES (1, 50);
 
 INSERT INTO lhd.users (id, name, fname, email, password) OVERRIDING SYSTEM VALUE VALUES (1, 'Hafsaoui', 'Théo', 'Theo.hafsaoui@superEmail.com', 'LeNomDeMonChien');
 INSERT INTO lhd.users (id, name, fname, email, password) OVERRIDING SYSTEM VALUE VALUES (4, 'Dupont', 'Martin', 'martin.dupont@lhd.org', 'password');
-INSERT INTO admins VALUES (5,'TheTestAdmin','TheTestAdmin','test@test.lhd','NO','NO');
+INSERT INTO lhd.admins VALUES (5,'TheTestAdmin','TheTestAdmin','test@test.lhd','NO','NO');
 
 
 INSERT INTO lhd.group_user (id_group, id_user) VALUES (1, 1);
