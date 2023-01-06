@@ -399,7 +399,7 @@ public class Schedule implements Observable {
                 professorDAO.save(newSlot.getId(), new long[] { newSlot.getProfessors().get(0).getId() });
             else if(!newSlot.getProfessors().isEmpty())
                 professorDAO.update(newSlot.getId(), newSlot.getProfessors().get(0).getId());
-            else
+            else if(!oldSlot.getProfessors().isEmpty())
                 professorDAO.delete(newSlot.getId(), oldSlot.getProfessors().get(0).getId());
 
             if (groupDAO.getGroupOfSlot(newSlot.getId()).isEmpty() && !newSlot.getGroup().isEmpty())
