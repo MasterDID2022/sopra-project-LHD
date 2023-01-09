@@ -1,8 +1,10 @@
 <h1 align="center">
   <img src="./.github/img/Header.png" alt="EDT">
-  <a href="./.github/file/ConsignesAttendus_du_projetS1-1.pdf">[FR]Subject</a>
+  <a href="./.github/file/ConsignesAttendus_du_projetS1-1.pdf">Subject</a>
   |
-  <a href="./.github/file/Manuel">[FR]Manual</a>
+    <a href="./doc/report.pdf">Report</a>
+  |
+  <a href="./.github/file/Manuel">Manual</a>
 </h1>
 
 A small project from University, aiming to recreate a java planning app with an enphasis on modern technique
