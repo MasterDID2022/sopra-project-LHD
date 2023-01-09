@@ -4,7 +4,7 @@
   |
     <a href="./doc/report.pdf">Report</a>
   |
-  <a href="./.github/file/Manuel">Manual</a>
+  <a href="./.github/file/Manuel.pdf">Manual</a>
 </h1>
 
 A small project from University, aiming to recreate a java planning app with an enphasis on modern technique
